@@ -24,8 +24,20 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
+
 /**
- * Useful constant bootstrap methods.
+ * Useful constant bootstrap methods and methods that make sense to
+ * invoke from {@link
+ * java.lang.invoke.ConstantBootstraps#invoke(Lookup, String, Class,
+ * MethodHandle, Object...)}.
  *
  * @author <a href="https://about.me/lairdnelson" target="_parent">Laird Nelson</a>
  *
@@ -35,11 +47,21 @@ import java.lang.invoke.MethodType;
  */
 public final class BootstrapMethods {
 
-  public static final ClassDesc CD_BootstrapMethods = BootstrapMethods.class.describeConstable().orElseThrow();
-  
+
+  /*
+   * Constructors.
+   */
+
+
   private BootstrapMethods() {
     super();
   }
+
+
+  /*
+   * public static methods.
+   */
+
 
   public static final ConstantCallSite findStaticSetterCallSite(final Lookup lookup,
                                                                 final String fieldName,
@@ -65,7 +87,7 @@ public final class BootstrapMethods {
     throws Throwable {
     return new ConstantCallSite(findSetterMethodHandle(lookup, fieldName, methodType.parameterType(0), targetClass));
   }
-  
+
   public static final ConstantCallSite findVirtualCallSite(final Lookup lookup,
                                                            final String methodName,
                                                            final MethodType methodType,
@@ -81,6 +103,46 @@ public final class BootstrapMethods {
     throws Throwable {
     return new ConstantCallSite(findConstructorMethodHandle(lookup, methodType, targetClass));
   }
+
+  @SuppressWarnings("unchecked")
+  public static final <K, V> SortedMap<K, V> immutableSortedMapOf(final Map<? extends K, ? extends V> map,
+                                                                  final Comparator<? super K> comparator) {
+    final SortedMap<K, V> mutableSortedMap;
+    if (comparator == null) {
+      if (map instanceof SortedMap) {
+        mutableSortedMap = (SortedMap<K, V>)map;
+      } else {
+        mutableSortedMap = new TreeMap<>(map);
+      }
+    } else {
+      mutableSortedMap = new TreeMap<>(comparator);
+      mutableSortedMap.putAll(map);
+    }
+    return Collections.unmodifiableSortedMap(mutableSortedMap);
+  }
+
+  @SuppressWarnings("unchecked")
+  public static final <E> SortedSet<E> immutableSortedSetOf(final Collection<? extends E> set,
+                                                            final Comparator<? super E> comparator) {
+    final SortedSet<E> mutableSortedSet;
+    if (comparator == null) {
+      if (set instanceof SortedSet) {
+        mutableSortedSet = (SortedSet<E>)set;
+      } else {
+        mutableSortedSet = new TreeSet<>(set);
+      }
+    } else {
+      mutableSortedSet = new TreeSet<>(comparator);
+      mutableSortedSet.addAll(set);
+    }
+    return Collections.unmodifiableSortedSet(mutableSortedSet);
+  }
+
+
+  /*
+   * private static methods.
+   */
+
 
   private static final MethodHandle findStaticMethodHandle(final Lookup lookup,
                                                            final String methodName,
@@ -98,7 +160,7 @@ public final class BootstrapMethods {
     return
       MethodHandles.privateLookupIn(targetClass, lookup).findStaticSetter(targetClass, fieldName, fieldType);
   }
-  
+
   private static final MethodHandle findSetterMethodHandle(final Lookup lookup,
                                                            final String fieldName,
                                                            final Class<?> fieldType,
@@ -115,7 +177,7 @@ public final class BootstrapMethods {
     throws Throwable {
     return MethodHandles.privateLookupIn(targetClass, lookup).findVirtual(targetClass, methodName, methodType);
   }
-  
+
   private static final MethodHandle findConstructorMethodHandle(final Lookup lookup,
                                                                 final MethodType methodType,
                                                                 final Class<?> targetClass)
@@ -126,5 +188,5 @@ public final class BootstrapMethods {
     return MethodHandles.privateLookupIn(targetClass, lookup).findConstructor(targetClass, methodType);
   }
 
-  
+
 }
