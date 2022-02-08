@@ -17,7 +17,7 @@
 
 /**
  * Provides classes and interfaces related to concepts embodied by the
- * {@code java.lang.invoke} package.
+ * {@code java.util.function} and {@code java.lang.invoke} packages.
  *
  * @author <a href="https://about.me/lairdnelson"
  * target="_parent">Laird Nelson</a>
