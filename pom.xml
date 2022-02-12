@@ -14,14 +14,14 @@
   </parent>
 
   <name>microBean™ Invoke</name>
-  <description>${project.name}</description>
+  <description>microBean™ Invoke: Functional and invokedynamic constructs for Java</description>
   <inceptionYear>2022</inceptionYear>
-  <url>https://microbean.github.io/${project.artifactId}</url>
+  <url>https://microbean.github.io/microbean-invoke</url>
 
   <scm>
-    <connection>scm:git:git@github.com:microbean/${project.artifactId}.git</connection>
-    <developerConnection>scm:git:git@github.com:microbean/${project.artifactId}.git</developerConnection>
-    <url>https://github.com/microbean/${project.artifactId}/</url>
+    <connection>scm:git:git@github.com:microbean/microbean-invoke.git</connection>
+    <developerConnection>scm:git:git@github.com:microbean/microbean-invoke.git</developerConnection>
+    <url>https://github.com/microbean/microbean-invoke/</url>
     <tag>HEAD</tag>
   </scm>
 
