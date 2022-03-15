@@ -30,16 +30,18 @@ import java.util.stream.Stream;
 
 import org.microbean.development.annotation.Convenience;
 import org.microbean.development.annotation.OverridingDiscouraged;
+import org.microbean.development.annotation.OverridingEncouraged;
 
 /**
- * A {@link Supplier} that is {@link Optional}-like, and a convenient
- * {@linkplain #optional() bridge to <code>Optional</code> objects}.
+ * A {@link Supplier} with additional contractual requirements.
  *
- * <p>Unlike {@link Optional}, any implementation of this interface is
- * not a <a
+ * <p>An {@link OptionalSupplier} does not behave like an {@link
+ * Optional} or a {@link java.util.concurrent.CompletableFuture},
+ * despite the deliberate similarities of some methods.</p>
+ *
+ * <p>An implementation of this interface is not a <a
  * href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/doc-files/ValueBased.html">value-based
- * class</a>.  This is also why there are no {@code isPresent()} or
- * {@code isEmpty()} methods.</p>
+ * class</a>.</p>
  *
  * @param <T> the type of value implementations of this interface
  * {@linkplain #get() supply}
@@ -49,24 +51,54 @@ import org.microbean.development.annotation.OverridingDiscouraged;
  *
  * @see #get()
  *
+ * @see #deterministic()
+ *
  * @see #optional()
  */
 @FunctionalInterface
 public interface OptionalSupplier<T> extends Supplier<T> {
 
   /**
+   * Returns {@code true} if and only if this {@link OptionalSupplier}
+   * is <em>deterministic</em>.
+   *
+   * <p>An {@link OptionalSupplier} is deterministic if and only if:</p>
+   *
+   * <ul>
+   *
+   * <li>Any two invocations of the {@link #get()} method return
+   * objects that are indistinguishable from one another, or</li>
+   *
+   * <li>Any two invocations of the {@link #get()} method throw {@link
+   * RuntimeException}s that are indistinguishable from one
+   * another</li>
+   *
+   * </ul>
+   *
+   * @return {@code true} if and only if this {@link OptionalSupplier}
+   * is <em>deterministic</em>
+   *
+   * @see #get()
+   */
+  @OverridingEncouraged
+  public default boolean deterministic() {
+    return false;
+  }
+
+  /**
    * Returns either the result of invoking the {@link #get()} method,
    * if a {@link RuntimeException} does not occur, or the result of
    * invoking the {@link Function#apply(Object)} method on the
-   * supplied {@code handler} if a {@link RuntimeException} does
-   * occur.
+   * supplied {@code handler} with any {@link RuntimeException} that
+   * does occur.
    *
    * @param handler the exception handler; must not be {@code null}
    *
    * @return either the result of invoking the {@link #get()} method,
    * if a {@link RuntimeException} does not occur, or the result of
    * invoking the {@link Function#apply(Object)} method on the
-   * supplied {@code handler} if a {@link RuntimeException} does occur
+   * supplied {@code handler} with any {@link RuntimeException} that
+   * does occur
    *
    * @exception NullPointerException if {@code handler} is {@code
    * null}
@@ -88,70 +120,6 @@ public interface OptionalSupplier<T> extends Supplier<T> {
     } catch (final RuntimeException e) {
       return handler.apply(e);
     }
-  }
-
-  /**
-   * Invokes the {@link Optional#filter(Predicate)} method on the
-   * return value of the {@link #optional()} method, supplying it with
-   * the supplied {@code predicate}, and returns the result.
-   *
-   * @param predicate the {@link Predicate} in question; must not be
-   * {@code null}
-   *
-   * @return the result of invoking the {@link
-   * Optional#filter(Predicate)} method on the return value of the
-   * {@link #optional()} method with the supplied {@code predicate};
-   * never {@code null}
-   *
-   * @nullability This method never returns {@code null}.
-   *
-   * @idempotency This method is idempotent and deterministic.
-   *
-   * @threadsafety This method itself is safe for concurrent use by
-   * multiple threads, but the {@link Predicate#test(Object)} method
-   * of the supplied {@code predicate} may not be
-   *
-   * @see #optional()
-   *
-   * @see Optional#filter(Predicate)
-   */
-  @Convenience
-  @OverridingDiscouraged
-  public default Optional<T> filter(final Predicate<? super T> predicate) {
-    return this.optional().filter(predicate);
-  }
-
-  /**
-   * Invokes the {@link Optional#flatMap(Function)} method on the
-   * return value of the {@link #optional()} method, supplying it with
-   * the supplied {@code mapper}, and returns the result.
-   *
-   * @param <U> the mapped type
-   *
-   * @param mapper the {@link Function} performing the flat mapping
-   * operation; must not be {@code null}
-   *
-   * @return the result of invoking the {@link
-   * Optional#flatMap(Function)} method on the return value of the
-   * {@link #optional()} method, supplying it with the supplied {@code
-   * mapper}; never {@code null}
-   *
-   * @nullability This method never returns {@code null}.
-   *
-   * @idempotency This method is idempotent and deterministic.
-   *
-   * @threadsafety This method itself is safe for concurrent use by
-   * multiple threads, but the {@link Predicate#test(Object)} method
-   * of the supplied {@code predicate} may not be
-   *
-   * @see #optional()
-   *
-   * @see Optional#flatMap(Function)
-   */
-  @Convenience
-  @OverridingDiscouraged
-  public default <U> Optional<U> flatMap(final Function<? super T, ? extends Optional<? extends U>> mapper) {
-    return this.optional().flatMap(mapper);
   }
 
   /**
@@ -245,19 +213,19 @@ public interface OptionalSupplier<T> extends Supplier<T> {
    */
   @OverridingDiscouraged
   public default <U> U handle(final BiFunction<? super T, ? super RuntimeException, ? extends U> handler) {
-    T value = null;
     try {
-      value = this.get();
+      return handler.apply(this.get(), null);
     } catch (final RuntimeException e) {
       return handler.apply(null, e);
     }
-    return handler.apply(value, null);
   }
 
   /**
-   * Invokes the {@link Optional#ifPresent(Consumer)} method on the return
-   * value of the {@link #optional()} method, supplying it with the
-   * supplied {@code action}, and returns the result.
+   * Invokes the {@link Consumer#accept(Object)} method on the
+   * supplied {@code action} with the return value of an invocation of
+   * the {@link #get()} method, unless the {@link #get()} method
+   * throws either a {@link NoSuchElementException} or an {@link
+   * UnsupportedOperationException}, in which case no action is taken.
    *
    * @param action the {@link Consumer} representing the action to
    * take; must not be {@code null}
@@ -272,27 +240,31 @@ public interface OptionalSupplier<T> extends Supplier<T> {
    * concurrent use by multiple threads, but the supplied {@link
    * Consumer}'s {@link Consumer#accept(Object)} method may not be
    *
-   * @see #optional()
-   *
-   * @see Optional#ifPresent(Consumer)
+   * @see #get()
    */
   @Convenience
   @OverridingDiscouraged
   public default void ifPresent(final Consumer<? super T> action) {
-    this.optional().ifPresent(action);
+    try {
+      action.accept(this.get());
+    } catch (final NoSuchElementException | UnsupportedOperationException e) {
+    }
   }
 
   /**
-   * Invokes the {@link Optional#ifPresentOrElse(Consumer, Runnable)}
-   * method on the return value of the {@link #optional()} method,
-   * supplying it with the supplied {@code action} and {@code
-   * emptyAction}, and returns the result.
+   * Invokes the {@link Consumer#accept(Object)} method on the
+   * supplied {@code presentAction} with the return value of an
+   * invocation of the {@link #get()} method, unless the {@link
+   * #get()} method throws either a {@link NoSuchElementException} or
+   * an {@link UnsupportedOperationException}, in which case the
+   * {@link Runnable#run()} method of the supplied {@code
+   * absentAction} is invoked instead.
    *
-   * @param action the {@link Consumer} representing the action to
-   * take if a value is present; must not be {@code null}
+   * @param presentAction the {@link Consumer} representing the action
+   * to take if a value is present; must not be {@code null}
    *
-   * @param emptyAction the {@link Runnable} representing the action to
-   * take if a value is absent; must not be {@code null}
+   * @param absentAction the {@link Runnable} representing the action
+   * to take if a value is absent; must not be {@code null}
    *
    * @exception NullPointerException if {@code action} or {@code
    * emptyAction} is {@code null}
@@ -307,51 +279,16 @@ public interface OptionalSupplier<T> extends Supplier<T> {
    * the supplied {@link Runnable}'s {@link Runnable#run()} method may
    * not be
    *
-   * @see #optional()
-   *
-   * @see Optional#ifPresentOrElse(Consumer, Runnable)
+   * @see #get()
    */
   @Convenience
   @OverridingDiscouraged
-  public default void ifPresentOrElse(final Consumer<? super T> action, final Runnable emptyAction) {
-    this.optional().ifPresentOrElse(action, emptyAction);
-  }
-
-  /**
-   * Invokes the {@link Optional#map(Function)} method on the return
-   * value of the {@link #optional()} method, supplying it with the
-   * supplied {@code mapper}, and returns an {@link Optional}
-   * representing the result.
-   *
-   * @param <U> the mapped type
-   *
-   * @param mapper the {@link Function} performing the mapping
-   * operation; must not be {@code null}
-   *
-   * @return an {@link Optional} representing the result of invoking
-   * the {@link Optional#map(Function)} method on the return value of
-   * the {@link #optional()} method, supplying it with the supplied
-   * {@code mapper}; never {@code null}
-   *
-   * @nullability This method never returns, and its overrides must
-   * never return, {@code null}.
-   *
-   * @idempotency This method is, and its overrides must be,
-   * idempotent and deterministic.
-   *
-   * @threadsafety This method itself is, and its overrides must be,
-   * safe for concurrent use by multiple threads, but the {@link
-   * Function#apply(Object)} method of the supplied {@code mapper} may
-   * not be
-   *
-   * @see #optional()
-   *
-   * @see Optional#map(Function)
-   */
-  @Convenience
-  @OverridingDiscouraged
-  public default <U> Optional<U> map(final Function <? super T, ? extends U> mapper) {
-    return this.optional().map(mapper);
+  public default void ifPresentOrElse(final Consumer<? super T> presentAction, final Runnable absentAction) {
+    try {
+      presentAction.accept(this.get());
+    } catch (final NoSuchElementException | UnsupportedOperationException e) {
+      absentAction.run();
+    }
   }
 
   /**
@@ -365,10 +302,11 @@ public interface OptionalSupplier<T> extends Supplier<T> {
    * <p>The default implementation of this method catches all {@link
    * NoSuchElementException}s and {@link
    * UnsupportedOperationException}s and returns an empty {@link
-   * Optional} in these cases.  To detect permanent versus transitory
-   * emptiness, potential callers should use the {@link #get()} method
-   * directly or either the {@link #optional(Function)} or {@link
-   * #optional(BiFunction)} methods.</p>
+   * Optional} in these cases, which may not be valid for some use
+   * cases.  To detect permanent versus transitory absence, potential
+   * callers should use the {@link #get()} method directly or either
+   * the {@link #optional(Function)} or {@link #optional(BiFunction)}
+   * methods.</p>
    *
    * @return a non-{@code null} but possibly {@linkplain
    * Optional#isEmpty() empty} {@link Optional} representing this
@@ -466,39 +404,6 @@ public interface OptionalSupplier<T> extends Supplier<T> {
   }
 
   /**
-   * Invokes the {@link Optional#or(Supplier)} method on the return
-   * value of the {@link #optional()} method, supplying it with the
-   * supplied {@code supplier}, and returns the result.
-   *
-   * @param supplier the {@link Supplier} providing the alternate
-   * {@link Optional}; must not be {@code null}
-   *
-   * @return the result of invoking the {@link Optional#or(Supplier)}
-   * method on the return value of the {@link #optional()} method,
-   * supplying it with the supplied {@code supplier}; never {@code
-   * null}
-   *
-   * @exception NullPointerException if {@code supplier} is {@code null}
-   *
-   * @nullability This method never returns {@code null}.
-   *
-   * @idempotency This method is idempotent and deterministic.
-   *
-   * @threadsafety This method itself is safe for concurrent use by
-   * multiple threads, but the {@link Supplier#get()} method of the
-   * supplied {@code supplier} may not be
-   *
-   * @see #optional()
-   *
-   * @see Optional#or(Supplier)
-   */
-  @Convenience
-  @OverridingDiscouraged
-  public default Optional<T> or(final Supplier<? extends Optional<? extends T>> supplier) {
-    return this.optional().or(supplier);
-  }
-
-  /**
    * Invokes the {@link Optional#orElse(Object)} method on the return
    * value of the {@link #optional()} method, supplying it with the
    * supplied {@code other}, and returns the result.
@@ -525,7 +430,11 @@ public interface OptionalSupplier<T> extends Supplier<T> {
   @Convenience
   @OverridingDiscouraged
   public default T orElse(final T other) {
-    return this.optional().orElse(other);
+    try {
+      return this.get();
+    } catch (final NoSuchElementException | UnsupportedOperationException e) {
+      return other;
+    }
   }
 
   /**
@@ -559,7 +468,11 @@ public interface OptionalSupplier<T> extends Supplier<T> {
   @Convenience
   @OverridingDiscouraged
   public default T orElseGet(final Supplier<? extends T> supplier) {
-    return this.optional().orElseGet(supplier);
+    try {
+      return this.get();
+    } catch (final NoSuchElementException | UnsupportedOperationException e) {
+      return supplier.get();
+    }
   }
 
   /**
@@ -590,7 +503,11 @@ public interface OptionalSupplier<T> extends Supplier<T> {
   @Convenience
   @OverridingDiscouraged
   public default T orElseThrow() {
-    return this.orElseThrow(NoSuchElementException::new);
+    try {
+      return this.get();
+    } catch (final UnsupportedOperationException e) {
+      throw new NoSuchElementException(e.getMessage(), e);
+    }
   }
 
   /**
@@ -633,7 +550,17 @@ public interface OptionalSupplier<T> extends Supplier<T> {
   @Convenience
   @OverridingDiscouraged
   public default <X extends Throwable> T orElseThrow(final Supplier<? extends X> throwableSupplier) throws X {
-    return this.optional().orElseThrow(throwableSupplier);
+    try {
+      return this.get();
+    } catch (final NoSuchElementException | UnsupportedOperationException e) {
+      final X throwable = throwableSupplier.get();
+      if (throwable.getCause() == null) {
+        throwable.initCause(e);
+      } else {
+        throwable.addSuppressed(e);
+      }
+      throw throwable;
+    }
   }
 
   /**
@@ -660,7 +587,11 @@ public interface OptionalSupplier<T> extends Supplier<T> {
   @Convenience
   @OverridingDiscouraged
   public default Stream<T> stream() {
-    return this.optional().stream();
+    try {
+      return Stream.of(this.get());
+    } catch (final NoSuchElementException | UnsupportedOperationException e) {
+      return Stream.empty();
+    }
   }
 
   private static <T> T returnNull(final RuntimeException e) {
