@@ -33,7 +33,8 @@ import org.microbean.development.annotation.OverridingDiscouraged;
 import org.microbean.development.annotation.OverridingEncouraged;
 
 /**
- * A {@link Supplier} with additional contractual requirements.
+ * A {@link DeterministicSupplier} with additional contractual
+ * requirements.
  *
  * <p>An {@link OptionalSupplier} does not behave like an {@link
  * Optional} or a {@link java.util.concurrent.CompletableFuture},
@@ -51,39 +52,12 @@ import org.microbean.development.annotation.OverridingEncouraged;
  *
  * @see #get()
  *
- * @see #deterministic()
+ * @see DeterministicSupplier#deterministic()
  *
  * @see #optional()
  */
 @FunctionalInterface
-public interface OptionalSupplier<T> extends Supplier<T> {
-
-  /**
-   * Returns {@code true} if and only if this {@link OptionalSupplier}
-   * is <em>deterministic</em>.
-   *
-   * <p>An {@link OptionalSupplier} is deterministic if and only if:</p>
-   *
-   * <ul>
-   *
-   * <li>Any two invocations of the {@link #get()} method return
-   * objects that are indistinguishable from one another, or</li>
-   *
-   * <li>Any two invocations of the {@link #get()} method throw {@link
-   * RuntimeException}s that are indistinguishable from one
-   * another</li>
-   *
-   * </ul>
-   *
-   * @return {@code true} if and only if this {@link OptionalSupplier}
-   * is <em>deterministic</em>
-   *
-   * @see #get()
-   */
-  @OverridingEncouraged
-  public default boolean deterministic() {
-    return false;
-  }
+public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
 
   /**
    * Returns either the result of invoking the {@link #get()} method,

@@ -23,9 +23,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 /**
- * A {@link Supplier} that computes the value it will return from its
- * {@link #get()} method when that method is first invoked, and that returns
- * that computed value for all subsequent invocations of that method.
+ * A {@link DeterministicSupplier} that computes the value it will
+ * return from its {@link #get()} method when that method is first
+ * invoked, and that returns that computed value for all subsequent
+ * invocations of that method.
  *
  * @author <a href="https://about.me/lairdnelson"
  * target="_parent">Laird Nelson</a>
@@ -41,7 +42,7 @@ import java.util.function.Supplier;
  *
  * @see #set(Object)
  */
-public final class CachingSupplier<T> implements Supplier<T> {
+public final class CachingSupplier<T> implements DeterministicSupplier<T> {
 
 
   /*
@@ -57,6 +58,7 @@ public final class CachingSupplier<T> implements Supplier<T> {
   /*
    * Constructors.
    */
+
 
   /**
    * Creates a new {@link CachingSupplier}.
@@ -156,6 +158,26 @@ public final class CachingSupplier<T> implements Supplier<T> {
       }
     }
     return optional.orElse(null);
+  }
+
+  /**
+   * Returns {@code true} when invoked to indicate that this {@link
+   * CachingSupplier}, like all {@link CachingSupplier}s, is
+   * deterministic.
+   *
+   * @return {@code true}
+   *
+   * @idempotency This method and its overrides must be idempotent and
+   * deterministic.
+   *
+   * @threadsafety This method is, and its overrides must be, safe for
+   * concurrent use by multiple threads.
+   *
+   * @see DeterministicSupplier#deterministic()
+   */
+  @Override // DeterministicSupplier<T>
+  public final boolean deterministic() {
+    return true;
   }
 
   /**
