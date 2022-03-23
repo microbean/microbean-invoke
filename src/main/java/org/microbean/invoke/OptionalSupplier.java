@@ -36,9 +36,10 @@ import org.microbean.development.annotation.OverridingEncouraged;
  * A {@link DeterministicSupplier} with additional contractual
  * requirements.
  *
- * <p>An {@link OptionalSupplier} does not behave like an {@link
- * Optional} or a {@link java.util.concurrent.CompletableFuture},
- * despite the deliberate similarities of some methods.</p>
+ * <p><strong>An {@link OptionalSupplier} does not behave like an
+ * {@link Optional} or a {@link
+ * java.util.concurrent.CompletableFuture},</strong> despite the
+ * deliberate similarities of some method names.</p>
  *
  * <p>An implementation of this interface is not a <a
  * href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/doc-files/ValueBased.html">value-based
@@ -50,9 +51,9 @@ import org.microbean.development.annotation.OverridingEncouraged;
  * @author <a href="https://about.me/lairdnelson"
  * target="_parent">Laird Nelson</a>
  *
- * @see #get()
+ * @see #deterministic()
  *
- * @see DeterministicSupplier#deterministic()
+ * @see #get()
  *
  * @see #optional()
  */
@@ -97,62 +98,50 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
   }
 
   /**
-   * Returns a value, which may be {@code null}, indicating (possibly
-   * transitory) <em>emptiness</em>, or non-{@code null}, indicating
-   * (possibly transitory) <em>presence</em>.
+   * Returns a value, which may be {@code null}.
    *
    * <p>This method's contract extends {@link Supplier#get()}'s
    * contract with the following additional requirements:</p>
    *
    * <ul>
    *
-   * <li>An implementation of this method need not be deterministic.</li>
+   * <li>An implementation of this method need not be deterministic
+   * (unless the {@link #deterministic() deterministic()} method
+   * returns {@code true})</li>
    *
-   * <li>An implementation of this method may indicate (possibly
-   * transitory) emptiness by any of the following means:
+   * <li>An implementation of this method may indicate the (possibly
+   * transitory) absence of a value by any of the following means:
    *
-   * <ul><li>Returning {@code null}.  The emptiness is
-   * <em>transitory</em>, i.e. a subsequent invocation of this method
-   * may return a non-{@code null} result.</li>
+   * <ul>
    *
-   * <li>Throwing a {@link NoSuchElementException}.  The emptiness is
-   * <em>permanent</em>, i.e. all subsequent invocations of this
-   * method will (must) also throw an {@link
-   * NoSuchElementException}.</li>
+   * <li>Throwing a {@link NoSuchElementException}.</li>
    *
-   * <li>Throwing an {@link UnsupportedOperationException}.  The
-   * emptiness is <em>permanent</em>, i.e. all subsequent invocations
-   * of this method will (must) also throw an {@link
-   * UnsupportedOperationException}.</li>
+   * <li>Throwing an {@link UnsupportedOperationException}.  Normally
+   * such an implementation will also return {@code true} from its
+   * {@link #deterministic() deterministic()} method.</li>
    *
    * </ul></li>
    *
-   * <li>The returning of a non-{@code null} value indicates (only)
-   * <em>transitory presence</em>, i.e. a subsequent invocation of
-   * this method may return {@code null} or throw either a {@link
-   * NoSuchElementException} or an {@link
-   * UnsupportedOperationException}.</li>
-   *
    * </ul>
    *
-   * @return a value, or {@code null} to indicate transitory emptiness
+   * @return a value, which may be {@code null}
    *
-   * @exception NoSuchElementException to indicate permanent emptiness
+   * @exception NoSuchElementException to indicate (usually
+   * transitory) absence
    *
-   * @exception UnsupportedOperationException to indicate permanent
-   * emptiness
+   * @exception UnsupportedOperationException to indicate (usually
+   * permanent) absence
    *
    * @nullability Implementations of this method may and often will
-   * return {@code null}, indicating transitory emptiness.
+   * return {@code null} in the normal course of events.
    *
    * @threadsafety Implementations of this method must be safe for
    * concurrent use by multiple threads.
    *
    * @idempotency Implementations of this method must be idempotent
-   * but need not be deterministic.  However, once an implementation
-   * of this method throws either a {@link NoSuchElementException} or
-   * an {@link UnsupportedOperationException}, it must also do so for
-   * every subsequent invocation.
+   * but need not be deterministic.
+   *
+   * @see #deterministic()
    */
   @Override
   public T get();
@@ -241,7 +230,7 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
    * to take if a value is absent; must not be {@code null}
    *
    * @exception NullPointerException if {@code action} or {@code
-   * emptyAction} is {@code null}
+   * absentAction} is {@code null}
    *
    * @idempotency This method is, and its overrides must be,
    * idempotent and deterministic, but the supplied {@link Consumer}
