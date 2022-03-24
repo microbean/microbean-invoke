@@ -63,37 +63,47 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
   /**
    * Returns either the result of invoking the {@link #get()} method,
    * if a {@link RuntimeException} does not occur, or the result of
-   * invoking the {@link Function#apply(Object)} method on the
-   * supplied {@code handler} with any {@link RuntimeException} that
-   * does occur.
+   * invoking the {@link Function#apply(Object) apply(Object)} method
+   * on the supplied {@code handler} with any {@link RuntimeException}
+   * that does occur, including {@link NoSuchElementException} and
+   * {@link UnsupportedOperationException} instances that are used to
+   * indicate value absence.
    *
    * @param handler the exception handler; must not be {@code null}
    *
    * @return either the result of invoking the {@link #get()} method,
    * if a {@link RuntimeException} does not occur, or the result of
-   * invoking the {@link Function#apply(Object)} method on the
-   * supplied {@code handler} with any {@link RuntimeException} that
-   * does occur
+   * invoking the {@link Function#apply(Object) apply(Object)} method
+   * on the supplied {@code handler} with any {@link RuntimeException}
+   * that does occur
    *
    * @exception NullPointerException if {@code handler} is {@code
    * null}
    *
-   * @nullability This method may return {@code null}
+   * @nullability This method and its (discouraged) overrides may
+   * return {@code null}
    *
-   * @idempotency This method is not guaranteed to be idempotent or
-   * deterministic.
+   * @idempotency No guarantees are made about idempotency or
+   * determinism.
    *
-   * @threadsafety This method itself is safe for concurrent use by
-   * multiple threads, but the {@link #get()} method may not be, and
-   * the {@link Function#apply(Object)} method of the supplied {@code
-   * handler} may not be.
+   * @threadsafety This method itself is, and its (discouraged)
+   * overrides must be, safe for concurrent use by multiple threads,
+   * but the {@link Function#apply(Object) apply(Object)} method of
+   * the supplied {@code handler} may not be.
+   *
+   * @see #get()
    */
   @OverridingDiscouraged
   public default T exceptionally(final Function<? super RuntimeException, ? extends T> handler) {
     try {
       return this.get();
     } catch (final RuntimeException e) {
-      return handler.apply(e);
+      try {
+        return handler.apply(e);
+      } catch (final RuntimeException r) {
+        r.addSuppressed(e);
+        throw r;
+      }
     }
   }
 
@@ -104,6 +114,11 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
    * contract with the following additional requirements:</p>
    *
    * <ul>
+   *
+   * <li>It is deliberately and explicitly permitted for
+   * implementations of this method to return {@code null} for any
+   * reason.  Callers of this method must be appropriately
+   * prepared.</li>
    *
    * <li>An implementation of this method need not be deterministic
    * (unless the {@link #deterministic() deterministic()} method
@@ -132,14 +147,17 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
    * @exception UnsupportedOperationException to indicate (usually
    * permanent) absence
    *
-   * @nullability Implementations of this method may and often will
-   * return {@code null} in the normal course of events.
+   * @nullability Implementations of this method may, and often will,
+   * return {@code null}, even in the normal course of events.
    *
    * @threadsafety Implementations of this method must be safe for
    * concurrent use by multiple threads.
    *
-   * @idempotency Implementations of this method must be idempotent
-   * but need not be deterministic.
+   * @idempotency No guarantees are made about idempotency or
+   * determinism.  An ideal implementation should be idempotent.  If
+   * the {@link #deterministic() deterministic()} method returns
+   * {@code true}, then any implementation of this method must be
+   * deterministic.
    *
    * @see #deterministic()
    */
@@ -147,81 +165,110 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
   public T get();
 
   /**
-   * Invokes the {@link #get()} method and handles either the result
-   * or any {@link RuntimeException}s that are thrown using the
-   * supplied {@link BiFunction}.
+   * Returns the result of invoking the {@link
+   * BiFunction#apply(Object, Object) apply(Object, Object)} method on
+   * the supplied {@code handler}, supplying it with the result of an
+   * invocation of the {@link #get()} method, which may be {@code
+   * null}, or any {@link RuntimeException} that an invocation of the
+   * {@link #get()} method throws, including {@link
+   * NoSuchElementException} and {@link UnsupportedOperationException}
+   * instances that are used to indicate value absence.
    *
    * <p>The first argument to the handler will be the return value of
    * the {@link #get()} method, which may be {@code null}.  The second
    * argument to the handler will be any {@link RuntimeException} that
-   * was thrown during the invocation of the {@link #get()}
-   * method.</p>
+   * was thrown during the invocation of the {@link #get()} method,
+   * including {@link NoSuchElementException} and {@link
+   * UnsupportedOperationException} instances that are used to
+   * indicate value absence.</p>
    *
    * @param <U> the type of the value returned
    *
    * @param handler the handler; must not be {@code null}
    *
-   * @return the return value of the supplied {@code handler}'s {@link
-   * BiFunction#apply(Object, Object)} method, which may be {@code
+   * @return the result of invoking the {@link
+   * BiFunction#apply(Object, Object) apply(Object, Object)} method on
+   * the supplied {@code handler}, supplying it with the result of an
+   * invocation of the {@link #get()} method, which may be {@code
+   * null}, or any {@link RuntimeException} that an invocation of the
+   * {@link #get()} method throws, including {@link
+   * NoSuchElementException} and {@link UnsupportedOperationException}
+   * instances that are used to indicate value absence
+   *
+   * @exception NullPointerException if {@code handler} is {@code
    * null}
    *
-   * @nullability The default implementation of this method and its
-   * overrides may return {@code null}.
+   * @nullability This method and its (discouraged) overrides may
+   * return {@code null}.
    *
-   * @threadsafety This method is, and its overrides must be, safe for
-   * concurrent use by multiple threads.
+   * @threadsafety This method is, and its (discouraged) overrides
+   * must be, safe for concurrent use by multiple threads.
    *
-   * @idempotency No guarantees about either idempotency or
-   * determinism are made.
+   * @idempotency No guarantees are made about idempotency or
+   * determinism.
+   *
+   * @see #get()
    */
   @OverridingDiscouraged
   public default <U> U handle(final BiFunction<? super T, ? super RuntimeException, ? extends U> handler) {
+    T value;
     try {
-      return handler.apply(this.get(), null);
+      value = this.get();
     } catch (final RuntimeException e) {
-      return handler.apply(null, e);
+      try {
+        return handler.apply(null, e);
+      } catch (final RuntimeException r) {
+        r.addSuppressed(e);
+        throw r;
+      }
     }
+    return handler.apply(value, null);
   }
 
   /**
-   * Invokes the {@link Consumer#accept(Object)} method on the
-   * supplied {@code action} with the return value of an invocation of
-   * the {@link #get()} method, unless the {@link #get()} method
-   * throws either a {@link NoSuchElementException} or an {@link
-   * UnsupportedOperationException}, in which case no action is taken.
+   * Invokes the {@link Consumer#accept(Object) accept(Object)} method
+   * on the supplied {@code action} with the return value of an
+   * invocation of the {@link #get()} method, which may be {@code
+   * null}, unless the {@link #get()} method throws either a {@link
+   * NoSuchElementException} or an {@link
+   * UnsupportedOperationException}, indicating value absence, in
+   * which case no action is taken.
    *
    * @param action the {@link Consumer} representing the action to
    * take; must not be {@code null}
    *
    * @exception NullPointerException if {@code action} is {@code null}
    *
-   * @idempotency This method is, and its overrides must be,
-   * idempotent and deterministic, but the supplied {@link Consumer}
-   * may not be.
+   * @idempotency No guarantees are made about idempotency or
+   * determinism.
    *
-   * @threadsafety This method is, and its overrides must be, safe for
-   * concurrent use by multiple threads, but the supplied {@link
-   * Consumer}'s {@link Consumer#accept(Object)} method may not be
+   * @threadsafety This method is, and its (discouraged) overrides
+   * must be, safe for concurrent use by multiple threads, but the
+   * supplied {@link Consumer}'s {@link Consumer#accept(Object)
+   * accept(Object)} method may not be
    *
    * @see #get()
    */
   @Convenience
   @OverridingDiscouraged
   public default void ifPresent(final Consumer<? super T> action) {
+    T value;
     try {
-      action.accept(this.get());
+      value = this.get();
     } catch (final NoSuchElementException | UnsupportedOperationException e) {
+      return;
     }
+    action.accept(value);
   }
 
   /**
-   * Invokes the {@link Consumer#accept(Object)} method on the
-   * supplied {@code presentAction} with the return value of an
-   * invocation of the {@link #get()} method, unless the {@link
-   * #get()} method throws either a {@link NoSuchElementException} or
-   * an {@link UnsupportedOperationException}, in which case the
-   * {@link Runnable#run()} method of the supplied {@code
-   * absentAction} is invoked instead.
+   * Invokes the {@link Consumer#accept(Object) accept(Object)} method
+   * on the supplied {@code presentAction} with the return value of an
+   * invocation of the {@link #get()} method, which may be {@code
+   * null}, or, if the {@link #get()} method indicates value absence
+   * by throwing either a {@link NoSuchElementException} or an {@link
+   * UnsupportedOperationException}, invokes the {@link Runnable#run()
+   * run()} method of the supplied {@code absentAction} instead.
    *
    * @param presentAction the {@link Consumer} representing the action
    * to take if a value is present; must not be {@code null}
@@ -232,26 +279,33 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
    * @exception NullPointerException if {@code action} or {@code
    * absentAction} is {@code null}
    *
-   * @idempotency This method is, and its overrides must be,
-   * idempotent and deterministic, but the supplied {@link Consumer}
-   * and {@link Runnable} may not be.
+   * @idempotency No guarantees are made about idempotency or
+   * determinism.
    *
-   * @threadsafety This method is, and its overrides must be, safe for
-   * concurrent use by multiple threads, but the supplied {@link
-   * Consumer}'s {@link Consumer#accept(Object)} method may not be and
-   * the supplied {@link Runnable}'s {@link Runnable#run()} method may
-   * not be
+   * @threadsafety This method is, and its (discouraged) overrides
+   * must be, safe for concurrent use by multiple threads, but the
+   * supplied {@link Consumer}'s {@link Consumer#accept(Object)
+   * accept(Object)} method may not be and the supplied {@link
+   * Runnable}'s {@link Runnable#run() run()} method may not be
    *
    * @see #get()
    */
   @Convenience
   @OverridingDiscouraged
   public default void ifPresentOrElse(final Consumer<? super T> presentAction, final Runnable absentAction) {
+    T value;
     try {
-      presentAction.accept(this.get());
+      value = this.get();
     } catch (final NoSuchElementException | UnsupportedOperationException e) {
-      absentAction.run();
+      try {
+        absentAction.run();
+        return;
+      } catch (final RuntimeException r) {
+        r.addSuppressed(e);
+        throw r;
+      }
     }
+    presentAction.accept(value);
   }
 
   /**
@@ -275,14 +329,15 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
    * Optional#isEmpty() empty} {@link Optional} representing this
    * {@link OptionalSupplier}'s {@linkplain #get() value}
    *
-   * @nullability The default implementation of this method does not
-   * and overrides must not return {@code null}.
+   * @nullability The default implementation of this method does not,
+   * and its (discouraged) overrides must not, return {@code null}.
    *
-   * @threadsafety The default implementation of this method is and
-   * overrides must be safe for concurrent use by multiple threads.
+   * @threadsafety The default implementation of this method is, and
+   * its (discouraged) overrides must be, safe for concurrent use by
+   * multiple threads.
    *
-   * @idempotency The default implementation and overrides of this
-   * method may not be idempotent or deterministic.
+   * @idempotency No guarantees are made about idempotency or
+   * determinism.
    *
    * @see #optional(BiFunction)
    *
@@ -312,14 +367,14 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
    * @exception NullPointerException if {@code handler} is {@code
    * null}
    *
-   * @nullability This method does not, and its overrides must not,
-   * return {@code null}.
+   * @nullability This method does not, and its (discouraged)
+   * overrides must not, return {@code null}.
    *
-   * @idempotency This method is, and its overrides must be,
-   * idempotent and deterministic.
+   * @idempotency No guarantees are made about idempotency or
+   * determinism.
    *
-   * @threadsafety This method is, and its overrides must be, safe for
-   * concurrent use by multiple threads.
+   * @threadsafety This method is, and its (discouraged) overrides
+   * must be, safe for concurrent use by multiple threads.
    *
    * @see #handle(BiFunction)
    *
@@ -347,14 +402,14 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
    * @exception NullPointerException if {@code handler} is {@code
    * null}
    *
-   * @nullability This method does not, and its overrides must not,
-   * return {@code null}.
+   * @nullability This method does not, and its (discouraged)
+   * overrides must not, return {@code null}.
    *
-   * @idempotency This method is, and its overrides must be,
-   * idempotent and deterministic.
+   * @idempotency No guarantees are made about idempotency or
+   * determinism.
    *
-   * @threadsafety This method is, and its overrides must be, safe for
-   * concurrent use by multiple threads.
+   * @threadsafety This method is, and its (discouraged) overrides
+   * must be, safe for concurrent use by multiple threads.
    *
    * @see #exceptionally(Function)
    *
@@ -367,28 +422,30 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
   }
 
   /**
-   * Invokes the {@link Optional#orElse(Object)} method on the return
-   * value of the {@link #optional()} method, supplying it with the
-   * supplied {@code other}, and returns the result.
+   * Returns the result of invoking the {@link #get()} method, which
+   * may be {@code null}, or, if the {@link #get()} method indicates
+   * value absence by throwing either a {@link NoSuchElementException}
+   * or an {@link UnsupportedOperationException}, returns the supplied
+   * alternate value, which may be {@code null}.
    *
    * @param other the alternate value; may be {@code null}
    *
-   * @return the result of invoking the {@link
-   * Optional#orElse(Object)} method on the return value of the {@link
-   * #optional()} method, supplying it with the supplied {@code
-   * other}
+   * @return the result of invoking the {@link #get()} method, which
+   * may be {@code null}, or, if the {@link #get()} method indicates
+   * value absence by throwing either a {@link NoSuchElementException}
+   * or an {@link UnsupportedOperationException}, returns the supplied
+   * alternate value, which may be {@code null}
    *
-   * @nullability This method may return {@code null}.
+   * @nullability This method and its (discouraged) overrides may
+   * return {@code null}.
    *
-   * @idempotency This method is idempotent and deterministic.
+   * @idempotency No guarantees are made about idempotency or
+   * determinism.
    *
-   * @threadsafety This method itself is safe for concurrent use by
-   * multiple threads, but the {@link Supplier#get()} method of the
-   * supplied {@code supplier} may not be
+   * @threadsafety This method is, and its (discouraged) overrides
+   * must be, safe for concurrent use by multiple threads.
    *
-   * @see #optional()
-   *
-   * @see Optional#orElse(Object)
+   * @see #get()
    */
   @Convenience
   @OverridingDiscouraged
@@ -401,32 +458,38 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
   }
 
   /**
-   * Invokes the {@link Optional#orElseGet(Supplier)} method on the
-   * return value of the {@link #optional()} method, supplying it with
-   * the supplied {@code supplier}, and returns the result.
+   * Returns the result of invoking the {@link #get()} method, which
+   * may be {@code null}, or, if the {@link #get()} method indicates
+   * value absence by throwing either a {@link NoSuchElementException}
+   * or an {@link UnsupportedOperationException}, returns the result
+   * of invoking the {@link #get()} method on the supplied {@link
+   * Supplier}, which may be {@code null}.
    *
    * @param supplier the alternate value {@link Supplier}; must not be
    * {@code null}
    *
-   * @return the result of invoking the {@link
-   * Optional#orElseGet(Supplier)} method on the return value of the
-   * {@link #optional()} method, supplying it with the supplied {@code
-   * supplier}
+   * @return the result of invoking the {@link #get()} method, which
+   * may be {@code null}, or, if the {@link #get()} method indicates
+   * value absence by throwing either a {@link NoSuchElementException}
+   * or an {@link UnsupportedOperationException}, returns the result
+   * of invoking the {@link #get()} method on the supplied {@link
+   * Supplier}, which may be {@code null}
    *
    * @exception NullPointerException if {@code supplier} is {@code
    * null}
    *
-   * @nullability This method may return {@code null}.
+   * @nullability This method and its (discouraged) overrides may
+   * return {@code null}.
    *
-   * @idempotency This method is idempotent and deterministic.
+   * @idempotency No guarantees are made about idempotency or
+   * determinism.
    *
-   * @threadsafety This method itself is safe for concurrent use by
-   * multiple threads, but the {@link Supplier#get()} method of the
-   * supplied {@code supplier} may not be
+   * @threadsafety This method is, and its (discouraged) overrides
+   * msut be, safe for concurrent use by multiple threads, but the
+   * {@link Supplier#get() get()} method of the supplied {@code supplier}
+   * may not be
    *
-   * @see #optional()
-   *
-   * @see Optional#orElseGet(Supplier)
+   * @see #get()
    */
   @Convenience
   @OverridingDiscouraged
@@ -434,32 +497,33 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
     try {
       return this.get();
     } catch (final NoSuchElementException | UnsupportedOperationException e) {
-      return supplier.get();
+      try {
+        return supplier.get();
+      } catch (final RuntimeException r) {
+        r.addSuppressed(e);
+        throw r;
+      }
     }
   }
 
   /**
-   * Invokes the {@link #orElseThrow(Supplier)} method with {@link
-   * NoSuchElementException#NoSuchElementException()
-   * NoSuchElementException::new} and returns the result.
+   * Returns the result of invoking the {@link #get()} method, which
+   * may be {@code null}.
    *
-   * @return the result of invoking the {@link #orElseThrow(Supplier)}
-   * method with {@link
-   * NoSuchElementException#NoSuchElementException()
-   * NoSuchElementException::new}
+   * @return the result of invoking the {@link #get()} method, which
+   * may be {@code null}
    *
-   * @exception NoSuchElementException if the {@link #optional()}
-   * method returns an {@linkplain Optional#isEmpty() empty} {@link
-   * Optional}
+   * @exception NoSuchElementException if value absence was indicated
+   * by the {@link #get()} method
    *
-   * @nullability This method never returns, and its overrides must
-   * never return, {@code null}.
+   * @nullability This method and its (discouraged) overrides may
+   * return {@code null}.
    *
-   * @idempotency This method is, and its overrides must be, as
-   * idempotent and deterministic as the {@link #optional()} method.
+   * @idempotency No guarantees are made about idempotency or
+   * determinism.
    *
-   * @threadsafety This method is, and its overrides must be, safe for
-   * concurrent use by multiple threads
+   * @threadsafety This method is, and its (discouraged) overrides
+   * must be, safe for concurrent use by multiple threads.
    *
    * @see #orElseThrow(Supplier)
    */
@@ -474,9 +538,12 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
   }
 
   /**
-   * Invokes the {@link Optional#orElseThrow(Supplier)} method on the
-   * return value of the {@link #optional()} method, supplying it with
-   * the supplied {@code throwableSupplier}, and returns the result.
+   * Returns the result of invoking the {@link #get()} method, which
+   * may be {@code null}, or, if the {@link #get()} method indicates
+   * value absence by throwing either a {@link NoSuchElementException}
+   * or an {@link UnsupportedOperationException}, throws the return
+   * value of an invocation of the supplied {@link Supplier}'s {@link
+   * Supplier#get() get()} method.
    *
    * @param <X> the type of {@link Throwable} the supplied {@code
    * throwableSupplier} {@linkplain Supplier#get() supplies}
@@ -484,31 +551,30 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
    * @param throwableSupplier the {@link Throwable} {@link Supplier};
    * must not be {@code null}
    *
-   * @return the result of invoking the {@link
-   * Optional#orElseThrow(Supplier)} method on the return value of the
-   * {@link #optional()} method, supplying it with the supplied {@code
-   * throwableSupplier}
+   * @return the result of invoking the {@link #get()} method, which
+   * may be {@code null}, or, if the {@link #get()} method indicates
+   * value absence by throwing either a {@link NoSuchElementException}
+   * or an {@link UnsupportedOperationException}, throws the return
+   * value of an invocation of the supplied {@link Supplier}'s {@link
+   * Supplier#get() get()} method
    *
    * @exception NullPointerException if {@code supplier} is {@code
    * null}
    *
-   * @exception X (actually {@code <X>}) if the {@link
-   * #optional()} method returns an {@linkplain Optional#isEmpty()
-   * empty} {@link Optional} and the {@link
-   * Optional#orElseThrow(Supplier)} method throws an exception
+   * @exception X (actually {@code <X>}) if the {@link #get()} method
+   * throws either a {@link NoSuchElementException} or an {@link
+   * UnsupportedOperationException}
    *
-   * @nullability This method never returns, and its overrides must
-   * never return, {@code null}.
+   * @nullability This method and its (discouraged) overrides may
+   * return {@code null}.
    *
-   * @idempotency This method is and its overrides must be idempotent
-   * and deterministic.
+   * @idempotency No guarantees are made about idempotency or
+   * determinism.
    *
-   * @threadsafety This method itself is, and its overrides must be,
-   * safe for concurrent use by multiple threads.
+   * @threadsafety This method itself is, and its (discouraged)
+   * overrides must be, safe for concurrent use by multiple threads.
    *
-   * @see #optional()
-   *
-   * @see Optional#orElseThrow(Supplier)
+   * @see #get()
    */
   @Convenience
   @OverridingDiscouraged
@@ -527,25 +593,37 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
   }
 
   /**
-   * Invokes the {@link Optional#stream()} method on the return value
-   * of the {@link #optional()} method, and returns the result.
+   * Returns the result of invoking the {@link Stream#of(Object)}
+   * method on the return value of an invocation of the {@link #get()}
+   * method, which may be {@code null}, or, if the {@link #get()}
+   * method indicates value absence by throwing either a {@link
+   * NoSuchElementException} or an {@link
+   * UnsupportedOperationException}, returns the result of invoking
+   * the {@link Stream#empty()} method.
    *
-   * @return the result of invoking the {@link
-   * Optional#stream()} method on the return value of the
-   * {@link #optional()} method
+   * <p>Note that this means the sole element of the {@link Stream}
+   * that is returned may be {@code null}.  If this is undesirable,
+   * consider invoking {@link Optional#stream() stream()} on the
+   * return value of the {@link #optional()} method instead.</p>
    *
-   * @nullability This method does not, and its overrides must not,
-   * return {@code null}.
+   * @return the result of invoking the {@link Stream#of(Object)}
+   * method on the return value of an invocation of the {@link #get()}
+   * method, which may be {@code null}, or, if the {@link #get()}
+   * method indicates value absence by throwing either a {@link
+   * NoSuchElementException} or an {@link
+   * UnsupportedOperationException}, returns the result of invoking
+   * the {@link Stream#empty()} method
    *
-   * @idempotency This method is, and its overrides must be,
-   * idempotent and deterministic.
+   * @nullability This method does not, and its (discouraged)
+   * overrides must not, return {@code null}.
    *
-   * @threadsafety This method is, and its overrides must be, safe for
-   * concurrent use by multiple threads.
+   * @idempotency No guarantees are made about idempotency or
+   * determinism.
    *
-   * @see #optional()
+   * @threadsafety This method is, and its (discouraged) overrides
+   * must be, safe for concurrent use by multiple threads.
    *
-   * @see Optional#stream()
+   * @see #get()
    */
   @Convenience
   @OverridingDiscouraged
