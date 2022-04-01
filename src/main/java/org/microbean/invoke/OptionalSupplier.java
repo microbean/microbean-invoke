@@ -153,9 +153,18 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
    * reason.</strong> Callers of this method must be appropriately
    * prepared.</li>
    *
-   * <li>An implementation of this method need not be deterministic
-   * (unless the {@link #deterministic() deterministic()} method
-   * returns {@code true})</li>
+   * <li>If an invocation of the {@link #presence()} method, on any
+   * thread, returns any of {@link Presence#ABSENT}, {@link
+   * Presence#DETERMINISTIC} or {@link Presence#PRESENT}, then an
+   * invocation of the {@link #deterministic()} method, on any thread,
+   * must return {@code true}, and additional requirements apply to
+   * the implementation of this method; see the {@link #presence()}
+   * method documentation for details.</li>
+   *
+   * <li>An implementation of this method need not be deterministic if
+   * an invocation of the {@link #presence()} method returns {@link
+   * Presence#UNKNOWN}.  (In such a case, any invocation of the {@link
+   * #deterministic()} method must return {@code false}.)</li>
    *
    * <li>An implementation of this method may indicate the (possibly
    * transitory) absence of a value by any of the following means:
@@ -643,16 +652,28 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
    *
    * <li>If an override of this method returns {@link
    * Presence#PRESENT}, then the implementation of the {@link #get()}
-   * method must not throw either a {@link NoSuchElementException} nor
-   * an {@link UnsupportedOperationException}.</li>
+   * method must never throw either a {@link NoSuchElementException}
+   * or an {@link UnsupportedOperationException}, and, for any two
+   * invocations, on any thread, must return either the same object, or
+   * objects that are indistinguishable from one another and that can
+   * be substituted for each other interchangeably.</li>
    *
-   * <li>If an override of this method returns {@link Presence#ABSENT},
-   * then it is expected that any invocation of the {@link #get()}
-   * method will throw either a {@link NoSuchElementException} or an
-   * {@link UnsupportedOperationException}.  If an implementation of
-   * the {@link #get()} method instead returns a value, contrary to
-   * these requirements, then the value must be treated as irrelevant
-   * or undefined.</li>
+   * <li>If an override of this method returns {@link
+   * Presence#ABSENT}, then it is expected that any two invocations of
+   * the {@link #get()} method, on any thread, will each throw either
+   * a {@link NoSuchElementException} or an {@link
+   * UnsupportedOperationException}.  If an implementation of the
+   * {@link #get()} method instead returns a value, contrary to these
+   * requirements, then the value must be treated as irrelevant or
+   * undefined.</li>
+   *
+   * <li>If an override of this method returns {@link
+   * Presence#DETERMINISTIC}, then any two invocations of the {@link
+   * #get()} method implementation, on any thread, must either throw
+   * either a {@link NoSuchElementException} or an {@link
+   * UnsupportedOperationException}, or must return either the same
+   * object, or objects that are indistinguishable from one another
+   * and that can be substituted for each other interchangeably.</li>
    *
    * <li>If an override of this method returns {@link
    * Presence#UNKNOWN}, then there are no additional requirements
@@ -662,8 +683,17 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
    *
    * </ul>
    *
+   * <p>Additionally, once an override of this method returns a {@link
+   * Presence} whose {@link Presence#deterministic() deterministic()}
+   * method returns {@code true}, then it must forever afterwards, for
+   * all invocations, on all possible threads, return the same {@link
+   * Presence}.</p>
+   *
+   * <p>If any of the requirements above is not met, undefined
+   * behavior may result.</p>
+   *
    * <p>The default implementation of this method returns {@link
-   * Presence#UNKNOWN}.</p>
+   * Presence#UNKNOWN}.  Overrides are strongly encouraged.</p>
    *
    * @return an {@link Presence} denoting the presence of values
    * returned by this {@link OptionalSupplier}'s {@link #get() get()}
@@ -672,8 +702,9 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
    * @nullability This method does not, and its (encouraged) overrides
    * must not, return {@code null}.
    *
-   * @idempotency This method is, and its (encouraged) overrides must
-   * be, idempotent and deterministic.
+   * @idempotency This method is idempotent and deterministic.  Its
+   * (encouraged) overrides must be idempotent.  They may not be
+   * deterministic (see above).
    *
    * @threadsafety This method is, and its (encouraged) overrides must
    * be, safe for concurrent use by multiple threads.
@@ -726,6 +757,12 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
     }
   }
 
+
+  /*
+   * Static methods.
+   */
+
+
   private static <T> T returnNull(final RuntimeException e) {
     if (e instanceof NoSuchElementException || e instanceof UnsupportedOperationException) {
       return null;
@@ -734,30 +771,181 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
     }
   }
 
+  /**
+   * Returns a new {@link OptionalSupplier} whose {@link #presence()}
+   * method will return the supplied {@link Presence} and whose {@link
+   * #get()} method will return the result of invoking the {@link
+   * Supplier#get()} method on the supplied {@code supplier}.
+   *
+   * @param <T> the type of value the returned {@link
+   * OptionalSupplier} will {@linkplain #get() supply}
+   *
+   * @param presence the {@link Presence} to use; must not be {@code null}
+   *
+   * @param supplier the {@link Supplier} whose {@link #get()} method
+   * will be called; must not be {@code null}
+   *
+   * @return a new {@link OptionalSupplier} whose {@link #presence()}
+   * method will return the supplied {@link Presence} and whose {@link
+   * #get()} method will return the result of invoking the {@link
+   * Supplier#get()} method on the supplied {@code supplier}
+   *
+   * @exception NullPointerException if {@code presence} or {@code
+   * supplier} is {@code null}
+   *
+   * @nullability This method never returns {@code null}.
+   *
+   * @idempotency This method is not idempotent but is deterministic.
+   *
+   * @threadsafety This method is safe for concurrent use by multiple
+   * threads.
+   */
+  public static <T> OptionalSupplier<T> of(final Presence presence, final Supplier<? extends T> supplier) {
+    Objects.requireNonNull(presence);
+    Objects.requireNonNull(supplier);
+    return new OptionalSupplier<>() {
+      @Override // OptionalSupplier<T>
+      public final Presence presence() {
+        return presence;
+      }
+      @Override // OptionalSupplier<T>
+      public final T get() {
+        return supplier.get();
+      }
+    };
+  }
 
   /**
-   * A token indicating deterministic presence or absence.
+   * Invokes {@link Absent#instance()} and returns the result.
+   *
+   * @param <T> the type of the nonexistent value the returned {@link
+   * OptionalSupplier} will never {@linkplain #get() supply}
+   *
+   * @return the result of invoking {@link Absent#instance()}
+   *
+   * @nullability This method never returns {@code null}.
+   *
+   * @idempotency This method is idempotent and deterministic.
+   *
+   * @threadsafety This method is safe for concurrent use by
+   * multiple threads.
+   *
+   * @see Absent#instance()
+   */
+  public static <T> OptionalSupplier<T> of() {
+    return Absent.instance();
+  }
+
+  /**
+   * Returns an {@link OptionalSupplier} representing the supplied
+   * {@link Supplier}.
+   *
+   * @param <T> the type of value the returned {@link
+   * OptionalSupplier} will {@linkplain #get() supply}
+   *
+   * @param supplier the {@link Supplier}; may be {@code null} in
+   * which case the return value of an invocation of {@link
+   * Absent#instance()} will be returned
+   *
+   * @return an {@link OptionalSupplier} representing the supplied
+   * {@link Supplier}
+   *
+   * @nullability This method never returns {@code null}.
+   *
+   * @idempotency This method is not idempotent but is deterministic.
+   *
+   * @threadsafety This method is safe for concurrent use by
+   * multiple threads.
+   */
+  public static <T> OptionalSupplier<T> of(final Supplier<T> supplier) {
+    if (supplier == null) {
+      return Absent.instance();
+    } else if (supplier instanceof OptionalSupplier<T> os) {
+      return os;
+    } else if (supplier instanceof DeterministicSupplier<T> ds) {
+      return new OptionalSupplier<>() {
+        @Override // OptionalSupplier<T>
+        public final Presence presence() {
+          return Presence.DETERMINISTIC;
+        }
+        @Override // OptionalSupplier<T>
+        public final T get() {
+          return ds.get();
+        }
+      };
+    } else {
+      return new OptionalSupplier<>() {
+        @Override
+        public final T get() {
+          return supplier.get();
+        }
+      };
+    }
+  }
+
+  /**
+   * Returns a new {@link OptionalSupplier} whose {@link #presence()}
+   * method will return {@link Presence#PRESENT} and whose {@link
+   * #get()} method will return the supplied {@code value}.
+   *
+   * @param <T> the type of value the returned {@link
+   * OptionalSupplier} will {@linkplain #get() supply}
+   *
+   * @param value the value the new {@link OptionalSupplier} will
+   * return from its {@link #get()} method; may be {@code null}
+   *
+   * @return a new {@link OptionalSupplier} whose {@link #presence()}
+   * method will return {@link Presence#PRESENT} and whose {@link
+   * #get()} method will return the supplied {@code value}
+   *
+   * @nullability This method never returns {@code null}.
+   *
+   * @idempotency This method is not idempotent but is deterministic.
+   *
+   * @threadsafety This method is safe for concurrent use by multiple
+   * threads.
+   */
+  public static <T> OptionalSupplier<T> of(final T value) {
+    return Present.of(value);
+  }
+
+
+  /*
+   * Inner and nested classes.
+   */
+
+
+  /**
+   * A token indicating transitory or permanent presence or absence.
    *
    * @author <a href="https://about.me/lairdnelson"
    * target="_parent">Laird Nelson</a>
+   *
+   * @see #deterministic()
    *
    * @see OptionalSupplier#presence()
    */
   public static enum Presence {
 
     /**
-     * An {@link Presence} indicating non-deterministic presence or
-     * absence.
+     * An {@link Presence} indicating an unknown, possibly transitory,
+     * presence or absence.
      */
     UNKNOWN(false),
 
     /**
-     * An {@link Presence} indicating deterministic absence.
+     * An {@link Presence} indicating an unknown permanent presence or
+     * absence.
+     */
+    DETERMINISTIC(true),
+
+    /**
+     * An {@link Presence} indicating permanent absence.
      */
     ABSENT(true),
 
     /**
-     * An {@link Presence} indicating deterministic presence.
+     * An {@link Presence} indicating permanent presence.
      */
     PRESENT(true);
 
@@ -781,6 +969,207 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
      */
     public final boolean deterministic() {
       return this.deterministic;
+    }
+
+  }
+
+  /**
+   * An {@link OptionalSupplier} implementation that indicates
+   * permanent absence.
+   *
+   * @author <a href="https://about.me/lairdnelson"
+   * target="_parent">Laird Nelson</a>
+   */
+  public static final class Absent<T> implements OptionalSupplier<T> {
+
+
+    /*
+     * Static fields.
+     */
+
+
+    private static final Absent<?> INSTANCE = new Absent<Void>();
+
+
+    /*
+     * Constructors.
+     */
+
+
+    private Absent() {
+      super();
+    }
+
+
+    /*
+     * Instance methods.
+     */
+
+
+    /**
+     * Returns {@link Presence#ABSENT} when invoked.
+     *
+     * @return {@link Presence#ABSENT} when invoked
+     *
+     * @nullability This method never returns {@code null}.
+     *
+     * @idempotency This method is idempotent and deterministic.
+     *
+     * @threadsafety This method is safe for concurrent use by
+     * multiple threads.
+     */
+    @Override // OptionalSupplier<T>
+    public final Presence presence() {
+      return Presence.ABSENT;
+    }
+
+    /**
+     * Throws a {@link NoSuchElementException} when invoked.
+     *
+     * @return nothing
+     *
+     * @exception NoSuchElementException when invoked
+     *
+     * @nullability This method never returns {@code null}.
+     *
+     * @idempotency This method is idempotent and deterministic.
+     *
+     * @threadsafety This method is safe for concurrent use by
+     * multiple threads.
+     */
+    @Override // OptionalSupplier<T>
+    public final T get() {
+      throw new NoSuchElementException();
+    }
+
+
+    /*
+     * Static methods.
+     */
+
+
+    /**
+     * Returns the sole instance of this class.
+     *
+     * @param <T> the type of the nonexistent value the returned
+     * {@link Absent} will never {@linkplain #get() supply}
+     *
+     * @return the sole instance of this class
+     *
+     * @nullability This method never returns {@code null}.
+     *
+     * @idempotency This method is idempotent and deterministic.
+     *
+     * @threadsafety This method is safe for concurrent use by
+     * multiple threads.
+     */
+    @SuppressWarnings("unchecked")
+    public static final <T> Absent<T> instance() {
+      return (Absent<T>)INSTANCE;
+    }
+
+  }
+
+  /**
+   * An {@link OptionalSupplier} implementation that supplies a fixed
+   * value.
+   *
+   * @author <a href="https://about.me/lairdnelson"
+   * target="_parent">Laird Nelson</a>
+   */
+  public static final class Present<T> implements OptionalSupplier<T> {
+
+
+    private final T value;
+
+
+    /*
+     * Constructors.
+     */
+
+
+    /**
+     * Creates a new {@link Present} that will {@linkplain #get()
+     * supply} the supplied value.
+     *
+     * @param value the value to be {@linkplain #get() supplied}; may
+     * be {@code null}
+     */
+    private Present(final T value) {
+      super();
+      this.value = value;
+    }
+
+
+    /*
+     * Instance methods.
+     */
+
+
+    /**
+     * Returns {@link Presence#PRESENT} when invoked.
+     *
+     * @return {@link Presence#PRESENT} when invoked
+     *
+     * @nullability This method never returns {@code null}.
+     *
+     * @idempotency This method is idempotent and deterministic.
+     *
+     * @threadsafety This method is safe for concurrent use by
+     * multiple threads.
+     */
+    @Override // OptionalSupplier<T>
+    public final Presence presence() {
+      return Presence.PRESENT;
+    }
+
+    /**
+     * Returns the value supplied {@linkplain #Present(Object) at
+     * construction time}, which may be {@code null}.
+     *
+     * @return the value supplied {@linkplain #Present(Object) at
+     * construction time}
+     *
+     * @nullability This method may return {@code null}.
+     *
+     * @idempotency This method is idempotent and deterministic.
+     *
+     * @threadsafety This method is safe for concurrent use by
+     * multiple threads.
+     */
+    @Override // OptionalSupplier<T>
+    public final T get() {
+      return this.value;
+    }
+
+
+    /*
+     * Static methods.
+     */
+
+
+    /**
+     * Returns a {@link Present} {@linkplain #get() supplying} the
+     * supplied value.
+     *
+     * @param <T> the type of the value the returned
+     * {@link Present} will {@linkplain #get() supply}
+     *
+     * @param value the value the {@link #get()} method will return;
+     * may be {@code null}
+     *
+     * @return a {@link Present} {@linkplain #get() supplying} the
+     * supplied value
+     *
+     * @nullability This method never returns {@code null}.
+     *
+     * @idempotency This method is idempotent and deterministic.
+     *
+     * @threadsafety This method is safe for concurrent use by
+     * multiple threads.
+     */
+    public static final <T> Present<T> of(final T value) {
+      return new Present<>(value);
     }
 
   }

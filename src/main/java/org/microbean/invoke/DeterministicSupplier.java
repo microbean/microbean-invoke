@@ -16,6 +16,8 @@
  */
 package org.microbean.invoke;
 
+import java.util.Objects;
+
 import java.util.function.Supplier;
 
 import org.microbean.development.annotation.OverridingEncouraged;
@@ -40,12 +42,14 @@ public interface DeterministicSupplier<T> extends Supplier<T> {
    *
    * <ul>
    *
-   * <li>Any two invocations of the {@link #get() get()} method return
-   * objects that are indistinguishable from one another, or</li>
+   * <li>Any two invocations of the {@link #get() get()} method, on
+   * any thread, return either the same object or objects that are
+   * indistinguishable from one another and that can be substituted
+   * for each other interchangeably, or</li>
    *
-   * <li>Any two invocations of the {@link #get() get()} method throw
-   * {@link RuntimeException}s that are indistinguishable from one
-   * another</li>
+   * <li>Any two invocations of the {@link #get() get()} method, on
+   * any thread, throw {@link RuntimeException}s of exactly the same
+   * type</li>
    *
    * </ul>
    *
@@ -68,5 +72,90 @@ public interface DeterministicSupplier<T> extends Supplier<T> {
     return false;
   }
 
-}
 
+  /*
+   * Static methods.
+   */
+
+
+  /**
+   * Returns a new {@link DeterministicSupplier} whose {@link
+   * #deterministic()} method will return the supplied {@code
+   * deterministic} value and whose {@link #get()} method will return
+   * the result of invoking the {@link Supplier#get()} method on the
+   * supplied {@code supplier}.
+   *
+   * @param <T> the type of value the returned {@link
+   * DeterministicSupplier} will {@linkplain #get() supply}
+   *
+   * @param deterministic whether the supplied {@link Supplier} is
+   * deterministic
+   *
+   * @param supplier the {@link Supplier} whose {@link #get()} method
+   * will be called; must not be {@code null}
+   *
+   * @return a new {@link DeterministicSupplier} whose {@link
+   * #deterministic()} method will return the supplied {@code
+   * deterministic} value and whose {@link #get()} method will return
+   * the result of invoking the {@link Supplier#get()} method on the
+   * supplied {@code supplier}
+   *
+   * @exception NullPointerException if {@code supplier} is {@code null}
+   *
+   * @nullability This method never returns {@code null}.
+   *
+   * @idempotency This method is not idempotent but is deterministic.
+   *
+   * @threadsafety This method is safe for concurrent use by multiple
+   * threads.
+   */
+  public static <T> DeterministicSupplier<T> of(final boolean deterministic, final Supplier<? extends T> supplier) {
+    Objects.requireNonNull(supplier);
+    return new DeterministicSupplier<>() {
+      @Override // DeterministicSupplier<T>
+      public final boolean deterministic() {
+        return deterministic;
+      }
+      @Override // DeterministicSupplier<T>
+      public final T get() {
+        return supplier.get();
+      }
+    };
+  }
+
+  /**
+   * Returns a new {@link DeterministicSupplier} whose {@link
+   * #deterministic()} method will return {@code true} and whose
+   * {@link #get()} method will return the supplied {@code value}.
+   *
+   * @param <T> the type of value the returned {@link
+   * DeterministicSupplier} will {@linkplain #get() supply}
+   *
+   * @param value the value the new {@link DeterministicSupplier} will
+   * return from its {@link #get()} method; may be {@code null}
+   *
+   * @return a new {@link DeterministicSupplier} whose {@link
+   * #deterministic()} method will return {@code true} and whose
+   * {@link #get()} method will return the supplied {@code value}
+   *
+   * @nullability This method never returns {@code null}.
+   *
+   * @idempotency This method is not idempotent but is deterministic.
+   *
+   * @threadsafety This method is safe for concurrent use by multiple
+   * threads.
+   */
+  public static <T> DeterministicSupplier<T> of(final T value) {
+    return new DeterministicSupplier<>() {
+      @Override // DeterministicSupplier<T>
+      public final boolean deterministic() {
+        return true;
+      }
+      @Override // DeterministicSupplier<T>
+      public final T get() {
+        return value;
+      }
+    };
+  }
+
+}
