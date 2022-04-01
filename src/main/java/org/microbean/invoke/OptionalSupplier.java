@@ -51,6 +51,8 @@ import org.microbean.development.annotation.OverridingEncouraged;
  * @author <a href="https://about.me/lairdnelson"
  * target="_parent">Laird Nelson</a>
  *
+ * @see #presence()
+ *
  * @see #deterministic()
  *
  * @see #get()
@@ -59,6 +61,37 @@ import org.microbean.development.annotation.OverridingEncouraged;
  */
 @FunctionalInterface
 public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
+
+  /**
+   * Invokes the {@link #presence()} method and invokes {@link
+   * Presence#deterministic() deterministic()} on its return value and
+   * returns the result.
+   *
+   * <p>Overrides of this method are <strong>strongly</strong>
+   * discouraged.</p>
+   *
+   * <p>Any (discouraged) overriding of this method should be
+   * undertaken with a sensible override of the {@link #presence()}
+   * method as well.</p>
+   *
+   * @return {@code true} if and only if this {@link OptionalSupplier}
+   * is known to be deterministic
+   *
+   * @idempotency This method is, and its (discouraged) overrides must
+   * be, idempotent and deterministic.
+   *
+   * @threadsafety This method is, and its (discouraged) overrides
+   * must be, safe for concurrent use by multiple threads.
+   *
+   * @see #presence()
+   *
+   * @see DeterministicSupplier#deterministic()
+   */
+  @Override // DeterministicSupplier<T>
+  @OverridingDiscouraged
+  public default boolean deterministic() {
+    return this.presence().deterministic();
+  }
 
   /**
    * Returns either the result of invoking the {@link #get()} method,
@@ -115,9 +148,9 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
    *
    * <ul>
    *
-   * <li>It is deliberately and explicitly permitted for
+   * <li><strong>It is deliberately and explicitly permitted for
    * implementations of this method to return {@code null} for any
-   * reason.  Callers of this method must be appropriately
+   * reason.</strong> Callers of this method must be appropriately
    * prepared.</li>
    *
    * <li>An implementation of this method need not be deterministic
@@ -158,6 +191,8 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
    * the {@link #deterministic() deterministic()} method returns
    * {@code true}, then any implementation of this method must be
    * deterministic.
+   *
+   * @see #presence()
    *
    * @see #deterministic()
    */
@@ -593,6 +628,62 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
   }
 
   /**
+   * Returns an {@link Presence} denoting the presence of values
+   * returned by this {@link OptionalSupplier}'s {@link #get() get()}
+   * method.
+   *
+   * <p>Overrides of this method must not call {@link
+   * #deterministic()} or undefined behavior (such as an infinite
+   * loop) may result.</p>
+   *
+   * <p>Overrides of this method must be compatible with the
+   * implementation of the {@link #get()} method.  Specifically:</p>
+   *
+   * <ul>
+   *
+   * <li>If an override of this method returns {@link
+   * Presence#PRESENT}, then the implementation of the {@link #get()}
+   * method must not throw either a {@link NoSuchElementException} nor
+   * an {@link UnsupportedOperationException}.</li>
+   *
+   * <li>If an override of this method returns {@link Presence#ABSENT},
+   * then it is expected that any invocation of the {@link #get()}
+   * method will throw either a {@link NoSuchElementException} or an
+   * {@link UnsupportedOperationException}.  If an implementation of
+   * the {@link #get()} method instead returns a value, contrary to
+   * these requirements, then the value must be treated as irrelevant
+   * or undefined.</li>
+   *
+   * <li>If an override of this method returns {@link
+   * Presence#UNKNOWN}, then there are no additional requirements
+   * placed upon the implementation of the {@link #get()} method
+   * besides those defined in {@linkplain #get() its existing
+   * contract}.</li>
+   *
+   * </ul>
+   *
+   * <p>The default implementation of this method returns {@link
+   * Presence#UNKNOWN}.</p>
+   *
+   * @return an {@link Presence} denoting the presence of values
+   * returned by this {@link OptionalSupplier}'s {@link #get() get()}
+   * method
+   *
+   * @nullability This method does not, and its (encouraged) overrides
+   * must not, return {@code null}.
+   *
+   * @idempotency This method is, and its (encouraged) overrides must
+   * be, idempotent and deterministic.
+   *
+   * @threadsafety This method is, and its (encouraged) overrides must
+   * be, safe for concurrent use by multiple threads.
+   */
+  @OverridingEncouraged
+  public default Presence presence() {
+    return Presence.UNKNOWN;
+  }
+
+  /**
    * Returns the result of invoking the {@link Stream#of(Object)}
    * method on the return value of an invocation of the {@link #get()}
    * method, which may be {@code null}, or, if the {@link #get()}
@@ -641,6 +732,57 @@ public interface OptionalSupplier<T> extends DeterministicSupplier<T> {
     } else {
       throw e;
     }
+  }
+
+
+  /**
+   * A token indicating deterministic presence or absence.
+   *
+   * @author <a href="https://about.me/lairdnelson"
+   * target="_parent">Laird Nelson</a>
+   *
+   * @see OptionalSupplier#presence()
+   */
+  public static enum Presence {
+
+    /**
+     * An {@link Presence} indicating non-deterministic presence or
+     * absence.
+     */
+    UNKNOWN(false),
+
+    /**
+     * An {@link Presence} indicating deterministic absence.
+     */
+    ABSENT(true),
+
+    /**
+     * An {@link Presence} indicating deterministic presence.
+     */
+    PRESENT(true);
+
+    private final boolean deterministic;
+
+    private Presence(final boolean deterministic) {
+      this.deterministic = deterministic;
+    }
+
+    /**
+     * Returns {@code true} if the presence or absence denoted by this
+     * {@link Presence} is deterministic.
+     *
+     * @return {@code true} if the presence or absence denoted by this
+     * {@link Presence} is deterministic
+     *
+     * @idempotency This method is idempotent and deterministic.
+     *
+     * @threadsafety This method is safe for concurrent use by
+     * multiple threads.
+     */
+    public final boolean deterministic() {
+      return this.deterministic;
+    }
+
   }
 
 }
