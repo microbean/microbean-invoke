@@ -16,6 +16,7 @@
  */
 package org.microbean.invoke;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -23,7 +24,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 /**
- * A {@link DeterministicSupplier} that computes the value it will
+ * An {@link OptionalSupplier} that computes the value it will
  * return from its {@link #get()} method when that method is first
  * invoked, and that returns that computed value for all subsequent
  * invocations of that method.
@@ -42,7 +43,7 @@ import java.util.function.Supplier;
  *
  * @see #set(Object)
  */
-public final class CachingSupplier<T> implements DeterministicSupplier<T> {
+public final class CachingSupplier<T> implements OptionalSupplier<T> {
 
 
   /*
@@ -92,7 +93,7 @@ public final class CachingSupplier<T> implements DeterministicSupplier<T> {
     super();
     final Optional<T> optional = Optional.ofNullable(value);
     this.ref = new AtomicReference<>(optional);
-    this.delegate = () -> optional.orElse(null);
+    this.delegate = OptionalSupplier.of(optional.orElse(null));
   }
 
   /**
@@ -101,16 +102,17 @@ public final class CachingSupplier<T> implements DeterministicSupplier<T> {
    * @param supplier the {@link Supplier} that will be used to supply
    * the value that will be returned by all invocations of the {@link
    * #get()} method; may be {@code null} in which case the {@link
-   * #get()} method will return {@code null} until, at least, the {@link
-   * #set(Object)} method is called; <strong>must be safe for concurrent
-   * use by multiple threads and must be side-effect free</strong>
+   * #get()} method will throw a {@link NoSuchElementException} until,
+   * at least, the {@link #set(Object)} method is called; <strong>must
+   * be safe for concurrent use by multiple threads and must be
+   * side-effect free</strong>
    *
    * @see #get()
    */
   public CachingSupplier(final Supplier<? extends T> supplier) {
     super();
     this.ref = new AtomicReference<>();
-    this.delegate = supplier == null ? CachingSupplier::returnNull : supplier;
+    this.delegate = supplier == null ? CachingSupplier::noSuchElementException : supplier;
   }
 
 
@@ -161,26 +163,6 @@ public final class CachingSupplier<T> implements DeterministicSupplier<T> {
   }
 
   /**
-   * Returns {@code true} when invoked to indicate that this {@link
-   * CachingSupplier}, like all {@link CachingSupplier}s, is
-   * deterministic.
-   *
-   * @return {@code true}
-   *
-   * @idempotency This method and its overrides must be idempotent and
-   * deterministic.
-   *
-   * @threadsafety This method is, and its overrides must be, safe for
-   * concurrent use by multiple threads.
-   *
-   * @see DeterministicSupplier#deterministic()
-   */
-  @Override // DeterministicSupplier<T>
-  public final boolean deterministic() {
-    return true;
-  }
-
-  /**
    * Sets the value that will be returned forever afterwards by the
    * {@link #get()} method and returns {@code true} if and only if the
    * value was previously unset.
@@ -204,6 +186,32 @@ public final class CachingSupplier<T> implements DeterministicSupplier<T> {
    */
   public final boolean set(final T newValue) {
     return this.ref.compareAndSet(null, Optional.ofNullable(newValue));
+  }
+
+  /**
+   * Returns an {@link Determinism} suitable for this {@link CachingSupplier}.
+   *
+   * <p>In most cases, this method returns {@link
+   * Determinism#PRESENT}.  In the case that the {@linkplain
+   * #CachingSupplier() zero-argument constructor} was invoked, and
+   * the {@link #set(Object)} method has not yet been called, this
+   * method will return {@link Determinism#DETERMINISTIC}.  Once the
+   * {@link #set(Object)} method has been called, this method will
+   * return {@link Determinism#PRESENT}.</p>
+   *
+   * @return one of {@link Determinism#PRESENT} or {@link
+   * Determinism#DETERMINISTIC}
+   *
+   * @nullability This method does not return {@code null}.
+   *
+   * @idempotency This method is idempotent and deterministic.
+   *
+   * @threadsafety This method is safe for concurrent use by multiple
+   * threads.
+   */
+  @Override
+  public final Determinism determinism() {
+    return this.ref.get() == null ? Determinism.DETERMINISTIC : Determinism.PRESENT;
   }
 
   /**
@@ -238,29 +246,8 @@ public final class CachingSupplier<T> implements DeterministicSupplier<T> {
    */
 
 
-  /**
-   * Returns {@code null} when invoked.
-   *
-   * <p>This method is referred to via a method reference in the
-   * {@link #CachingSupplier(Supplier)} constructor and is used for no
-   * other purpose.</p>
-   *
-   * @param <T> the type of object to return; irrelevant because
-   * {@code null} is always returned
-   *
-   * @return {@code null} always
-   *
-   * @idempotency This method is idempotent and deterministic.
-   *
-   * @nullability This method always returns {@code null}.
-   *
-   * @threadsafety This method is safe for concurrent use by multiple
-   * threads.
-   *
-   * @see #CachingSupplier(Supplier)
-   */
-  private static final <T> T returnNull() {
-    return null;
+  private static final <T> T noSuchElementException() {
+    throw new NoSuchElementException();
   }
 
 }
