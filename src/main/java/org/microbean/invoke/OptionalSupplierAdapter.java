@@ -36,19 +36,19 @@ final class OptionalSupplierAdapter<T> implements OptionalSupplier<T> {
 
   OptionalSupplierAdapter(final Determinism determinism, Supplier<? extends T> supplier) {
     super();
-    Objects.requireNonNull(determinism, "determinism");
     if (supplier == null) {
       this.determinism = Determinism.ABSENT;
       this.supplier = Absence.instance();
     } else if (supplier instanceof OptionalSupplier<? extends T> os) {
-      if (determinism == os.determinism() || determinism == Determinism.NON_DETERMINISTIC) {
+      if (Objects.requireNonNull(determinism, "determinism") == os.determinism() ||
+          determinism == Determinism.NON_DETERMINISTIC) {
         this.determinism = os.determinism();
         this.supplier = supplier;
       } else {
         throw new IllegalArgumentException("determinism: " + determinism + "; supplier: " + supplier);
       }
     } else {
-      this.determinism = determinism;
+      this.determinism = Objects.requireNonNull(determinism, "determinism");
       this.supplier = supplier;
     }
   }
