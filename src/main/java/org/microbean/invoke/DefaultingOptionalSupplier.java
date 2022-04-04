@@ -28,7 +28,7 @@ import java.util.function.Supplier;
  * @author <a href="https://about.me/lairdnelson"
  * target="_parent">Laird Nelson</a>
  */
-public final class DefaultingOptionalSupplier<T> implements OptionalSupplier<T> {
+final class DefaultingOptionalSupplier<T> implements OptionalSupplier<T> {
 
   private final Supplier<? extends T> defaults;
 

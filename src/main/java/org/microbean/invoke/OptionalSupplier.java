@@ -813,6 +813,50 @@ public interface OptionalSupplier<T> extends Supplier<T> {
   }
 
   /**
+   * Returns an {@link OptionalSupplier} that will, loosely speaking,
+   * try the supplied {@code supplier} first, and, if it throws a
+   * {@link NoSuchElementException} or an {@link
+   * UnsupportedOperationException} from its {@link Supplier#get()}
+   * method, will then try the supplied {@code defaults}.
+   *
+   * <p>The supplied {@link Supplier} instances can, themselves, be
+   * {@link OptionalSupplier}s, and, if so, the resulting {@link
+   * OptionalSupplier} will have its {@link #determinism()} method
+   * appropriately implemented.</p>
+   *
+   * @param <T> the type of object the returned {@link
+   * OptionalSupplier} will {@linkplain #get() supply}
+   *
+   * @param supplier the first {@link Supplier} to try; may be {@code
+   * null}
+   *
+   * @param defaults the fallback {@link Supplier} to try; may be
+   * {@code null}
+   *
+   * @return a {@link DefaultingOptionalSupplier}
+   *
+   * @nullability This method never returns {@code null}.
+   *
+   * @idempotency This method is idempotent and deterministic.
+   *
+   * @threadsafety This method is safe for concurrent use by multiple
+   * threads.
+   */
+  public static <T> OptionalSupplier<T> of(final Supplier<T> supplier, final Supplier<T> defaults) {
+    if (supplier == null) {
+      if (defaults == null) {
+        return Absence.instance();
+      } else {
+        return of(defaults);
+      }
+    } else if (defaults == null) {
+      return of(supplier);
+    } else {
+      return DefaultingOptionalSupplier.of(supplier, defaults);
+    }
+  }
+
+  /**
    * Returns a new {@link OptionalSupplier} whose {@link #determinism()}
    * method will return {@link Determinism#PRESENT} and whose {@link
    * #get()} method will return the supplied {@code value}.
