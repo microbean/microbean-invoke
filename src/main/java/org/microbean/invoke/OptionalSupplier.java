@@ -757,18 +757,7 @@ public interface OptionalSupplier<T> extends Supplier<T> {
    * threads.
    */
   public static <T> OptionalSupplier<T> of(final Determinism determinism, final Supplier<? extends T> supplier) {
-    Objects.requireNonNull(determinism);
-    Objects.requireNonNull(supplier);
-    return new OptionalSupplier<>() {
-      @Override // OptionalSupplier<T>
-      public final Determinism determinism() {
-        return determinism;
-      }
-      @Override // OptionalSupplier<T>
-      public final T get() {
-        return supplier.get();
-      }
-    };
+    return new OptionalSupplierAdapter<>(determinism, supplier);
   }
 
   /**
@@ -819,12 +808,7 @@ public interface OptionalSupplier<T> extends Supplier<T> {
     } else if (supplier instanceof OptionalSupplier<T> os) {
       return os;
     } else {
-      return new OptionalSupplier<>() {
-        @Override
-        public final T get() {
-          return supplier.get();
-        }
-      };
+      return new OptionalSupplierAdapter<>(supplier);
     }
   }
 
