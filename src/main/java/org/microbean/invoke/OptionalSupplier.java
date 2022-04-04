@@ -802,11 +802,12 @@ public interface OptionalSupplier<T> extends Supplier<T> {
    * @threadsafety This method is safe for concurrent use by
    * multiple threads.
    */
-  public static <T> OptionalSupplier<T> of(final Supplier<T> supplier) {
+  @SuppressWarnings("unchecked")
+  public static <T> OptionalSupplier<T> of(final Supplier<? extends T> supplier) {
     if (supplier == null) {
       return Absence.instance();
-    } else if (supplier instanceof OptionalSupplier<T> os) {
-      return os;
+    } else if (supplier instanceof OptionalSupplier<? extends T> os) {
+      return (OptionalSupplier<T>)os;
     } else {
       return new OptionalSupplierAdapter<>(supplier);
     }
@@ -842,7 +843,7 @@ public interface OptionalSupplier<T> extends Supplier<T> {
    * @threadsafety This method is safe for concurrent use by multiple
    * threads.
    */
-  public static <T> OptionalSupplier<T> of(final Supplier<T> supplier, final Supplier<T> defaults) {
+  public static <T> OptionalSupplier<T> of(final Supplier<? extends T> supplier, final Supplier<? extends T> defaults) {
     if (supplier == null) {
       if (defaults == null) {
         return Absence.instance();
