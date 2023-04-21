@@ -1,18 +1,15 @@
 /* -*- mode: Java; c-basic-offset: 2; indent-tabs-mode: nil; coding: utf-8-unix -*-
  *
- * Copyright © 2022 microBean™.
+ * Copyright © 2022–2023 microBean™.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
- * implied.  See the License for the specific language governing
- * permissions and limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 package org.microbean.invoke;
 
@@ -32,16 +29,12 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
- * Useful constant bootstrap methods and methods that make sense to
- * invoke from {@link
- * java.lang.invoke.ConstantBootstraps#invoke(Lookup, String, Class,
- * MethodHandle, Object...)}.
+ * Useful constant bootstrap methods and methods that make sense to invoke from {@link
+ * java.lang.invoke.ConstantBootstraps#invoke(Lookup, String, Class, MethodHandle, Object...)}.
  *
- * @author <a href="https://about.me/lairdnelson"
- * target="_parent">Laird Nelson</a>
+ * @author <a href="https://about.me/lairdnelson" target="_parent">Laird Nelson</a>
  *
- * @see <a
- * href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/invoke/package-summary.html"
+ * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/invoke/package-summary.html"
  * target="_parent"><code>java.lang.invoke</code></a>
  */
 public final class BootstrapMethods {
@@ -63,25 +56,19 @@ public final class BootstrapMethods {
 
 
   /**
-   * Returns a {@link ConstantCallSite} {@linkplain
-   * ConstantCallSite#getTarget() backed} by a {@linkplain
-   * Lookup#findStaticSetter(Class, String, Class) static setter
-   * <code>MethodHandle</code>}.
+   * Returns a {@link ConstantCallSite} {@linkplain ConstantCallSite#getTarget() backed} by a {@linkplain
+   * Lookup#findStaticSetter(Class, String, Class) static setter <code>MethodHandle</code>}.
    *
    * @param lookup a {@link Lookup}; will not be {@code null}
    *
-   * @param fieldName the name of the static field to find; will not
-   * be {@code null}
+   * @param fieldName the name of the static field to find; will not be {@code null}
    *
    * @param methodType a {@link MethodType}; will not be {@code null}
    *
-   * @param targetClass the {@link Class} whose static field will be
-   * sought; will not be {@code null}
+   * @param targetClass the {@link Class} whose static field will be sought; will not be {@code null}
    *
-   * @return a {@link ConstantCallSite} {@linkplain
-   * ConstantCallSite#getTarget() backed} by a {@linkplain
-   * Lookup#findStaticSetter(Class, String, Class) static setter
-   * <code>MethodHandle</code>}
+   * @return a {@link ConstantCallSite} {@linkplain ConstantCallSite#getTarget() backed} by a {@linkplain
+   * Lookup#findStaticSetter(Class, String, Class) static setter <code>MethodHandle</code>}
    *
    * @exception Throwable if an error occurs
    *
@@ -89,8 +76,7 @@ public final class BootstrapMethods {
    *
    * @idempotency This method is idempotent and deterministic.
    *
-   * @threadsafety This method is safe for concurrent use by multiple
-   * threads.
+   * @threadsafety This method is safe for concurrent use by multiple threads.
    *
    * @see Lookup#findStaticSetter(Class, String, Class)
    */
@@ -103,29 +89,21 @@ public final class BootstrapMethods {
   }
 
   /**
-   * Returns a {@link ConstantCallSite} {@linkplain
-   * ConstantCallSite#getTarget() backed} by a {@linkplain
-   * Lookup#findStatic(Class, String, MethodType) static
-   * <code>MethodHandle</code>} {@linkplain
-   * MethodHandle#asSpreader(Class, int) adapted to be an
-   * <em>array-spreading</em> <code>MethodHandle</code>}.
+   * Returns a {@link ConstantCallSite} {@linkplain ConstantCallSite#getTarget() backed} by a {@linkplain
+   * Lookup#findStatic(Class, String, MethodType) static <code>MethodHandle</code>} {@linkplain
+   * MethodHandle#asSpreader(Class, int) adapted to be an <em>array-spreading</em> <code>MethodHandle</code>}.
    *
    * @param lookup a {@link Lookup}; will not be {@code null}
    *
-   * @param methodName the name of the static field to find; will not
-   * be {@code null}
+   * @param methodName the name of the static field to find; will not be {@code null}
    *
    * @param methodType a {@link MethodType}; will not be {@code null}
    *
-   * @param targetClass the {@link Class} whose static method will be
-   * sought; will not be {@code null}
+   * @param targetClass the {@link Class} whose static method will be sought; will not be {@code null}
    *
-   * @return a {@link ConstantCallSite} {@linkplain
-   * ConstantCallSite#getTarget() backed} by a {@linkplain
-   * Lookup#findStatic(Class, String, MethodType) static
-   * <code>MethodHandle</code>} {@linkplain
-   * MethodHandle#asSpreader(Class, int) adapted to be an
-   * <em>array-spreading</em> <code>MethodHandle</code>}
+   * @return a {@link ConstantCallSite} {@linkplain ConstantCallSite#getTarget() backed} by a {@linkplain
+   * Lookup#findStatic(Class, String, MethodType) static <code>MethodHandle</code>} {@linkplain
+   * MethodHandle#asSpreader(Class, int) adapted to be an <em>array-spreading</em> <code>MethodHandle</code>}
    *
    * @exception Throwable if an error occurs
    *
@@ -133,8 +111,7 @@ public final class BootstrapMethods {
    *
    * @idempotency This method is idempotent and deterministic.
    *
-   * @threadsafety This method is safe for concurrent use by multiple
-   * threads.
+   * @threadsafety This method is safe for concurrent use by multiple threads.
    *
    * @see Lookup#findStatic(Class, String, MethodType)
    *
@@ -150,25 +127,19 @@ public final class BootstrapMethods {
   }
 
   /**
-   * Returns a {@link ConstantCallSite} {@linkplain
-   * ConstantCallSite#getTarget() backed} by a {@linkplain
-   * Lookup#findSetter(Class, String, Class) setter
-   * <code>MethodHandle</code>}.
+   * Returns a {@link ConstantCallSite} {@linkplain ConstantCallSite#getTarget() backed} by a {@linkplain
+   * Lookup#findSetter(Class, String, Class) setter <code>MethodHandle</code>}.
    *
    * @param lookup a {@link Lookup}; will not be {@code null}
    *
-   * @param fieldName the name of the field to find; will not be
-   * {@code null}
+   * @param fieldName the name of the field to find; will not be {@code null}
    *
    * @param methodType a {@link MethodType}; will not be {@code null}
    *
-   * @param targetClass the {@link Class} whose instance field will be
-   * sought; will not be {@code null}
+   * @param targetClass the {@link Class} whose instance field will be sought; will not be {@code null}
    *
-   * @return a {@link ConstantCallSite} {@linkplain
-   * ConstantCallSite#getTarget() backed} by a {@linkplain
-   * Lookup#findSetter(Class, String, Class) setter
-   * <code>MethodHandle</code>}
+   * @return a {@link ConstantCallSite} {@linkplain ConstantCallSite#getTarget() backed} by a {@linkplain
+   * Lookup#findSetter(Class, String, Class) setter <code>MethodHandle</code>}
    *
    * @exception Throwable if an error occurs
    *
@@ -176,8 +147,7 @@ public final class BootstrapMethods {
    *
    * @idempotency This method is idempotent and deterministic.
    *
-   * @threadsafety This method is safe for concurrent use by multiple
-   * threads.
+   * @threadsafety This method is safe for concurrent use by multiple threads.
    *
    * @see Lookup#findSetter(Class, String, Class)
    */
@@ -190,25 +160,19 @@ public final class BootstrapMethods {
   }
 
   /**
-   * Returns a {@link ConstantCallSite} {@linkplain
-   * ConstantCallSite#getTarget() backed} by a {@linkplain
-   * Lookup#findVirtual(Class, String, MethodType) virtual
-   * <code>MethodHandle</code>}.
+   * Returns a {@link ConstantCallSite} {@linkplain ConstantCallSite#getTarget() backed} by a {@linkplain
+   * Lookup#findVirtual(Class, String, MethodType) virtual <code>MethodHandle</code>}.
    *
    * @param lookup a {@link Lookup}; will not be {@code null}
    *
-   * @param methodName the name of the method to find; will not be
-   * {@code null}
+   * @param methodName the name of the method to find; will not be {@code null}
    *
    * @param methodType a {@link MethodType}; will not be {@code null}
    *
-   * @param targetClass the {@link Class} whose instance field will be
-   * sought; will not be {@code null}
+   * @param targetClass the {@link Class} whose virtual method will be sought; will not be {@code null}
    *
-   * @return a {@link ConstantCallSite} {@linkplain
-   * ConstantCallSite#getTarget() backed} by a {@linkplain
-   * Lookup#findVirtual(Class, String, MethodType) virtual
-   * <code>MethodHandle</code>}
+   * @return a {@link ConstantCallSite} {@linkplain ConstantCallSite#getTarget() backed} by a {@linkplain
+   * Lookup#findVirtual(Class, String, MethodType) virtual <code>MethodHandle</code>}
    *
    * @exception Throwable if an error occurs
    *
@@ -216,8 +180,7 @@ public final class BootstrapMethods {
    *
    * @idempotency This method is idempotent and deterministic.
    *
-   * @threadsafety This method is safe for concurrent use by multiple
-   * threads.
+   * @threadsafety This method is safe for concurrent use by multiple threads.
    *
    * @see Lookup#findVirtual(Class, String, MethodType)
    */
@@ -230,10 +193,8 @@ public final class BootstrapMethods {
   }
 
   /**
-   * Returns a {@link ConstantCallSite} {@linkplain
-   * ConstantCallSite#getTarget() backed} by a {@linkplain
-   * Lookup#findConstructor(Class, MethodType) constructor
-   * <code>MethodHandle</code>}.
+   * Returns a {@link ConstantCallSite} {@linkplain ConstantCallSite#getTarget() backed} by a {@linkplain
+   * Lookup#findConstructor(Class, MethodType) constructor <code>MethodHandle</code>}.
    *
    * @param lookup a {@link Lookup}; will not be {@code null}
    *
@@ -241,13 +202,10 @@ public final class BootstrapMethods {
    *
    * @param methodType a {@link MethodType}; will not be {@code null}
    *
-   * @param targetClass the {@link Class} whose instance field will be
-   * sought; will not be {@code null}
+   * @param targetClass the {@link Class} whose constructor will be sought; will not be {@code null}
    *
-   * @return a {@link ConstantCallSite} {@linkplain
-   * ConstantCallSite#getTarget() backed} by a {@linkplain
-   * Lookup#findConstructor(Class, MethodType) constructor
-   * <code>MethodHandle</code>}
+   * @return a {@link ConstantCallSite} {@linkplain ConstantCallSite#getTarget() backed} by a {@linkplain
+   * Lookup#findConstructor(Class, MethodType) constructor <code>MethodHandle</code>}
    *
    * @exception Throwable if an error occurs
    *
@@ -255,8 +213,7 @@ public final class BootstrapMethods {
    *
    * @idempotency This method is idempotent and deterministic.
    *
-   * @threadsafety This method is safe for concurrent use by multiple
-   * threads.
+   * @threadsafety This method is safe for concurrent use by multiple threads.
    *
    * @see Lookup#findConstructor(Class, MethodType)
    */
@@ -269,24 +226,19 @@ public final class BootstrapMethods {
   }
 
   /**
-   * Given a {@link Map} or a {@link SortedMap}, returns a {@link
-   * SortedMap} representing it that is immutable.
+   * Given a {@link Map} or a {@link SortedMap}, returns a {@link SortedMap} representing it that is immutable.
    *
-   * @param <K> the type borne by the supplied {@link Map}'s
-   * {@linkplain Map#keySet() keys}
+   * @param <K> the type borne by the supplied {@link Map}'s {@linkplain Map#keySet() keys}
    *
-   * @param <V> the type borne by the supplied {@link Map}'s
-   * {@linkplain Map#values() values}
+   * @param <V> the type borne by the supplied {@link Map}'s {@linkplain Map#values() values}
    *
    * @param map the {@link Map} to represent; must not be {@code null}
    *
-   * @param comparator the {@link Comparator} to use to order the
-   * supplied {@link Map}'s elements; may be {@code null} to indicate
-   * natural order should be used in which case the supplied {@link
-   * Map}'s elements must implement {@link Comparable}
+   * @param comparator the {@link Comparator} to use to order the supplied {@link Map}'s elements; may be {@code null}
+   * to indicate natural order should be used in which case the supplied {@link Map}'s elements must implement {@link
+   * Comparable}
    *
-   * @return an immutable {@link SortedMap} representing the supplied
-   * {@link Map}
+   * @return an immutable {@link SortedMap} representing the supplied {@link Map}
    *
    * @exception NullPointerException if {@code map} is {@code null}
    *
@@ -294,43 +246,31 @@ public final class BootstrapMethods {
    *
    * @idempotency This method is idempotent and deterministic.
    *
-   * @threadsafety This method is safe for concurrent use by multiple
-   * threads.
+   * @threadsafety This method is safe for concurrent use by multiple threads.
    */
-  @SuppressWarnings("unchecked")
   public static final <K, V> SortedMap<K, V> immutableSortedMapOf(final Map<? extends K, ? extends V> map,
                                                                   final Comparator<? super K> comparator) {
-    final SortedMap<K, V> mutableSortedMap;
-    if (comparator == null) {
-      if (map instanceof SortedMap) {
-        mutableSortedMap = (SortedMap<K, V>)map;
-      } else {
-        mutableSortedMap = new TreeMap<>(map);
-      }
-    } else {
-      mutableSortedMap = new TreeMap<>(comparator);
-      mutableSortedMap.putAll(map);
-    }
+    @SuppressWarnings("unchecked")
+    final SortedMap<K, V> mutableSortedMap =
+      new TreeMap<>(comparator == null ?
+                    map instanceof SortedMap<? extends K, ? extends V> sm ? (Comparator<? super K>)sm.comparator() : null :
+                    comparator);
+    mutableSortedMap.putAll(map);
     return Collections.unmodifiableSortedMap(mutableSortedMap);
   }
 
   /**
-   * Given a {@link Collection}, returns a {@link SortedSet}
-   * representing it that is immutable.
+   * Given a {@link Collection}, returns a {@link SortedSet} representing it that is immutable.
    *
-   * @param <E> the type borne by the supplied {@link Collection}'s
-   * elements
+   * @param <E> the type borne by the supplied {@link Collection}'s elements
    *
-   * @param set the {@link Collection} to represent; must not be
-   * {@code null}
+   * @param set the {@link Collection} to represent; must not be {@code null}
    *
-   * @param comparator the {@link Comparator} to use to order the
-   * supplied {@link Collection}'s elements; may be {@code null} to
-   * indicate natural order should be used in which case the supplied
-   * {@link Collection}'s elements must implement {@link Comparable}
+   * @param comparator the {@link Comparator} to use to order the supplied {@link Collection}'s elements; may be {@code
+   * null} to indicate natural order should be used in which case the supplied {@link Collection}'s elements must
+   * implement {@link Comparable}
    *
-   * @return an immutable {@link SortedSet} representing the supplied
-   * {@link Collection}
+   * @return an immutable {@link SortedSet} representing the supplied {@link Collection}
    *
    * @exception NullPointerException if {@code set} is {@code null}
    *
@@ -338,23 +278,16 @@ public final class BootstrapMethods {
    *
    * @idempotency This method is idempotent and deterministic.
    *
-   * @threadsafety This method is safe for concurrent use by multiple
-   * threads.
+   * @threadsafety This method is safe for concurrent use by multiple threads.
    */
-  @SuppressWarnings("unchecked")
   public static final <E> SortedSet<E> immutableSortedSetOf(final Collection<? extends E> set,
                                                             final Comparator<? super E> comparator) {
-    final SortedSet<E> mutableSortedSet;
-    if (comparator == null) {
-      if (set instanceof SortedSet) {
-        mutableSortedSet = (SortedSet<E>)set;
-      } else {
-        mutableSortedSet = new TreeSet<>(set);
-      }
-    } else {
-      mutableSortedSet = new TreeSet<>(comparator);
-      mutableSortedSet.addAll(set);
-    }
+    @SuppressWarnings("unchecked")
+    final SortedSet<E> mutableSortedSet =
+      new TreeSet<>(comparator == null ?
+                    set instanceof SortedSet<? extends E> ss ? (Comparator<? super E>)ss.comparator() : null :
+                    comparator);
+    mutableSortedSet.addAll(set);
     return Collections.unmodifiableSortedSet(mutableSortedSet);
   }
 

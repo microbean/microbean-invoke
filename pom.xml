@@ -25,36 +25,7 @@
     <tag>HEAD</tag>
   </scm>
 
-  <dependencyManagement>
-    <dependencies>
-
-
-      <!-- Normal dependencies. -->
-
-
-      <dependency>
-        <groupId>org.microbean</groupId>
-        <artifactId>microbean-development-annotations</artifactId>
-        <version>0.2.12</version>
-        <type>jar</type>
-      </dependency>
-
-
-    </dependencies>
-  </dependencyManagement>
-
   <dependencies>
-
-
-    <!-- Compile-scoped dependencies. -->
-
-
-    <dependency>
-        <groupId>org.microbean</groupId>
-        <artifactId>microbean-development-annotations</artifactId>
-        <type>jar</type>
-        <scope>compile</scope>
-    </dependency>
 
 
     <!-- Test-scoped dependencies. -->
@@ -86,7 +57,6 @@
           <configuration>
             <compilerArgs>
               <arg>-Xlint:all</arg>
-              <arg>-Xlint:-preview</arg>
               <arg>-Xpkginfo:always</arg>
             </compilerArgs>
           </configuration>
@@ -142,7 +112,7 @@
 
     <!-- maven-javadoc-plugin properties -->
     <detectJavaApiLink>false</detectJavaApiLink>
-    <links>https://docs.oracle.com/en/java/javase/17/docs/api,https://microbean.github.io/microbean-development-annotations/apidocs/</links>
+    <links>https://docs.oracle.com/en/java/javase/17/docs/api</links>
 
   </properties>
 

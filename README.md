@@ -32,7 +32,7 @@ Maven dependency:
   <groupId>org.microbean</groupId>
   <artifactId>microbean-invoke</artifactId>
   <!-- Always check https://search.maven.org/artifact/org.microbean/microbean-invoke for up-to-date available versions. -->
-  <version>0.0.13</version>
+  <version>0.0.14</version>
 </dependency>
 ```
 
