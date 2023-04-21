@@ -22,6 +22,7 @@ import java.lang.invoke.MethodType;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.SortedSet;
@@ -226,6 +227,55 @@ public final class BootstrapMethods {
   }
 
   /**
+   * Returns an empty, immutable {@link SortedMap}.
+   *
+   * @param <K> the type borne by the supplied {@link Map}'s {@linkplain Map#keySet() keys}
+   *
+   * @param <V> the type borne by the supplied {@link Map}'s {@linkplain Map#values() values}
+   *
+   * @param comparator the {@link Comparator} to be returned by the returned {@link SortedMap}'s {@link
+   * SortedMap#comparator()} method; may be {@code null}
+   *
+   * @return an immutable, empty {@link SortedMap}
+   *
+   * @exception NullPointerException if {@code map} is {@code null}
+   *
+   * @nullability This method never returns {@code null}.
+   *
+   * @idempotency This method is idempotent and deterministic.
+   *
+   * @threadsafety This method is safe for concurrent use by multiple threads.
+   */
+  public static final <K, V> SortedMap<K, V> immutableEmptySortedMap(final Comparator<? super K> comparator) {
+    return comparator == null ? Collections.emptySortedMap() : immutableSortedMapOf(Map.of(), comparator);
+  }
+
+  /**
+   * Given a {@link Map}, returns a {@link SortedMap} representing it that is immutable.
+   *
+   * @param <K> the type borne by the supplied {@link Map}'s {@linkplain Map#keySet() keys}
+   *
+   * @param <V> the type borne by the supplied {@link Map}'s {@linkplain Map#values() values}
+   *
+   * @param map the {@link Map} to represent; must not be {@code null}
+   *
+   * @return an immutable {@link SortedMap} representing the supplied {@link Map}
+   *
+   * @exception NullPointerException if {@code map} is {@code null}
+   *
+   * @nullability This method never returns {@code null}.
+   *
+   * @idempotency This method is idempotent and deterministic.
+   *
+   * @threadsafety This method is safe for concurrent use by multiple threads.
+   *
+   * @see #immutableSortedMapOf(Map, Comparator)
+   */
+  public static final <K, V> SortedMap<K, V> immutableSortedMapOf(final Map<? extends K, ? extends V> map) {
+    return map.isEmpty() ? Collections.emptySortedMap() : immutableSortedMapOf(map, null);
+  }
+
+  /**
    * Given a {@link Map} or a {@link SortedMap}, returns a {@link SortedMap} representing it that is immutable.
    *
    * @param <K> the type borne by the supplied {@link Map}'s {@linkplain Map#keySet() keys}
@@ -257,6 +307,53 @@ public final class BootstrapMethods {
                     comparator);
     mutableSortedMap.putAll(map);
     return Collections.unmodifiableSortedMap(mutableSortedMap);
+  }
+
+  /**
+   * Returns an immutable, empty {@link SortedSet}.
+   *
+   * @param <E> the {@link SortedSet}'s element type
+   *
+   * @param comparator the {@link Comparator} to be returned by the returned {@link SortedSet}'s {@link
+   * SortedSet#comparator()} method; may be {@code null}
+   *
+   * @return an immutable, empty {@link SortedSet}
+   *
+   * @exception NullPointerException if {@code set} is {@code null}
+   *
+   * @nullability This method never returns {@code null}.
+   *
+   * @idempotency This method is idempotent and deterministic.
+   *
+   * @threadsafety This method is safe for concurrent use by multiple threads.
+   *
+   * @see #immutableSortedSetOf(Collection, Comparator)
+   */
+  public static final <E> SortedSet<E> immutableEmptySortedSet(final Comparator<? super E> comparator) {
+    return comparator == null ? Collections.emptySortedSet() : immutableSortedSetOf(List.of(), comparator);
+  }
+
+  /**
+   * Given a {@link Collection}, returns a {@link SortedSet} representing it that is immutable.
+   *
+   * @param <E> the type borne by the supplied {@link Collection}'s elements
+   *
+   * @param set the {@link Collection} to represent; must not be {@code null}
+   *
+   * @return an immutable {@link SortedSet} representing the supplied {@link Collection}
+   *
+   * @exception NullPointerException if {@code set} is {@code null}
+   *
+   * @nullability This method never returns {@code null}.
+   *
+   * @idempotency This method is idempotent and deterministic.
+   *
+   * @threadsafety This method is safe for concurrent use by multiple threads.
+   *
+   * @see #immutableSortedSetOf(Collection, Comparator)
+   */
+  public static final <E> SortedSet<E> immutableSortedSetOf(final Collection<? extends E> set) {
+    return set.isEmpty() ? Collections.emptySortedSet() : immutableSortedSetOf(set, null);
   }
 
   /**
