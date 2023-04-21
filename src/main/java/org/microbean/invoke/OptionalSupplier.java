@@ -1,18 +1,15 @@
 /* -*- mode: Java; c-basic-offset: 2; indent-tabs-mode: nil; coding: utf-8-unix -*-
  *
- * Copyright © 2021–2022 microBean™.
+ * Copyright © 2022–2023 microBean™.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
- * implied.  See the License for the specific language governing
- * permissions and limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 package org.microbean.invoke;
 
@@ -27,10 +24,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import java.util.stream.Stream;
-
-import org.microbean.development.annotation.Convenience;
-import org.microbean.development.annotation.OverridingDiscouraged;
-import org.microbean.development.annotation.OverridingEncouraged;
 
 /**
  * A {@link Supplier} with additional contractual requirements.
@@ -92,7 +85,6 @@ public interface OptionalSupplier<T> extends Supplier<T> {
    *
    * @see #get()
    */
-  @OverridingDiscouraged
   public default T exceptionally(final Function<? super RuntimeException, ? extends T> handler) {
     try {
       return this.get();
@@ -213,7 +205,6 @@ public interface OptionalSupplier<T> extends Supplier<T> {
    *
    * @see #get()
    */
-  @OverridingDiscouraged
   public default <U> U handle(final BiFunction<? super T, ? super RuntimeException, ? extends U> handler) {
     T value;
     try {
@@ -253,8 +244,6 @@ public interface OptionalSupplier<T> extends Supplier<T> {
    *
    * @see #get()
    */
-  @Convenience
-  @OverridingDiscouraged
   public default void ifPresent(final Consumer<? super T> action) {
     T value;
     try {
@@ -294,8 +283,6 @@ public interface OptionalSupplier<T> extends Supplier<T> {
    *
    * @see #get()
    */
-  @Convenience
-  @OverridingDiscouraged
   public default void ifPresentOrElse(final Consumer<? super T> presentAction, final Runnable absentAction) {
     T value;
     try {
@@ -347,8 +334,6 @@ public interface OptionalSupplier<T> extends Supplier<T> {
    *
    * @see #get()
    */
-  @Convenience
-  @OverridingDiscouraged
   public default Optional<T> optional() {
     return this.optional(OptionalSupplier::returnNull);
   }
@@ -384,8 +369,6 @@ public interface OptionalSupplier<T> extends Supplier<T> {
    *
    * @see Optional#ofNullable(Object)
    */
-  @Convenience
-  @OverridingDiscouraged
   public default <U> Optional<U> optional(final BiFunction<? super T, ? super RuntimeException, ? extends U> handler) {
     return Optional.ofNullable(this.handle(handler));
   }
@@ -419,8 +402,6 @@ public interface OptionalSupplier<T> extends Supplier<T> {
    *
    * @see Optional#ofNullable(Object)
    */
-  @Convenience
-  @OverridingDiscouraged
   public default Optional<T> optional(final Function<? super RuntimeException, ? extends T> handler) {
     return Optional.ofNullable(this.exceptionally(handler));
   }
@@ -451,8 +432,6 @@ public interface OptionalSupplier<T> extends Supplier<T> {
    *
    * @see #get()
    */
-  @Convenience
-  @OverridingDiscouraged
   public default T orElse(final T other) {
     try {
       return this.get();
@@ -495,8 +474,6 @@ public interface OptionalSupplier<T> extends Supplier<T> {
    *
    * @see #get()
    */
-  @Convenience
-  @OverridingDiscouraged
   public default T orElseGet(final Supplier<? extends T> supplier) {
     try {
       return this.get();
@@ -531,8 +508,6 @@ public interface OptionalSupplier<T> extends Supplier<T> {
    *
    * @see #orElseThrow(Supplier)
    */
-  @Convenience
-  @OverridingDiscouraged
   public default T orElseThrow() {
     try {
       return this.get();
@@ -580,8 +555,6 @@ public interface OptionalSupplier<T> extends Supplier<T> {
    *
    * @see #get()
    */
-  @Convenience
-  @OverridingDiscouraged
   public default <X extends Throwable> T orElseThrow(final Supplier<? extends X> throwableSupplier) throws X {
     try {
       return this.get();
@@ -665,7 +638,6 @@ public interface OptionalSupplier<T> extends Supplier<T> {
    * @threadsafety This method is, and its (encouraged) overrides must
    * be, safe for concurrent use by multiple threads.
    */
-  @OverridingEncouraged
   public default Determinism determinism() {
     return Determinism.NON_DETERMINISTIC;
   }
@@ -703,8 +675,6 @@ public interface OptionalSupplier<T> extends Supplier<T> {
    *
    * @see #get()
    */
-  @Convenience
-  @OverridingDiscouraged
   public default Stream<T> stream() {
     try {
       return Stream.of(this.get());
