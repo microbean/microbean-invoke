@@ -14,954 +14,924 @@
 <div class="source-container">
 <pre><span class="source-line-no">001</span><span id="line-1">/* -*- mode: Java; c-basic-offset: 2; indent-tabs-mode: nil; coding: utf-8-unix -*-</span>
 <span class="source-line-no">002</span><span id="line-2"> *</span>
-<span class="source-line-no">003</span><span id="line-3"> * Copyright © 2021–2022 microBean™.</span>
+<span class="source-line-no">003</span><span id="line-3"> * Copyright © 2022–2023 microBean™.</span>
 <span class="source-line-no">004</span><span id="line-4"> *</span>
-<span class="source-line-no">005</span><span id="line-5"> * Licensed under the Apache License, Version 2.0 (the "License");</span>
-<span class="source-line-no">006</span><span id="line-6"> * you may not use this file except in compliance with the License.</span>
-<span class="source-line-no">007</span><span id="line-7"> * You may obtain a copy of the License at</span>
-<span class="source-line-no">008</span><span id="line-8"> *</span>
-<span class="source-line-no">009</span><span id="line-9"> *     http://www.apache.org/licenses/LICENSE-2.0</span>
-<span class="source-line-no">010</span><span id="line-10"> *</span>
-<span class="source-line-no">011</span><span id="line-11"> * Unless required by applicable law or agreed to in writing, software</span>
-<span class="source-line-no">012</span><span id="line-12"> * distributed under the License is distributed on an "AS IS" BASIS,</span>
-<span class="source-line-no">013</span><span id="line-13"> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or</span>
-<span class="source-line-no">014</span><span id="line-14"> * implied.  See the License for the specific language governing</span>
-<span class="source-line-no">015</span><span id="line-15"> * permissions and limitations under the License.</span>
-<span class="source-line-no">016</span><span id="line-16"> */</span>
-<span class="source-line-no">017</span><span id="line-17">package org.microbean.invoke;</span>
-<span class="source-line-no">018</span><span id="line-18"></span>
-<span class="source-line-no">019</span><span id="line-19">import java.util.NoSuchElementException;</span>
-<span class="source-line-no">020</span><span id="line-20">import java.util.Objects;</span>
-<span class="source-line-no">021</span><span id="line-21">import java.util.Optional;</span>
-<span class="source-line-no">022</span><span id="line-22"></span>
-<span class="source-line-no">023</span><span id="line-23">import java.util.function.BiFunction;</span>
-<span class="source-line-no">024</span><span id="line-24">import java.util.function.Consumer;</span>
-<span class="source-line-no">025</span><span id="line-25">import java.util.function.Function;</span>
-<span class="source-line-no">026</span><span id="line-26">import java.util.function.Predicate;</span>
-<span class="source-line-no">027</span><span id="line-27">import java.util.function.Supplier;</span>
-<span class="source-line-no">028</span><span id="line-28"></span>
-<span class="source-line-no">029</span><span id="line-29">import java.util.stream.Stream;</span>
-<span class="source-line-no">030</span><span id="line-30"></span>
-<span class="source-line-no">031</span><span id="line-31">import org.microbean.development.annotation.Convenience;</span>
-<span class="source-line-no">032</span><span id="line-32">import org.microbean.development.annotation.OverridingDiscouraged;</span>
-<span class="source-line-no">033</span><span id="line-33">import org.microbean.development.annotation.OverridingEncouraged;</span>
-<span class="source-line-no">034</span><span id="line-34"></span>
-<span class="source-line-no">035</span><span id="line-35">/**</span>
-<span class="source-line-no">036</span><span id="line-36"> * A {@link Supplier} with additional contractual requirements.</span>
-<span class="source-line-no">037</span><span id="line-37"> *</span>
-<span class="source-line-no">038</span><span id="line-38"> * &lt;p&gt;&lt;strong&gt;An {@link OptionalSupplier} does not behave like an</span>
-<span class="source-line-no">039</span><span id="line-39"> * {@link Optional} or a {@link</span>
-<span class="source-line-no">040</span><span id="line-40"> * java.util.concurrent.CompletableFuture},&lt;/strong&gt; despite the</span>
-<span class="source-line-no">041</span><span id="line-41"> * deliberate similarities of some method names.&lt;/p&gt;</span>
+<span class="source-line-no">005</span><span id="line-5"> * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with</span>
+<span class="source-line-no">006</span><span id="line-6"> * the License.  You may obtain a copy of the License at</span>
+<span class="source-line-no">007</span><span id="line-7"> *</span>
+<span class="source-line-no">008</span><span id="line-8"> *     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="source-line-no">009</span><span id="line-9"> *</span>
+<span class="source-line-no">010</span><span id="line-10"> * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on</span>
+<span class="source-line-no">011</span><span id="line-11"> * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the</span>
+<span class="source-line-no">012</span><span id="line-12"> * specific language governing permissions and limitations under the License.</span>
+<span class="source-line-no">013</span><span id="line-13"> */</span>
+<span class="source-line-no">014</span><span id="line-14">package org.microbean.invoke;</span>
+<span class="source-line-no">015</span><span id="line-15"></span>
+<span class="source-line-no">016</span><span id="line-16">import java.util.NoSuchElementException;</span>
+<span class="source-line-no">017</span><span id="line-17">import java.util.Objects;</span>
+<span class="source-line-no">018</span><span id="line-18">import java.util.Optional;</span>
+<span class="source-line-no">019</span><span id="line-19"></span>
+<span class="source-line-no">020</span><span id="line-20">import java.util.function.BiFunction;</span>
+<span class="source-line-no">021</span><span id="line-21">import java.util.function.Consumer;</span>
+<span class="source-line-no">022</span><span id="line-22">import java.util.function.Function;</span>
+<span class="source-line-no">023</span><span id="line-23">import java.util.function.Predicate;</span>
+<span class="source-line-no">024</span><span id="line-24">import java.util.function.Supplier;</span>
+<span class="source-line-no">025</span><span id="line-25"></span>
+<span class="source-line-no">026</span><span id="line-26">import java.util.stream.Stream;</span>
+<span class="source-line-no">027</span><span id="line-27"></span>
+<span class="source-line-no">028</span><span id="line-28">/**</span>
+<span class="source-line-no">029</span><span id="line-29"> * A {@link Supplier} with additional contractual requirements.</span>
+<span class="source-line-no">030</span><span id="line-30"> *</span>
+<span class="source-line-no">031</span><span id="line-31"> * &lt;p&gt;&lt;strong&gt;An {@link OptionalSupplier} does not behave like an</span>
+<span class="source-line-no">032</span><span id="line-32"> * {@link Optional} or a {@link</span>
+<span class="source-line-no">033</span><span id="line-33"> * java.util.concurrent.CompletableFuture},&lt;/strong&gt; despite the</span>
+<span class="source-line-no">034</span><span id="line-34"> * deliberate similarities of some method names.&lt;/p&gt;</span>
+<span class="source-line-no">035</span><span id="line-35"> *</span>
+<span class="source-line-no">036</span><span id="line-36"> * &lt;p&gt;An implementation of this interface is not a &lt;a</span>
+<span class="source-line-no">037</span><span id="line-37"> * href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/doc-files/ValueBased.html"&gt;value-based</span>
+<span class="source-line-no">038</span><span id="line-38"> * class&lt;/a&gt;.&lt;/p&gt;</span>
+<span class="source-line-no">039</span><span id="line-39"> *</span>
+<span class="source-line-no">040</span><span id="line-40"> * @param &lt;T&gt; the type of value implementations of this interface</span>
+<span class="source-line-no">041</span><span id="line-41"> * {@linkplain #get() supply}</span>
 <span class="source-line-no">042</span><span id="line-42"> *</span>
-<span class="source-line-no">043</span><span id="line-43"> * &lt;p&gt;An implementation of this interface is not a &lt;a</span>
-<span class="source-line-no">044</span><span id="line-44"> * href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/doc-files/ValueBased.html"&gt;value-based</span>
-<span class="source-line-no">045</span><span id="line-45"> * class&lt;/a&gt;.&lt;/p&gt;</span>
-<span class="source-line-no">046</span><span id="line-46"> *</span>
-<span class="source-line-no">047</span><span id="line-47"> * @param &lt;T&gt; the type of value implementations of this interface</span>
-<span class="source-line-no">048</span><span id="line-48"> * {@linkplain #get() supply}</span>
+<span class="source-line-no">043</span><span id="line-43"> * @author &lt;a href="https://about.me/lairdnelson"</span>
+<span class="source-line-no">044</span><span id="line-44"> * target="_parent"&gt;Laird Nelson&lt;/a&gt;</span>
+<span class="source-line-no">045</span><span id="line-45"> *</span>
+<span class="source-line-no">046</span><span id="line-46"> * @see #determinism()</span>
+<span class="source-line-no">047</span><span id="line-47"> *</span>
+<span class="source-line-no">048</span><span id="line-48"> * @see #get()</span>
 <span class="source-line-no">049</span><span id="line-49"> *</span>
-<span class="source-line-no">050</span><span id="line-50"> * @author &lt;a href="https://about.me/lairdnelson"</span>
-<span class="source-line-no">051</span><span id="line-51"> * target="_parent"&gt;Laird Nelson&lt;/a&gt;</span>
-<span class="source-line-no">052</span><span id="line-52"> *</span>
-<span class="source-line-no">053</span><span id="line-53"> * @see #determinism()</span>
-<span class="source-line-no">054</span><span id="line-54"> *</span>
-<span class="source-line-no">055</span><span id="line-55"> * @see #get()</span>
-<span class="source-line-no">056</span><span id="line-56"> *</span>
-<span class="source-line-no">057</span><span id="line-57"> * @see #optional()</span>
-<span class="source-line-no">058</span><span id="line-58"> */</span>
-<span class="source-line-no">059</span><span id="line-59">@FunctionalInterface</span>
-<span class="source-line-no">060</span><span id="line-60">public interface OptionalSupplier&lt;T&gt; extends Supplier&lt;T&gt; {</span>
-<span class="source-line-no">061</span><span id="line-61"></span>
-<span class="source-line-no">062</span><span id="line-62">  /**</span>
-<span class="source-line-no">063</span><span id="line-63">   * Returns either the result of invoking the {@link #get()} method,</span>
-<span class="source-line-no">064</span><span id="line-64">   * if a {@link RuntimeException} does not occur, or the result of</span>
-<span class="source-line-no">065</span><span id="line-65">   * invoking the {@link Function#apply(Object) apply(Object)} method</span>
-<span class="source-line-no">066</span><span id="line-66">   * on the supplied {@code handler} with any {@link RuntimeException}</span>
-<span class="source-line-no">067</span><span id="line-67">   * that does occur, including {@link NoSuchElementException} and</span>
-<span class="source-line-no">068</span><span id="line-68">   * {@link UnsupportedOperationException} instances that are used to</span>
-<span class="source-line-no">069</span><span id="line-69">   * indicate value absence.</span>
-<span class="source-line-no">070</span><span id="line-70">   *</span>
-<span class="source-line-no">071</span><span id="line-71">   * @param handler the exception handler; must not be {@code null}</span>
-<span class="source-line-no">072</span><span id="line-72">   *</span>
-<span class="source-line-no">073</span><span id="line-73">   * @return either the result of invoking the {@link #get()} method,</span>
-<span class="source-line-no">074</span><span id="line-74">   * if a {@link RuntimeException} does not occur, or the result of</span>
-<span class="source-line-no">075</span><span id="line-75">   * invoking the {@link Function#apply(Object) apply(Object)} method</span>
-<span class="source-line-no">076</span><span id="line-76">   * on the supplied {@code handler} with any {@link RuntimeException}</span>
-<span class="source-line-no">077</span><span id="line-77">   * that does occur</span>
-<span class="source-line-no">078</span><span id="line-78">   *</span>
-<span class="source-line-no">079</span><span id="line-79">   * @exception NullPointerException if {@code handler} is {@code</span>
-<span class="source-line-no">080</span><span id="line-80">   * null}</span>
-<span class="source-line-no">081</span><span id="line-81">   *</span>
-<span class="source-line-no">082</span><span id="line-82">   * @nullability This method and its (discouraged) overrides may</span>
-<span class="source-line-no">083</span><span id="line-83">   * return {@code null}</span>
-<span class="source-line-no">084</span><span id="line-84">   *</span>
-<span class="source-line-no">085</span><span id="line-85">   * @idempotency No guarantees are made about idempotency or</span>
-<span class="source-line-no">086</span><span id="line-86">   * determinism.</span>
-<span class="source-line-no">087</span><span id="line-87">   *</span>
-<span class="source-line-no">088</span><span id="line-88">   * @threadsafety This method itself is, and its (discouraged)</span>
-<span class="source-line-no">089</span><span id="line-89">   * overrides must be, safe for concurrent use by multiple threads,</span>
-<span class="source-line-no">090</span><span id="line-90">   * but the {@link Function#apply(Object) apply(Object)} method of</span>
-<span class="source-line-no">091</span><span id="line-91">   * the supplied {@code handler} may not be.</span>
-<span class="source-line-no">092</span><span id="line-92">   *</span>
-<span class="source-line-no">093</span><span id="line-93">   * @see #get()</span>
-<span class="source-line-no">094</span><span id="line-94">   */</span>
-<span class="source-line-no">095</span><span id="line-95">  @OverridingDiscouraged</span>
-<span class="source-line-no">096</span><span id="line-96">  public default T exceptionally(final Function&lt;? super RuntimeException, ? extends T&gt; handler) {</span>
-<span class="source-line-no">097</span><span id="line-97">    try {</span>
-<span class="source-line-no">098</span><span id="line-98">      return this.get();</span>
-<span class="source-line-no">099</span><span id="line-99">    } catch (final RuntimeException e) {</span>
-<span class="source-line-no">100</span><span id="line-100">      try {</span>
-<span class="source-line-no">101</span><span id="line-101">        return handler.apply(e);</span>
-<span class="source-line-no">102</span><span id="line-102">      } catch (final RuntimeException r) {</span>
-<span class="source-line-no">103</span><span id="line-103">        r.addSuppressed(e);</span>
-<span class="source-line-no">104</span><span id="line-104">        throw r;</span>
-<span class="source-line-no">105</span><span id="line-105">      }</span>
-<span class="source-line-no">106</span><span id="line-106">    }</span>
-<span class="source-line-no">107</span><span id="line-107">  }</span>
-<span class="source-line-no">108</span><span id="line-108"></span>
-<span class="source-line-no">109</span><span id="line-109">  /**</span>
-<span class="source-line-no">110</span><span id="line-110">   * Returns a value, which may be {@code null}.</span>
-<span class="source-line-no">111</span><span id="line-111">   *</span>
-<span class="source-line-no">112</span><span id="line-112">   * &lt;p&gt;This method's contract extends {@link Supplier#get()}'s</span>
-<span class="source-line-no">113</span><span id="line-113">   * contract with the following additional requirements:&lt;/p&gt;</span>
-<span class="source-line-no">114</span><span id="line-114">   *</span>
-<span class="source-line-no">115</span><span id="line-115">   * &lt;ul&gt;</span>
-<span class="source-line-no">116</span><span id="line-116">   *</span>
-<span class="source-line-no">117</span><span id="line-117">   * &lt;li&gt;&lt;strong&gt;It is deliberately and explicitly permitted for</span>
-<span class="source-line-no">118</span><span id="line-118">   * implementations of this method to return {@code null} for any</span>
-<span class="source-line-no">119</span><span id="line-119">   * reason.&lt;/strong&gt; Callers of this method must be appropriately</span>
-<span class="source-line-no">120</span><span id="line-120">   * prepared.&lt;/li&gt;</span>
-<span class="source-line-no">121</span><span id="line-121">   *</span>
-<span class="source-line-no">122</span><span id="line-122">   * &lt;li&gt;If an invocation of the {@link #determinism()} method, on any</span>
-<span class="source-line-no">123</span><span id="line-123">   * thread, returns any of {@link Determinism#ABSENT}, {@link</span>
-<span class="source-line-no">124</span><span id="line-124">   * Determinism#DETERMINISTIC} or {@link Determinism#PRESENT}, then</span>
-<span class="source-line-no">125</span><span id="line-125">   * additional requirements apply to the implementation of this</span>
-<span class="source-line-no">126</span><span id="line-126">   * method; see the {@link #determinism()} method documentation for</span>
-<span class="source-line-no">127</span><span id="line-127">   * details.&lt;/li&gt;</span>
-<span class="source-line-no">128</span><span id="line-128">   *</span>
-<span class="source-line-no">129</span><span id="line-129">   * &lt;li&gt;An implementation of this method need not be deterministic if</span>
-<span class="source-line-no">130</span><span id="line-130">   * an invocation of the {@link #determinism()} method returns {@link</span>
-<span class="source-line-no">131</span><span id="line-131">   * Determinism#NON_DETERMINISTIC}.&lt;/li&gt;</span>
-<span class="source-line-no">132</span><span id="line-132">   *</span>
-<span class="source-line-no">133</span><span id="line-133">   * &lt;li&gt;An implementation of this method may indicate the (possibly</span>
-<span class="source-line-no">134</span><span id="line-134">   * transitory) absence of a value by any of the following means:</span>
+<span class="source-line-no">050</span><span id="line-50"> * @see #optional()</span>
+<span class="source-line-no">051</span><span id="line-51"> */</span>
+<span class="source-line-no">052</span><span id="line-52">@FunctionalInterface</span>
+<span class="source-line-no">053</span><span id="line-53">public interface OptionalSupplier&lt;T&gt; extends Supplier&lt;T&gt; {</span>
+<span class="source-line-no">054</span><span id="line-54"></span>
+<span class="source-line-no">055</span><span id="line-55">  /**</span>
+<span class="source-line-no">056</span><span id="line-56">   * Returns either the result of invoking the {@link #get()} method,</span>
+<span class="source-line-no">057</span><span id="line-57">   * if a {@link RuntimeException} does not occur, or the result of</span>
+<span class="source-line-no">058</span><span id="line-58">   * invoking the {@link Function#apply(Object) apply(Object)} method</span>
+<span class="source-line-no">059</span><span id="line-59">   * on the supplied {@code handler} with any {@link RuntimeException}</span>
+<span class="source-line-no">060</span><span id="line-60">   * that does occur, including {@link NoSuchElementException} and</span>
+<span class="source-line-no">061</span><span id="line-61">   * {@link UnsupportedOperationException} instances that are used to</span>
+<span class="source-line-no">062</span><span id="line-62">   * indicate value absence.</span>
+<span class="source-line-no">063</span><span id="line-63">   *</span>
+<span class="source-line-no">064</span><span id="line-64">   * @param handler the exception handler; must not be {@code null}</span>
+<span class="source-line-no">065</span><span id="line-65">   *</span>
+<span class="source-line-no">066</span><span id="line-66">   * @return either the result of invoking the {@link #get()} method,</span>
+<span class="source-line-no">067</span><span id="line-67">   * if a {@link RuntimeException} does not occur, or the result of</span>
+<span class="source-line-no">068</span><span id="line-68">   * invoking the {@link Function#apply(Object) apply(Object)} method</span>
+<span class="source-line-no">069</span><span id="line-69">   * on the supplied {@code handler} with any {@link RuntimeException}</span>
+<span class="source-line-no">070</span><span id="line-70">   * that does occur</span>
+<span class="source-line-no">071</span><span id="line-71">   *</span>
+<span class="source-line-no">072</span><span id="line-72">   * @exception NullPointerException if {@code handler} is {@code</span>
+<span class="source-line-no">073</span><span id="line-73">   * null}</span>
+<span class="source-line-no">074</span><span id="line-74">   *</span>
+<span class="source-line-no">075</span><span id="line-75">   * @nullability This method and its (discouraged) overrides may</span>
+<span class="source-line-no">076</span><span id="line-76">   * return {@code null}</span>
+<span class="source-line-no">077</span><span id="line-77">   *</span>
+<span class="source-line-no">078</span><span id="line-78">   * @idempotency No guarantees are made about idempotency or</span>
+<span class="source-line-no">079</span><span id="line-79">   * determinism.</span>
+<span class="source-line-no">080</span><span id="line-80">   *</span>
+<span class="source-line-no">081</span><span id="line-81">   * @threadsafety This method itself is, and its (discouraged)</span>
+<span class="source-line-no">082</span><span id="line-82">   * overrides must be, safe for concurrent use by multiple threads,</span>
+<span class="source-line-no">083</span><span id="line-83">   * but the {@link Function#apply(Object) apply(Object)} method of</span>
+<span class="source-line-no">084</span><span id="line-84">   * the supplied {@code handler} may not be.</span>
+<span class="source-line-no">085</span><span id="line-85">   *</span>
+<span class="source-line-no">086</span><span id="line-86">   * @see #get()</span>
+<span class="source-line-no">087</span><span id="line-87">   */</span>
+<span class="source-line-no">088</span><span id="line-88">  public default T exceptionally(final Function&lt;? super RuntimeException, ? extends T&gt; handler) {</span>
+<span class="source-line-no">089</span><span id="line-89">    try {</span>
+<span class="source-line-no">090</span><span id="line-90">      return this.get();</span>
+<span class="source-line-no">091</span><span id="line-91">    } catch (final RuntimeException e) {</span>
+<span class="source-line-no">092</span><span id="line-92">      try {</span>
+<span class="source-line-no">093</span><span id="line-93">        return handler.apply(e);</span>
+<span class="source-line-no">094</span><span id="line-94">      } catch (final RuntimeException r) {</span>
+<span class="source-line-no">095</span><span id="line-95">        r.addSuppressed(e);</span>
+<span class="source-line-no">096</span><span id="line-96">        throw r;</span>
+<span class="source-line-no">097</span><span id="line-97">      }</span>
+<span class="source-line-no">098</span><span id="line-98">    }</span>
+<span class="source-line-no">099</span><span id="line-99">  }</span>
+<span class="source-line-no">100</span><span id="line-100"></span>
+<span class="source-line-no">101</span><span id="line-101">  /**</span>
+<span class="source-line-no">102</span><span id="line-102">   * Returns a value, which may be {@code null}.</span>
+<span class="source-line-no">103</span><span id="line-103">   *</span>
+<span class="source-line-no">104</span><span id="line-104">   * &lt;p&gt;This method's contract extends {@link Supplier#get()}'s</span>
+<span class="source-line-no">105</span><span id="line-105">   * contract with the following additional requirements:&lt;/p&gt;</span>
+<span class="source-line-no">106</span><span id="line-106">   *</span>
+<span class="source-line-no">107</span><span id="line-107">   * &lt;ul&gt;</span>
+<span class="source-line-no">108</span><span id="line-108">   *</span>
+<span class="source-line-no">109</span><span id="line-109">   * &lt;li&gt;&lt;strong&gt;It is deliberately and explicitly permitted for</span>
+<span class="source-line-no">110</span><span id="line-110">   * implementations of this method to return {@code null} for any</span>
+<span class="source-line-no">111</span><span id="line-111">   * reason.&lt;/strong&gt; Callers of this method must be appropriately</span>
+<span class="source-line-no">112</span><span id="line-112">   * prepared.&lt;/li&gt;</span>
+<span class="source-line-no">113</span><span id="line-113">   *</span>
+<span class="source-line-no">114</span><span id="line-114">   * &lt;li&gt;If an invocation of the {@link #determinism()} method, on any</span>
+<span class="source-line-no">115</span><span id="line-115">   * thread, returns any of {@link Determinism#ABSENT}, {@link</span>
+<span class="source-line-no">116</span><span id="line-116">   * Determinism#DETERMINISTIC} or {@link Determinism#PRESENT}, then</span>
+<span class="source-line-no">117</span><span id="line-117">   * additional requirements apply to the implementation of this</span>
+<span class="source-line-no">118</span><span id="line-118">   * method; see the {@link #determinism()} method documentation for</span>
+<span class="source-line-no">119</span><span id="line-119">   * details.&lt;/li&gt;</span>
+<span class="source-line-no">120</span><span id="line-120">   *</span>
+<span class="source-line-no">121</span><span id="line-121">   * &lt;li&gt;An implementation of this method need not be deterministic if</span>
+<span class="source-line-no">122</span><span id="line-122">   * an invocation of the {@link #determinism()} method returns {@link</span>
+<span class="source-line-no">123</span><span id="line-123">   * Determinism#NON_DETERMINISTIC}.&lt;/li&gt;</span>
+<span class="source-line-no">124</span><span id="line-124">   *</span>
+<span class="source-line-no">125</span><span id="line-125">   * &lt;li&gt;An implementation of this method may indicate the (possibly</span>
+<span class="source-line-no">126</span><span id="line-126">   * transitory) absence of a value by any of the following means:</span>
+<span class="source-line-no">127</span><span id="line-127">   *</span>
+<span class="source-line-no">128</span><span id="line-128">   * &lt;ul&gt;</span>
+<span class="source-line-no">129</span><span id="line-129">   *</span>
+<span class="source-line-no">130</span><span id="line-130">   * &lt;li&gt;Throwing a {@link NoSuchElementException}.&lt;/li&gt;</span>
+<span class="source-line-no">131</span><span id="line-131">   *</span>
+<span class="source-line-no">132</span><span id="line-132">   * &lt;li&gt;Throwing an {@link UnsupportedOperationException}.&lt;/li&gt;</span>
+<span class="source-line-no">133</span><span id="line-133">   *</span>
+<span class="source-line-no">134</span><span id="line-134">   * &lt;/ul&gt;&lt;/li&gt;</span>
 <span class="source-line-no">135</span><span id="line-135">   *</span>
-<span class="source-line-no">136</span><span id="line-136">   * &lt;ul&gt;</span>
+<span class="source-line-no">136</span><span id="line-136">   * &lt;/ul&gt;</span>
 <span class="source-line-no">137</span><span id="line-137">   *</span>
-<span class="source-line-no">138</span><span id="line-138">   * &lt;li&gt;Throwing a {@link NoSuchElementException}.&lt;/li&gt;</span>
+<span class="source-line-no">138</span><span id="line-138">   * @return a value, which may be {@code null}</span>
 <span class="source-line-no">139</span><span id="line-139">   *</span>
-<span class="source-line-no">140</span><span id="line-140">   * &lt;li&gt;Throwing an {@link UnsupportedOperationException}.&lt;/li&gt;</span>
-<span class="source-line-no">141</span><span id="line-141">   *</span>
-<span class="source-line-no">142</span><span id="line-142">   * &lt;/ul&gt;&lt;/li&gt;</span>
-<span class="source-line-no">143</span><span id="line-143">   *</span>
-<span class="source-line-no">144</span><span id="line-144">   * &lt;/ul&gt;</span>
+<span class="source-line-no">140</span><span id="line-140">   * @exception NoSuchElementException to indicate (usually</span>
+<span class="source-line-no">141</span><span id="line-141">   * transitory) absence</span>
+<span class="source-line-no">142</span><span id="line-142">   *</span>
+<span class="source-line-no">143</span><span id="line-143">   * @exception UnsupportedOperationException to indicate (usually</span>
+<span class="source-line-no">144</span><span id="line-144">   * permanent) absence</span>
 <span class="source-line-no">145</span><span id="line-145">   *</span>
-<span class="source-line-no">146</span><span id="line-146">   * @return a value, which may be {@code null}</span>
-<span class="source-line-no">147</span><span id="line-147">   *</span>
-<span class="source-line-no">148</span><span id="line-148">   * @exception NoSuchElementException to indicate (usually</span>
-<span class="source-line-no">149</span><span id="line-149">   * transitory) absence</span>
-<span class="source-line-no">150</span><span id="line-150">   *</span>
-<span class="source-line-no">151</span><span id="line-151">   * @exception UnsupportedOperationException to indicate (usually</span>
-<span class="source-line-no">152</span><span id="line-152">   * permanent) absence</span>
-<span class="source-line-no">153</span><span id="line-153">   *</span>
-<span class="source-line-no">154</span><span id="line-154">   * @nullability Implementations of this method may, and often will,</span>
-<span class="source-line-no">155</span><span id="line-155">   * return {@code null}, even in the normal course of events.</span>
-<span class="source-line-no">156</span><span id="line-156">   *</span>
-<span class="source-line-no">157</span><span id="line-157">   * @threadsafety Implementations of this method must be safe for</span>
-<span class="source-line-no">158</span><span id="line-158">   * concurrent use by multiple threads.</span>
-<span class="source-line-no">159</span><span id="line-159">   *</span>
-<span class="source-line-no">160</span><span id="line-160">   * @idempotency No guarantees are made about idempotency or</span>
-<span class="source-line-no">161</span><span id="line-161">   * determinism.  An ideal implementation should be idempotent.  If</span>
-<span class="source-line-no">162</span><span id="line-162">   * the {@link #determinism() determinism()} method returns a {@link</span>
-<span class="source-line-no">163</span><span id="line-163">   * Determinism} that is not {@link Determinism#NON_DETERMINISTIC}, then any</span>
-<span class="source-line-no">164</span><span id="line-164">   * implementation of this method must be deterministic.</span>
-<span class="source-line-no">165</span><span id="line-165">   *</span>
-<span class="source-line-no">166</span><span id="line-166">   * @see #determinism()</span>
-<span class="source-line-no">167</span><span id="line-167">   */</span>
-<span class="source-line-no">168</span><span id="line-168">  @Override</span>
-<span class="source-line-no">169</span><span id="line-169">  public T get();</span>
-<span class="source-line-no">170</span><span id="line-170"></span>
-<span class="source-line-no">171</span><span id="line-171">  /**</span>
-<span class="source-line-no">172</span><span id="line-172">   * Returns the result of invoking the {@link</span>
-<span class="source-line-no">173</span><span id="line-173">   * BiFunction#apply(Object, Object) apply(Object, Object)} method on</span>
-<span class="source-line-no">174</span><span id="line-174">   * the supplied {@code handler}, supplying it with the result of an</span>
-<span class="source-line-no">175</span><span id="line-175">   * invocation of the {@link #get()} method, which may be {@code</span>
-<span class="source-line-no">176</span><span id="line-176">   * null}, or any {@link RuntimeException} that an invocation of the</span>
-<span class="source-line-no">177</span><span id="line-177">   * {@link #get()} method throws, including {@link</span>
-<span class="source-line-no">178</span><span id="line-178">   * NoSuchElementException} and {@link UnsupportedOperationException}</span>
-<span class="source-line-no">179</span><span id="line-179">   * instances that are used to indicate value absence.</span>
+<span class="source-line-no">146</span><span id="line-146">   * @nullability Implementations of this method may, and often will,</span>
+<span class="source-line-no">147</span><span id="line-147">   * return {@code null}, even in the normal course of events.</span>
+<span class="source-line-no">148</span><span id="line-148">   *</span>
+<span class="source-line-no">149</span><span id="line-149">   * @threadsafety Implementations of this method must be safe for</span>
+<span class="source-line-no">150</span><span id="line-150">   * concurrent use by multiple threads.</span>
+<span class="source-line-no">151</span><span id="line-151">   *</span>
+<span class="source-line-no">152</span><span id="line-152">   * @idempotency No guarantees are made about idempotency or</span>
+<span class="source-line-no">153</span><span id="line-153">   * determinism.  An ideal implementation should be idempotent.  If</span>
+<span class="source-line-no">154</span><span id="line-154">   * the {@link #determinism() determinism()} method returns a {@link</span>
+<span class="source-line-no">155</span><span id="line-155">   * Determinism} that is not {@link Determinism#NON_DETERMINISTIC}, then any</span>
+<span class="source-line-no">156</span><span id="line-156">   * implementation of this method must be deterministic.</span>
+<span class="source-line-no">157</span><span id="line-157">   *</span>
+<span class="source-line-no">158</span><span id="line-158">   * @see #determinism()</span>
+<span class="source-line-no">159</span><span id="line-159">   */</span>
+<span class="source-line-no">160</span><span id="line-160">  @Override</span>
+<span class="source-line-no">161</span><span id="line-161">  public T get();</span>
+<span class="source-line-no">162</span><span id="line-162"></span>
+<span class="source-line-no">163</span><span id="line-163">  /**</span>
+<span class="source-line-no">164</span><span id="line-164">   * Returns the result of invoking the {@link</span>
+<span class="source-line-no">165</span><span id="line-165">   * BiFunction#apply(Object, Object) apply(Object, Object)} method on</span>
+<span class="source-line-no">166</span><span id="line-166">   * the supplied {@code handler}, supplying it with the result of an</span>
+<span class="source-line-no">167</span><span id="line-167">   * invocation of the {@link #get()} method, which may be {@code</span>
+<span class="source-line-no">168</span><span id="line-168">   * null}, or any {@link RuntimeException} that an invocation of the</span>
+<span class="source-line-no">169</span><span id="line-169">   * {@link #get()} method throws, including {@link</span>
+<span class="source-line-no">170</span><span id="line-170">   * NoSuchElementException} and {@link UnsupportedOperationException}</span>
+<span class="source-line-no">171</span><span id="line-171">   * instances that are used to indicate value absence.</span>
+<span class="source-line-no">172</span><span id="line-172">   *</span>
+<span class="source-line-no">173</span><span id="line-173">   * &lt;p&gt;The first argument to the handler will be the return value of</span>
+<span class="source-line-no">174</span><span id="line-174">   * the {@link #get()} method, which may be {@code null}.  The second</span>
+<span class="source-line-no">175</span><span id="line-175">   * argument to the handler will be any {@link RuntimeException} that</span>
+<span class="source-line-no">176</span><span id="line-176">   * was thrown during the invocation of the {@link #get()} method,</span>
+<span class="source-line-no">177</span><span id="line-177">   * including {@link NoSuchElementException} and {@link</span>
+<span class="source-line-no">178</span><span id="line-178">   * UnsupportedOperationException} instances that are used to</span>
+<span class="source-line-no">179</span><span id="line-179">   * indicate value absence.&lt;/p&gt;</span>
 <span class="source-line-no">180</span><span id="line-180">   *</span>
-<span class="source-line-no">181</span><span id="line-181">   * &lt;p&gt;The first argument to the handler will be the return value of</span>
-<span class="source-line-no">182</span><span id="line-182">   * the {@link #get()} method, which may be {@code null}.  The second</span>
-<span class="source-line-no">183</span><span id="line-183">   * argument to the handler will be any {@link RuntimeException} that</span>
-<span class="source-line-no">184</span><span id="line-184">   * was thrown during the invocation of the {@link #get()} method,</span>
-<span class="source-line-no">185</span><span id="line-185">   * including {@link NoSuchElementException} and {@link</span>
-<span class="source-line-no">186</span><span id="line-186">   * UnsupportedOperationException} instances that are used to</span>
-<span class="source-line-no">187</span><span id="line-187">   * indicate value absence.&lt;/p&gt;</span>
-<span class="source-line-no">188</span><span id="line-188">   *</span>
-<span class="source-line-no">189</span><span id="line-189">   * @param &lt;U&gt; the type of the value returned</span>
-<span class="source-line-no">190</span><span id="line-190">   *</span>
-<span class="source-line-no">191</span><span id="line-191">   * @param handler the handler; must not be {@code null}</span>
-<span class="source-line-no">192</span><span id="line-192">   *</span>
-<span class="source-line-no">193</span><span id="line-193">   * @return the result of invoking the {@link</span>
-<span class="source-line-no">194</span><span id="line-194">   * BiFunction#apply(Object, Object) apply(Object, Object)} method on</span>
-<span class="source-line-no">195</span><span id="line-195">   * the supplied {@code handler}, supplying it with the result of an</span>
-<span class="source-line-no">196</span><span id="line-196">   * invocation of the {@link #get()} method, which may be {@code</span>
-<span class="source-line-no">197</span><span id="line-197">   * null}, or any {@link RuntimeException} that an invocation of the</span>
-<span class="source-line-no">198</span><span id="line-198">   * {@link #get()} method throws, including {@link</span>
-<span class="source-line-no">199</span><span id="line-199">   * NoSuchElementException} and {@link UnsupportedOperationException}</span>
-<span class="source-line-no">200</span><span id="line-200">   * instances that are used to indicate value absence</span>
-<span class="source-line-no">201</span><span id="line-201">   *</span>
-<span class="source-line-no">202</span><span id="line-202">   * @exception NullPointerException if {@code handler} is {@code</span>
-<span class="source-line-no">203</span><span id="line-203">   * null}</span>
-<span class="source-line-no">204</span><span id="line-204">   *</span>
-<span class="source-line-no">205</span><span id="line-205">   * @nullability This method and its (discouraged) overrides may</span>
-<span class="source-line-no">206</span><span id="line-206">   * return {@code null}.</span>
-<span class="source-line-no">207</span><span id="line-207">   *</span>
-<span class="source-line-no">208</span><span id="line-208">   * @threadsafety This method is, and its (discouraged) overrides</span>
-<span class="source-line-no">209</span><span id="line-209">   * must be, safe for concurrent use by multiple threads.</span>
-<span class="source-line-no">210</span><span id="line-210">   *</span>
-<span class="source-line-no">211</span><span id="line-211">   * @idempotency No guarantees are made about idempotency or</span>
-<span class="source-line-no">212</span><span id="line-212">   * determinism.</span>
-<span class="source-line-no">213</span><span id="line-213">   *</span>
-<span class="source-line-no">214</span><span id="line-214">   * @see #get()</span>
-<span class="source-line-no">215</span><span id="line-215">   */</span>
-<span class="source-line-no">216</span><span id="line-216">  @OverridingDiscouraged</span>
-<span class="source-line-no">217</span><span id="line-217">  public default &lt;U&gt; U handle(final BiFunction&lt;? super T, ? super RuntimeException, ? extends U&gt; handler) {</span>
-<span class="source-line-no">218</span><span id="line-218">    T value;</span>
-<span class="source-line-no">219</span><span id="line-219">    try {</span>
-<span class="source-line-no">220</span><span id="line-220">      value = this.get();</span>
-<span class="source-line-no">221</span><span id="line-221">    } catch (final RuntimeException e) {</span>
-<span class="source-line-no">222</span><span id="line-222">      try {</span>
-<span class="source-line-no">223</span><span id="line-223">        return handler.apply(null, e);</span>
-<span class="source-line-no">224</span><span id="line-224">      } catch (final RuntimeException r) {</span>
-<span class="source-line-no">225</span><span id="line-225">        r.addSuppressed(e);</span>
-<span class="source-line-no">226</span><span id="line-226">        throw r;</span>
-<span class="source-line-no">227</span><span id="line-227">      }</span>
-<span class="source-line-no">228</span><span id="line-228">    }</span>
-<span class="source-line-no">229</span><span id="line-229">    return handler.apply(value, null);</span>
-<span class="source-line-no">230</span><span id="line-230">  }</span>
-<span class="source-line-no">231</span><span id="line-231"></span>
-<span class="source-line-no">232</span><span id="line-232">  /**</span>
-<span class="source-line-no">233</span><span id="line-233">   * Invokes the {@link Consumer#accept(Object) accept(Object)} method</span>
-<span class="source-line-no">234</span><span id="line-234">   * on the supplied {@code action} with the return value of an</span>
-<span class="source-line-no">235</span><span id="line-235">   * invocation of the {@link #get()} method, which may be {@code</span>
-<span class="source-line-no">236</span><span id="line-236">   * null}, unless the {@link #get()} method throws either a {@link</span>
-<span class="source-line-no">237</span><span id="line-237">   * NoSuchElementException} or an {@link</span>
-<span class="source-line-no">238</span><span id="line-238">   * UnsupportedOperationException}, indicating value absence, in</span>
-<span class="source-line-no">239</span><span id="line-239">   * which case no action is taken.</span>
-<span class="source-line-no">240</span><span id="line-240">   *</span>
-<span class="source-line-no">241</span><span id="line-241">   * @param action the {@link Consumer} representing the action to</span>
-<span class="source-line-no">242</span><span id="line-242">   * take; must not be {@code null}</span>
-<span class="source-line-no">243</span><span id="line-243">   *</span>
-<span class="source-line-no">244</span><span id="line-244">   * @exception NullPointerException if {@code action} is {@code null}</span>
-<span class="source-line-no">245</span><span id="line-245">   *</span>
-<span class="source-line-no">246</span><span id="line-246">   * @idempotency No guarantees are made about idempotency or</span>
-<span class="source-line-no">247</span><span id="line-247">   * determinism.</span>
-<span class="source-line-no">248</span><span id="line-248">   *</span>
-<span class="source-line-no">249</span><span id="line-249">   * @threadsafety This method is, and its (discouraged) overrides</span>
-<span class="source-line-no">250</span><span id="line-250">   * must be, safe for concurrent use by multiple threads, but the</span>
-<span class="source-line-no">251</span><span id="line-251">   * supplied {@link Consumer}'s {@link Consumer#accept(Object)</span>
-<span class="source-line-no">252</span><span id="line-252">   * accept(Object)} method may not be</span>
-<span class="source-line-no">253</span><span id="line-253">   *</span>
-<span class="source-line-no">254</span><span id="line-254">   * @see #get()</span>
-<span class="source-line-no">255</span><span id="line-255">   */</span>
-<span class="source-line-no">256</span><span id="line-256">  @Convenience</span>
-<span class="source-line-no">257</span><span id="line-257">  @OverridingDiscouraged</span>
-<span class="source-line-no">258</span><span id="line-258">  public default void ifPresent(final Consumer&lt;? super T&gt; action) {</span>
-<span class="source-line-no">259</span><span id="line-259">    T value;</span>
-<span class="source-line-no">260</span><span id="line-260">    try {</span>
-<span class="source-line-no">261</span><span id="line-261">      value = this.get();</span>
-<span class="source-line-no">262</span><span id="line-262">    } catch (final NoSuchElementException | UnsupportedOperationException e) {</span>
-<span class="source-line-no">263</span><span id="line-263">      return;</span>
-<span class="source-line-no">264</span><span id="line-264">    }</span>
-<span class="source-line-no">265</span><span id="line-265">    action.accept(value);</span>
-<span class="source-line-no">266</span><span id="line-266">  }</span>
-<span class="source-line-no">267</span><span id="line-267"></span>
-<span class="source-line-no">268</span><span id="line-268">  /**</span>
-<span class="source-line-no">269</span><span id="line-269">   * Invokes the {@link Consumer#accept(Object) accept(Object)} method</span>
-<span class="source-line-no">270</span><span id="line-270">   * on the supplied {@code presentAction} with the return value of an</span>
-<span class="source-line-no">271</span><span id="line-271">   * invocation of the {@link #get()} method, which may be {@code</span>
-<span class="source-line-no">272</span><span id="line-272">   * null}, or, if the {@link #get()} method indicates value absence</span>
-<span class="source-line-no">273</span><span id="line-273">   * by throwing either a {@link NoSuchElementException} or an {@link</span>
-<span class="source-line-no">274</span><span id="line-274">   * UnsupportedOperationException}, invokes the {@link Runnable#run()</span>
-<span class="source-line-no">275</span><span id="line-275">   * run()} method of the supplied {@code absentAction} instead.</span>
-<span class="source-line-no">276</span><span id="line-276">   *</span>
-<span class="source-line-no">277</span><span id="line-277">   * @param presentAction the {@link Consumer} representing the action</span>
-<span class="source-line-no">278</span><span id="line-278">   * to take if a value is present; must not be {@code null}</span>
-<span class="source-line-no">279</span><span id="line-279">   *</span>
-<span class="source-line-no">280</span><span id="line-280">   * @param absentAction the {@link Runnable} representing the action</span>
-<span class="source-line-no">281</span><span id="line-281">   * to take if a value is absent; must not be {@code null}</span>
-<span class="source-line-no">282</span><span id="line-282">   *</span>
-<span class="source-line-no">283</span><span id="line-283">   * @exception NullPointerException if {@code action} or {@code</span>
-<span class="source-line-no">284</span><span id="line-284">   * absentAction} is {@code null}</span>
-<span class="source-line-no">285</span><span id="line-285">   *</span>
-<span class="source-line-no">286</span><span id="line-286">   * @idempotency No guarantees are made about idempotency or</span>
-<span class="source-line-no">287</span><span id="line-287">   * determinism.</span>
-<span class="source-line-no">288</span><span id="line-288">   *</span>
-<span class="source-line-no">289</span><span id="line-289">   * @threadsafety This method is, and its (discouraged) overrides</span>
-<span class="source-line-no">290</span><span id="line-290">   * must be, safe for concurrent use by multiple threads, but the</span>
-<span class="source-line-no">291</span><span id="line-291">   * supplied {@link Consumer}'s {@link Consumer#accept(Object)</span>
-<span class="source-line-no">292</span><span id="line-292">   * accept(Object)} method may not be and the supplied {@link</span>
-<span class="source-line-no">293</span><span id="line-293">   * Runnable}'s {@link Runnable#run() run()} method may not be</span>
-<span class="source-line-no">294</span><span id="line-294">   *</span>
-<span class="source-line-no">295</span><span id="line-295">   * @see #get()</span>
-<span class="source-line-no">296</span><span id="line-296">   */</span>
-<span class="source-line-no">297</span><span id="line-297">  @Convenience</span>
-<span class="source-line-no">298</span><span id="line-298">  @OverridingDiscouraged</span>
-<span class="source-line-no">299</span><span id="line-299">  public default void ifPresentOrElse(final Consumer&lt;? super T&gt; presentAction, final Runnable absentAction) {</span>
-<span class="source-line-no">300</span><span id="line-300">    T value;</span>
-<span class="source-line-no">301</span><span id="line-301">    try {</span>
-<span class="source-line-no">302</span><span id="line-302">      value = this.get();</span>
-<span class="source-line-no">303</span><span id="line-303">    } catch (final NoSuchElementException | UnsupportedOperationException e) {</span>
-<span class="source-line-no">304</span><span id="line-304">      try {</span>
-<span class="source-line-no">305</span><span id="line-305">        absentAction.run();</span>
-<span class="source-line-no">306</span><span id="line-306">        return;</span>
-<span class="source-line-no">307</span><span id="line-307">      } catch (final RuntimeException r) {</span>
-<span class="source-line-no">308</span><span id="line-308">        r.addSuppressed(e);</span>
-<span class="source-line-no">309</span><span id="line-309">        throw r;</span>
-<span class="source-line-no">310</span><span id="line-310">      }</span>
-<span class="source-line-no">311</span><span id="line-311">    }</span>
-<span class="source-line-no">312</span><span id="line-312">    presentAction.accept(value);</span>
-<span class="source-line-no">313</span><span id="line-313">  }</span>
-<span class="source-line-no">314</span><span id="line-314"></span>
-<span class="source-line-no">315</span><span id="line-315">  /**</span>
-<span class="source-line-no">316</span><span id="line-316">   * Returns a non-{@code null} but possibly {@linkplain</span>
-<span class="source-line-no">317</span><span id="line-317">   * Optional#isEmpty() empty} {@link Optional} representing this</span>
-<span class="source-line-no">318</span><span id="line-318">   * {@link OptionalSupplier}'s {@linkplain #get() value}.</span>
-<span class="source-line-no">319</span><span id="line-319">   *</span>
-<span class="source-line-no">320</span><span id="line-320">   * &lt;p&gt;The default implementation of this method does not and its</span>
-<span class="source-line-no">321</span><span id="line-321">   * overrides must not return {@code null}.&lt;/p&gt;</span>
+<span class="source-line-no">181</span><span id="line-181">   * @param &lt;U&gt; the type of the value returned</span>
+<span class="source-line-no">182</span><span id="line-182">   *</span>
+<span class="source-line-no">183</span><span id="line-183">   * @param handler the handler; must not be {@code null}</span>
+<span class="source-line-no">184</span><span id="line-184">   *</span>
+<span class="source-line-no">185</span><span id="line-185">   * @return the result of invoking the {@link</span>
+<span class="source-line-no">186</span><span id="line-186">   * BiFunction#apply(Object, Object) apply(Object, Object)} method on</span>
+<span class="source-line-no">187</span><span id="line-187">   * the supplied {@code handler}, supplying it with the result of an</span>
+<span class="source-line-no">188</span><span id="line-188">   * invocation of the {@link #get()} method, which may be {@code</span>
+<span class="source-line-no">189</span><span id="line-189">   * null}, or any {@link RuntimeException} that an invocation of the</span>
+<span class="source-line-no">190</span><span id="line-190">   * {@link #get()} method throws, including {@link</span>
+<span class="source-line-no">191</span><span id="line-191">   * NoSuchElementException} and {@link UnsupportedOperationException}</span>
+<span class="source-line-no">192</span><span id="line-192">   * instances that are used to indicate value absence</span>
+<span class="source-line-no">193</span><span id="line-193">   *</span>
+<span class="source-line-no">194</span><span id="line-194">   * @exception NullPointerException if {@code handler} is {@code</span>
+<span class="source-line-no">195</span><span id="line-195">   * null}</span>
+<span class="source-line-no">196</span><span id="line-196">   *</span>
+<span class="source-line-no">197</span><span id="line-197">   * @nullability This method and its (discouraged) overrides may</span>
+<span class="source-line-no">198</span><span id="line-198">   * return {@code null}.</span>
+<span class="source-line-no">199</span><span id="line-199">   *</span>
+<span class="source-line-no">200</span><span id="line-200">   * @threadsafety This method is, and its (discouraged) overrides</span>
+<span class="source-line-no">201</span><span id="line-201">   * must be, safe for concurrent use by multiple threads.</span>
+<span class="source-line-no">202</span><span id="line-202">   *</span>
+<span class="source-line-no">203</span><span id="line-203">   * @idempotency No guarantees are made about idempotency or</span>
+<span class="source-line-no">204</span><span id="line-204">   * determinism.</span>
+<span class="source-line-no">205</span><span id="line-205">   *</span>
+<span class="source-line-no">206</span><span id="line-206">   * @see #get()</span>
+<span class="source-line-no">207</span><span id="line-207">   */</span>
+<span class="source-line-no">208</span><span id="line-208">  public default &lt;U&gt; U handle(final BiFunction&lt;? super T, ? super RuntimeException, ? extends U&gt; handler) {</span>
+<span class="source-line-no">209</span><span id="line-209">    T value;</span>
+<span class="source-line-no">210</span><span id="line-210">    try {</span>
+<span class="source-line-no">211</span><span id="line-211">      value = this.get();</span>
+<span class="source-line-no">212</span><span id="line-212">    } catch (final RuntimeException e) {</span>
+<span class="source-line-no">213</span><span id="line-213">      try {</span>
+<span class="source-line-no">214</span><span id="line-214">        return handler.apply(null, e);</span>
+<span class="source-line-no">215</span><span id="line-215">      } catch (final RuntimeException r) {</span>
+<span class="source-line-no">216</span><span id="line-216">        r.addSuppressed(e);</span>
+<span class="source-line-no">217</span><span id="line-217">        throw r;</span>
+<span class="source-line-no">218</span><span id="line-218">      }</span>
+<span class="source-line-no">219</span><span id="line-219">    }</span>
+<span class="source-line-no">220</span><span id="line-220">    return handler.apply(value, null);</span>
+<span class="source-line-no">221</span><span id="line-221">  }</span>
+<span class="source-line-no">222</span><span id="line-222"></span>
+<span class="source-line-no">223</span><span id="line-223">  /**</span>
+<span class="source-line-no">224</span><span id="line-224">   * Invokes the {@link Consumer#accept(Object) accept(Object)} method</span>
+<span class="source-line-no">225</span><span id="line-225">   * on the supplied {@code action} with the return value of an</span>
+<span class="source-line-no">226</span><span id="line-226">   * invocation of the {@link #get()} method, which may be {@code</span>
+<span class="source-line-no">227</span><span id="line-227">   * null}, unless the {@link #get()} method throws either a {@link</span>
+<span class="source-line-no">228</span><span id="line-228">   * NoSuchElementException} or an {@link</span>
+<span class="source-line-no">229</span><span id="line-229">   * UnsupportedOperationException}, indicating value absence, in</span>
+<span class="source-line-no">230</span><span id="line-230">   * which case no action is taken.</span>
+<span class="source-line-no">231</span><span id="line-231">   *</span>
+<span class="source-line-no">232</span><span id="line-232">   * @param action the {@link Consumer} representing the action to</span>
+<span class="source-line-no">233</span><span id="line-233">   * take; must not be {@code null}</span>
+<span class="source-line-no">234</span><span id="line-234">   *</span>
+<span class="source-line-no">235</span><span id="line-235">   * @exception NullPointerException if {@code action} is {@code null}</span>
+<span class="source-line-no">236</span><span id="line-236">   *</span>
+<span class="source-line-no">237</span><span id="line-237">   * @idempotency No guarantees are made about idempotency or</span>
+<span class="source-line-no">238</span><span id="line-238">   * determinism.</span>
+<span class="source-line-no">239</span><span id="line-239">   *</span>
+<span class="source-line-no">240</span><span id="line-240">   * @threadsafety This method is, and its (discouraged) overrides</span>
+<span class="source-line-no">241</span><span id="line-241">   * must be, safe for concurrent use by multiple threads, but the</span>
+<span class="source-line-no">242</span><span id="line-242">   * supplied {@link Consumer}'s {@link Consumer#accept(Object)</span>
+<span class="source-line-no">243</span><span id="line-243">   * accept(Object)} method may not be</span>
+<span class="source-line-no">244</span><span id="line-244">   *</span>
+<span class="source-line-no">245</span><span id="line-245">   * @see #get()</span>
+<span class="source-line-no">246</span><span id="line-246">   */</span>
+<span class="source-line-no">247</span><span id="line-247">  public default void ifPresent(final Consumer&lt;? super T&gt; action) {</span>
+<span class="source-line-no">248</span><span id="line-248">    T value;</span>
+<span class="source-line-no">249</span><span id="line-249">    try {</span>
+<span class="source-line-no">250</span><span id="line-250">      value = this.get();</span>
+<span class="source-line-no">251</span><span id="line-251">    } catch (final NoSuchElementException | UnsupportedOperationException e) {</span>
+<span class="source-line-no">252</span><span id="line-252">      return;</span>
+<span class="source-line-no">253</span><span id="line-253">    }</span>
+<span class="source-line-no">254</span><span id="line-254">    action.accept(value);</span>
+<span class="source-line-no">255</span><span id="line-255">  }</span>
+<span class="source-line-no">256</span><span id="line-256"></span>
+<span class="source-line-no">257</span><span id="line-257">  /**</span>
+<span class="source-line-no">258</span><span id="line-258">   * Invokes the {@link Consumer#accept(Object) accept(Object)} method</span>
+<span class="source-line-no">259</span><span id="line-259">   * on the supplied {@code presentAction} with the return value of an</span>
+<span class="source-line-no">260</span><span id="line-260">   * invocation of the {@link #get()} method, which may be {@code</span>
+<span class="source-line-no">261</span><span id="line-261">   * null}, or, if the {@link #get()} method indicates value absence</span>
+<span class="source-line-no">262</span><span id="line-262">   * by throwing either a {@link NoSuchElementException} or an {@link</span>
+<span class="source-line-no">263</span><span id="line-263">   * UnsupportedOperationException}, invokes the {@link Runnable#run()</span>
+<span class="source-line-no">264</span><span id="line-264">   * run()} method of the supplied {@code absentAction} instead.</span>
+<span class="source-line-no">265</span><span id="line-265">   *</span>
+<span class="source-line-no">266</span><span id="line-266">   * @param presentAction the {@link Consumer} representing the action</span>
+<span class="source-line-no">267</span><span id="line-267">   * to take if a value is present; must not be {@code null}</span>
+<span class="source-line-no">268</span><span id="line-268">   *</span>
+<span class="source-line-no">269</span><span id="line-269">   * @param absentAction the {@link Runnable} representing the action</span>
+<span class="source-line-no">270</span><span id="line-270">   * to take if a value is absent; must not be {@code null}</span>
+<span class="source-line-no">271</span><span id="line-271">   *</span>
+<span class="source-line-no">272</span><span id="line-272">   * @exception NullPointerException if {@code action} or {@code</span>
+<span class="source-line-no">273</span><span id="line-273">   * absentAction} is {@code null}</span>
+<span class="source-line-no">274</span><span id="line-274">   *</span>
+<span class="source-line-no">275</span><span id="line-275">   * @idempotency No guarantees are made about idempotency or</span>
+<span class="source-line-no">276</span><span id="line-276">   * determinism.</span>
+<span class="source-line-no">277</span><span id="line-277">   *</span>
+<span class="source-line-no">278</span><span id="line-278">   * @threadsafety This method is, and its (discouraged) overrides</span>
+<span class="source-line-no">279</span><span id="line-279">   * must be, safe for concurrent use by multiple threads, but the</span>
+<span class="source-line-no">280</span><span id="line-280">   * supplied {@link Consumer}'s {@link Consumer#accept(Object)</span>
+<span class="source-line-no">281</span><span id="line-281">   * accept(Object)} method may not be and the supplied {@link</span>
+<span class="source-line-no">282</span><span id="line-282">   * Runnable}'s {@link Runnable#run() run()} method may not be</span>
+<span class="source-line-no">283</span><span id="line-283">   *</span>
+<span class="source-line-no">284</span><span id="line-284">   * @see #get()</span>
+<span class="source-line-no">285</span><span id="line-285">   */</span>
+<span class="source-line-no">286</span><span id="line-286">  public default void ifPresentOrElse(final Consumer&lt;? super T&gt; presentAction, final Runnable absentAction) {</span>
+<span class="source-line-no">287</span><span id="line-287">    T value;</span>
+<span class="source-line-no">288</span><span id="line-288">    try {</span>
+<span class="source-line-no">289</span><span id="line-289">      value = this.get();</span>
+<span class="source-line-no">290</span><span id="line-290">    } catch (final NoSuchElementException | UnsupportedOperationException e) {</span>
+<span class="source-line-no">291</span><span id="line-291">      try {</span>
+<span class="source-line-no">292</span><span id="line-292">        absentAction.run();</span>
+<span class="source-line-no">293</span><span id="line-293">        return;</span>
+<span class="source-line-no">294</span><span id="line-294">      } catch (final RuntimeException r) {</span>
+<span class="source-line-no">295</span><span id="line-295">        r.addSuppressed(e);</span>
+<span class="source-line-no">296</span><span id="line-296">        throw r;</span>
+<span class="source-line-no">297</span><span id="line-297">      }</span>
+<span class="source-line-no">298</span><span id="line-298">    }</span>
+<span class="source-line-no">299</span><span id="line-299">    presentAction.accept(value);</span>
+<span class="source-line-no">300</span><span id="line-300">  }</span>
+<span class="source-line-no">301</span><span id="line-301"></span>
+<span class="source-line-no">302</span><span id="line-302">  /**</span>
+<span class="source-line-no">303</span><span id="line-303">   * Returns a non-{@code null} but possibly {@linkplain</span>
+<span class="source-line-no">304</span><span id="line-304">   * Optional#isEmpty() empty} {@link Optional} representing this</span>
+<span class="source-line-no">305</span><span id="line-305">   * {@link OptionalSupplier}'s {@linkplain #get() value}.</span>
+<span class="source-line-no">306</span><span id="line-306">   *</span>
+<span class="source-line-no">307</span><span id="line-307">   * &lt;p&gt;The default implementation of this method does not and its</span>
+<span class="source-line-no">308</span><span id="line-308">   * overrides must not return {@code null}.&lt;/p&gt;</span>
+<span class="source-line-no">309</span><span id="line-309">   *</span>
+<span class="source-line-no">310</span><span id="line-310">   * &lt;p&gt;The default implementation of this method catches all {@link</span>
+<span class="source-line-no">311</span><span id="line-311">   * NoSuchElementException}s and {@link</span>
+<span class="source-line-no">312</span><span id="line-312">   * UnsupportedOperationException}s and returns an empty {@link</span>
+<span class="source-line-no">313</span><span id="line-313">   * Optional} in these cases, which may not be valid for some use</span>
+<span class="source-line-no">314</span><span id="line-314">   * cases.  To detect permanent versus transitory absence, potential</span>
+<span class="source-line-no">315</span><span id="line-315">   * callers should use the {@link #get()} method directly or either</span>
+<span class="source-line-no">316</span><span id="line-316">   * the {@link #optional(Function)} or {@link #optional(BiFunction)}</span>
+<span class="source-line-no">317</span><span id="line-317">   * methods.&lt;/p&gt;</span>
+<span class="source-line-no">318</span><span id="line-318">   *</span>
+<span class="source-line-no">319</span><span id="line-319">   * @return a non-{@code null} but possibly {@linkplain</span>
+<span class="source-line-no">320</span><span id="line-320">   * Optional#isEmpty() empty} {@link Optional} representing this</span>
+<span class="source-line-no">321</span><span id="line-321">   * {@link OptionalSupplier}'s {@linkplain #get() value}</span>
 <span class="source-line-no">322</span><span id="line-322">   *</span>
-<span class="source-line-no">323</span><span id="line-323">   * &lt;p&gt;The default implementation of this method catches all {@link</span>
-<span class="source-line-no">324</span><span id="line-324">   * NoSuchElementException}s and {@link</span>
-<span class="source-line-no">325</span><span id="line-325">   * UnsupportedOperationException}s and returns an empty {@link</span>
-<span class="source-line-no">326</span><span id="line-326">   * Optional} in these cases, which may not be valid for some use</span>
-<span class="source-line-no">327</span><span id="line-327">   * cases.  To detect permanent versus transitory absence, potential</span>
-<span class="source-line-no">328</span><span id="line-328">   * callers should use the {@link #get()} method directly or either</span>
-<span class="source-line-no">329</span><span id="line-329">   * the {@link #optional(Function)} or {@link #optional(BiFunction)}</span>
-<span class="source-line-no">330</span><span id="line-330">   * methods.&lt;/p&gt;</span>
-<span class="source-line-no">331</span><span id="line-331">   *</span>
-<span class="source-line-no">332</span><span id="line-332">   * @return a non-{@code null} but possibly {@linkplain</span>
-<span class="source-line-no">333</span><span id="line-333">   * Optional#isEmpty() empty} {@link Optional} representing this</span>
-<span class="source-line-no">334</span><span id="line-334">   * {@link OptionalSupplier}'s {@linkplain #get() value}</span>
-<span class="source-line-no">335</span><span id="line-335">   *</span>
-<span class="source-line-no">336</span><span id="line-336">   * @nullability The default implementation of this method does not,</span>
-<span class="source-line-no">337</span><span id="line-337">   * and its (discouraged) overrides must not, return {@code null}.</span>
-<span class="source-line-no">338</span><span id="line-338">   *</span>
-<span class="source-line-no">339</span><span id="line-339">   * @threadsafety The default implementation of this method is, and</span>
-<span class="source-line-no">340</span><span id="line-340">   * its (discouraged) overrides must be, safe for concurrent use by</span>
-<span class="source-line-no">341</span><span id="line-341">   * multiple threads.</span>
-<span class="source-line-no">342</span><span id="line-342">   *</span>
-<span class="source-line-no">343</span><span id="line-343">   * @idempotency No guarantees are made about idempotency or</span>
-<span class="source-line-no">344</span><span id="line-344">   * determinism.</span>
-<span class="source-line-no">345</span><span id="line-345">   *</span>
-<span class="source-line-no">346</span><span id="line-346">   * @see #optional(BiFunction)</span>
-<span class="source-line-no">347</span><span id="line-347">   *</span>
-<span class="source-line-no">348</span><span id="line-348">   * @see #get()</span>
-<span class="source-line-no">349</span><span id="line-349">   */</span>
-<span class="source-line-no">350</span><span id="line-350">  @Convenience</span>
-<span class="source-line-no">351</span><span id="line-351">  @OverridingDiscouraged</span>
-<span class="source-line-no">352</span><span id="line-352">  public default Optional&lt;T&gt; optional() {</span>
-<span class="source-line-no">353</span><span id="line-353">    return this.optional(OptionalSupplier::returnNull);</span>
-<span class="source-line-no">354</span><span id="line-354">  }</span>
-<span class="source-line-no">355</span><span id="line-355"></span>
-<span class="source-line-no">356</span><span id="line-356">  /**</span>
-<span class="source-line-no">357</span><span id="line-357">   * Invokes the {@link #handle(BiFunction)} method, supplying it with</span>
-<span class="source-line-no">358</span><span id="line-358">   * the supplied {@code handler}, supplies its return value to the</span>
-<span class="source-line-no">359</span><span id="line-359">   * {@link Optional#ofNullable(Object)} method, and returns the</span>
-<span class="source-line-no">360</span><span id="line-360">   * result.</span>
+<span class="source-line-no">323</span><span id="line-323">   * @nullability The default implementation of this method does not,</span>
+<span class="source-line-no">324</span><span id="line-324">   * and its (discouraged) overrides must not, return {@code null}.</span>
+<span class="source-line-no">325</span><span id="line-325">   *</span>
+<span class="source-line-no">326</span><span id="line-326">   * @threadsafety The default implementation of this method is, and</span>
+<span class="source-line-no">327</span><span id="line-327">   * its (discouraged) overrides must be, safe for concurrent use by</span>
+<span class="source-line-no">328</span><span id="line-328">   * multiple threads.</span>
+<span class="source-line-no">329</span><span id="line-329">   *</span>
+<span class="source-line-no">330</span><span id="line-330">   * @idempotency No guarantees are made about idempotency or</span>
+<span class="source-line-no">331</span><span id="line-331">   * determinism.</span>
+<span class="source-line-no">332</span><span id="line-332">   *</span>
+<span class="source-line-no">333</span><span id="line-333">   * @see #optional(BiFunction)</span>
+<span class="source-line-no">334</span><span id="line-334">   *</span>
+<span class="source-line-no">335</span><span id="line-335">   * @see #get()</span>
+<span class="source-line-no">336</span><span id="line-336">   */</span>
+<span class="source-line-no">337</span><span id="line-337">  public default Optional&lt;T&gt; optional() {</span>
+<span class="source-line-no">338</span><span id="line-338">    return this.optional(OptionalSupplier::returnNull);</span>
+<span class="source-line-no">339</span><span id="line-339">  }</span>
+<span class="source-line-no">340</span><span id="line-340"></span>
+<span class="source-line-no">341</span><span id="line-341">  /**</span>
+<span class="source-line-no">342</span><span id="line-342">   * Invokes the {@link #handle(BiFunction)} method, supplying it with</span>
+<span class="source-line-no">343</span><span id="line-343">   * the supplied {@code handler}, supplies its return value to the</span>
+<span class="source-line-no">344</span><span id="line-344">   * {@link Optional#ofNullable(Object)} method, and returns the</span>
+<span class="source-line-no">345</span><span id="line-345">   * result.</span>
+<span class="source-line-no">346</span><span id="line-346">   *</span>
+<span class="source-line-no">347</span><span id="line-347">   * @param &lt;U&gt; the type of the returned {@link Optional}</span>
+<span class="source-line-no">348</span><span id="line-348">   *</span>
+<span class="source-line-no">349</span><span id="line-349">   * @param handler the handler; must not be {@code null}</span>
+<span class="source-line-no">350</span><span id="line-350">   *</span>
+<span class="source-line-no">351</span><span id="line-351">   * @return the result of invoking the {@link</span>
+<span class="source-line-no">352</span><span id="line-352">   * Optional#ofNullable(Object)} method supplied with the return</span>
+<span class="source-line-no">353</span><span id="line-353">   * value of invoking the {@link #handle(BiFunction)} method with the</span>
+<span class="source-line-no">354</span><span id="line-354">   * supplied {@code handler}</span>
+<span class="source-line-no">355</span><span id="line-355">   *</span>
+<span class="source-line-no">356</span><span id="line-356">   * @exception NullPointerException if {@code handler} is {@code</span>
+<span class="source-line-no">357</span><span id="line-357">   * null}</span>
+<span class="source-line-no">358</span><span id="line-358">   *</span>
+<span class="source-line-no">359</span><span id="line-359">   * @nullability This method does not, and its (discouraged)</span>
+<span class="source-line-no">360</span><span id="line-360">   * overrides must not, return {@code null}.</span>
 <span class="source-line-no">361</span><span id="line-361">   *</span>
-<span class="source-line-no">362</span><span id="line-362">   * @param &lt;U&gt; the type of the returned {@link Optional}</span>
-<span class="source-line-no">363</span><span id="line-363">   *</span>
-<span class="source-line-no">364</span><span id="line-364">   * @param handler the handler; must not be {@code null}</span>
-<span class="source-line-no">365</span><span id="line-365">   *</span>
-<span class="source-line-no">366</span><span id="line-366">   * @return the result of invoking the {@link</span>
-<span class="source-line-no">367</span><span id="line-367">   * Optional#ofNullable(Object)} method supplied with the return</span>
-<span class="source-line-no">368</span><span id="line-368">   * value of invoking the {@link #handle(BiFunction)} method with the</span>
-<span class="source-line-no">369</span><span id="line-369">   * supplied {@code handler}</span>
-<span class="source-line-no">370</span><span id="line-370">   *</span>
-<span class="source-line-no">371</span><span id="line-371">   * @exception NullPointerException if {@code handler} is {@code</span>
-<span class="source-line-no">372</span><span id="line-372">   * null}</span>
-<span class="source-line-no">373</span><span id="line-373">   *</span>
-<span class="source-line-no">374</span><span id="line-374">   * @nullability This method does not, and its (discouraged)</span>
-<span class="source-line-no">375</span><span id="line-375">   * overrides must not, return {@code null}.</span>
-<span class="source-line-no">376</span><span id="line-376">   *</span>
-<span class="source-line-no">377</span><span id="line-377">   * @idempotency No guarantees are made about idempotency or</span>
-<span class="source-line-no">378</span><span id="line-378">   * determinism.</span>
-<span class="source-line-no">379</span><span id="line-379">   *</span>
-<span class="source-line-no">380</span><span id="line-380">   * @threadsafety This method is, and its (discouraged) overrides</span>
-<span class="source-line-no">381</span><span id="line-381">   * must be, safe for concurrent use by multiple threads.</span>
-<span class="source-line-no">382</span><span id="line-382">   *</span>
-<span class="source-line-no">383</span><span id="line-383">   * @see #handle(BiFunction)</span>
-<span class="source-line-no">384</span><span id="line-384">   *</span>
-<span class="source-line-no">385</span><span id="line-385">   * @see Optional#ofNullable(Object)</span>
-<span class="source-line-no">386</span><span id="line-386">   */</span>
-<span class="source-line-no">387</span><span id="line-387">  @Convenience</span>
-<span class="source-line-no">388</span><span id="line-388">  @OverridingDiscouraged</span>
-<span class="source-line-no">389</span><span id="line-389">  public default &lt;U&gt; Optional&lt;U&gt; optional(final BiFunction&lt;? super T, ? super RuntimeException, ? extends U&gt; handler) {</span>
-<span class="source-line-no">390</span><span id="line-390">    return Optional.ofNullable(this.handle(handler));</span>
-<span class="source-line-no">391</span><span id="line-391">  }</span>
-<span class="source-line-no">392</span><span id="line-392"></span>
-<span class="source-line-no">393</span><span id="line-393">  /**</span>
-<span class="source-line-no">394</span><span id="line-394">   * Invokes the {@link #exceptionally(Function)} method, supplying it</span>
-<span class="source-line-no">395</span><span id="line-395">   * with the supplied {@code handler}, supplies its return value to</span>
-<span class="source-line-no">396</span><span id="line-396">   * the {@link Optional#ofNullable(Object)} method, and returns the</span>
-<span class="source-line-no">397</span><span id="line-397">   * result.</span>
-<span class="source-line-no">398</span><span id="line-398">   *</span>
-<span class="source-line-no">399</span><span id="line-399">   * @param handler the handler; must not be {@code null}</span>
+<span class="source-line-no">362</span><span id="line-362">   * @idempotency No guarantees are made about idempotency or</span>
+<span class="source-line-no">363</span><span id="line-363">   * determinism.</span>
+<span class="source-line-no">364</span><span id="line-364">   *</span>
+<span class="source-line-no">365</span><span id="line-365">   * @threadsafety This method is, and its (discouraged) overrides</span>
+<span class="source-line-no">366</span><span id="line-366">   * must be, safe for concurrent use by multiple threads.</span>
+<span class="source-line-no">367</span><span id="line-367">   *</span>
+<span class="source-line-no">368</span><span id="line-368">   * @see #handle(BiFunction)</span>
+<span class="source-line-no">369</span><span id="line-369">   *</span>
+<span class="source-line-no">370</span><span id="line-370">   * @see Optional#ofNullable(Object)</span>
+<span class="source-line-no">371</span><span id="line-371">   */</span>
+<span class="source-line-no">372</span><span id="line-372">  public default &lt;U&gt; Optional&lt;U&gt; optional(final BiFunction&lt;? super T, ? super RuntimeException, ? extends U&gt; handler) {</span>
+<span class="source-line-no">373</span><span id="line-373">    return Optional.ofNullable(this.handle(handler));</span>
+<span class="source-line-no">374</span><span id="line-374">  }</span>
+<span class="source-line-no">375</span><span id="line-375"></span>
+<span class="source-line-no">376</span><span id="line-376">  /**</span>
+<span class="source-line-no">377</span><span id="line-377">   * Invokes the {@link #exceptionally(Function)} method, supplying it</span>
+<span class="source-line-no">378</span><span id="line-378">   * with the supplied {@code handler}, supplies its return value to</span>
+<span class="source-line-no">379</span><span id="line-379">   * the {@link Optional#ofNullable(Object)} method, and returns the</span>
+<span class="source-line-no">380</span><span id="line-380">   * result.</span>
+<span class="source-line-no">381</span><span id="line-381">   *</span>
+<span class="source-line-no">382</span><span id="line-382">   * @param handler the handler; must not be {@code null}</span>
+<span class="source-line-no">383</span><span id="line-383">   *</span>
+<span class="source-line-no">384</span><span id="line-384">   * @return the result of invoking the {@link</span>
+<span class="source-line-no">385</span><span id="line-385">   * Optional#ofNullable(Object)} method supplied with the return</span>
+<span class="source-line-no">386</span><span id="line-386">   * value of invoking the {@link #exceptionally(Function)} method</span>
+<span class="source-line-no">387</span><span id="line-387">   * with the supplied {@code handler}</span>
+<span class="source-line-no">388</span><span id="line-388">   *</span>
+<span class="source-line-no">389</span><span id="line-389">   * @exception NullPointerException if {@code handler} is {@code</span>
+<span class="source-line-no">390</span><span id="line-390">   * null}</span>
+<span class="source-line-no">391</span><span id="line-391">   *</span>
+<span class="source-line-no">392</span><span id="line-392">   * @nullability This method does not, and its (discouraged)</span>
+<span class="source-line-no">393</span><span id="line-393">   * overrides must not, return {@code null}.</span>
+<span class="source-line-no">394</span><span id="line-394">   *</span>
+<span class="source-line-no">395</span><span id="line-395">   * @idempotency No guarantees are made about idempotency or</span>
+<span class="source-line-no">396</span><span id="line-396">   * determinism.</span>
+<span class="source-line-no">397</span><span id="line-397">   *</span>
+<span class="source-line-no">398</span><span id="line-398">   * @threadsafety This method is, and its (discouraged) overrides</span>
+<span class="source-line-no">399</span><span id="line-399">   * must be, safe for concurrent use by multiple threads.</span>
 <span class="source-line-no">400</span><span id="line-400">   *</span>
-<span class="source-line-no">401</span><span id="line-401">   * @return the result of invoking the {@link</span>
-<span class="source-line-no">402</span><span id="line-402">   * Optional#ofNullable(Object)} method supplied with the return</span>
-<span class="source-line-no">403</span><span id="line-403">   * value of invoking the {@link #exceptionally(Function)} method</span>
-<span class="source-line-no">404</span><span id="line-404">   * with the supplied {@code handler}</span>
-<span class="source-line-no">405</span><span id="line-405">   *</span>
-<span class="source-line-no">406</span><span id="line-406">   * @exception NullPointerException if {@code handler} is {@code</span>
-<span class="source-line-no">407</span><span id="line-407">   * null}</span>
-<span class="source-line-no">408</span><span id="line-408">   *</span>
-<span class="source-line-no">409</span><span id="line-409">   * @nullability This method does not, and its (discouraged)</span>
-<span class="source-line-no">410</span><span id="line-410">   * overrides must not, return {@code null}.</span>
-<span class="source-line-no">411</span><span id="line-411">   *</span>
-<span class="source-line-no">412</span><span id="line-412">   * @idempotency No guarantees are made about idempotency or</span>
-<span class="source-line-no">413</span><span id="line-413">   * determinism.</span>
-<span class="source-line-no">414</span><span id="line-414">   *</span>
-<span class="source-line-no">415</span><span id="line-415">   * @threadsafety This method is, and its (discouraged) overrides</span>
-<span class="source-line-no">416</span><span id="line-416">   * must be, safe for concurrent use by multiple threads.</span>
+<span class="source-line-no">401</span><span id="line-401">   * @see #exceptionally(Function)</span>
+<span class="source-line-no">402</span><span id="line-402">   *</span>
+<span class="source-line-no">403</span><span id="line-403">   * @see Optional#ofNullable(Object)</span>
+<span class="source-line-no">404</span><span id="line-404">   */</span>
+<span class="source-line-no">405</span><span id="line-405">  public default Optional&lt;T&gt; optional(final Function&lt;? super RuntimeException, ? extends T&gt; handler) {</span>
+<span class="source-line-no">406</span><span id="line-406">    return Optional.ofNullable(this.exceptionally(handler));</span>
+<span class="source-line-no">407</span><span id="line-407">  }</span>
+<span class="source-line-no">408</span><span id="line-408"></span>
+<span class="source-line-no">409</span><span id="line-409">  /**</span>
+<span class="source-line-no">410</span><span id="line-410">   * Returns the result of invoking the {@link #get()} method, which</span>
+<span class="source-line-no">411</span><span id="line-411">   * may be {@code null}, or, if the {@link #get()} method indicates</span>
+<span class="source-line-no">412</span><span id="line-412">   * value absence by throwing either a {@link NoSuchElementException}</span>
+<span class="source-line-no">413</span><span id="line-413">   * or an {@link UnsupportedOperationException}, returns the supplied</span>
+<span class="source-line-no">414</span><span id="line-414">   * alternate value, which may be {@code null}.</span>
+<span class="source-line-no">415</span><span id="line-415">   *</span>
+<span class="source-line-no">416</span><span id="line-416">   * @param other the alternate value; may be {@code null}</span>
 <span class="source-line-no">417</span><span id="line-417">   *</span>
-<span class="source-line-no">418</span><span id="line-418">   * @see #exceptionally(Function)</span>
-<span class="source-line-no">419</span><span id="line-419">   *</span>
-<span class="source-line-no">420</span><span id="line-420">   * @see Optional#ofNullable(Object)</span>
-<span class="source-line-no">421</span><span id="line-421">   */</span>
-<span class="source-line-no">422</span><span id="line-422">  @Convenience</span>
-<span class="source-line-no">423</span><span id="line-423">  @OverridingDiscouraged</span>
-<span class="source-line-no">424</span><span id="line-424">  public default Optional&lt;T&gt; optional(final Function&lt;? super RuntimeException, ? extends T&gt; handler) {</span>
-<span class="source-line-no">425</span><span id="line-425">    return Optional.ofNullable(this.exceptionally(handler));</span>
-<span class="source-line-no">426</span><span id="line-426">  }</span>
-<span class="source-line-no">427</span><span id="line-427"></span>
-<span class="source-line-no">428</span><span id="line-428">  /**</span>
-<span class="source-line-no">429</span><span id="line-429">   * Returns the result of invoking the {@link #get()} method, which</span>
-<span class="source-line-no">430</span><span id="line-430">   * may be {@code null}, or, if the {@link #get()} method indicates</span>
-<span class="source-line-no">431</span><span id="line-431">   * value absence by throwing either a {@link NoSuchElementException}</span>
-<span class="source-line-no">432</span><span id="line-432">   * or an {@link UnsupportedOperationException}, returns the supplied</span>
-<span class="source-line-no">433</span><span id="line-433">   * alternate value, which may be {@code null}.</span>
-<span class="source-line-no">434</span><span id="line-434">   *</span>
-<span class="source-line-no">435</span><span id="line-435">   * @param other the alternate value; may be {@code null}</span>
-<span class="source-line-no">436</span><span id="line-436">   *</span>
-<span class="source-line-no">437</span><span id="line-437">   * @return the result of invoking the {@link #get()} method, which</span>
-<span class="source-line-no">438</span><span id="line-438">   * may be {@code null}, or, if the {@link #get()} method indicates</span>
-<span class="source-line-no">439</span><span id="line-439">   * value absence by throwing either a {@link NoSuchElementException}</span>
-<span class="source-line-no">440</span><span id="line-440">   * or an {@link UnsupportedOperationException}, returns the supplied</span>
-<span class="source-line-no">441</span><span id="line-441">   * alternate value, which may be {@code null}</span>
-<span class="source-line-no">442</span><span id="line-442">   *</span>
-<span class="source-line-no">443</span><span id="line-443">   * @nullability This method and its (discouraged) overrides may</span>
-<span class="source-line-no">444</span><span id="line-444">   * return {@code null}.</span>
-<span class="source-line-no">445</span><span id="line-445">   *</span>
-<span class="source-line-no">446</span><span id="line-446">   * @idempotency No guarantees are made about idempotency or</span>
-<span class="source-line-no">447</span><span id="line-447">   * determinism.</span>
-<span class="source-line-no">448</span><span id="line-448">   *</span>
-<span class="source-line-no">449</span><span id="line-449">   * @threadsafety This method is, and its (discouraged) overrides</span>
-<span class="source-line-no">450</span><span id="line-450">   * must be, safe for concurrent use by multiple threads.</span>
-<span class="source-line-no">451</span><span id="line-451">   *</span>
-<span class="source-line-no">452</span><span id="line-452">   * @see #get()</span>
-<span class="source-line-no">453</span><span id="line-453">   */</span>
-<span class="source-line-no">454</span><span id="line-454">  @Convenience</span>
-<span class="source-line-no">455</span><span id="line-455">  @OverridingDiscouraged</span>
-<span class="source-line-no">456</span><span id="line-456">  public default T orElse(final T other) {</span>
-<span class="source-line-no">457</span><span id="line-457">    try {</span>
-<span class="source-line-no">458</span><span id="line-458">      return this.get();</span>
-<span class="source-line-no">459</span><span id="line-459">    } catch (final NoSuchElementException | UnsupportedOperationException e) {</span>
-<span class="source-line-no">460</span><span id="line-460">      return other;</span>
-<span class="source-line-no">461</span><span id="line-461">    }</span>
-<span class="source-line-no">462</span><span id="line-462">  }</span>
-<span class="source-line-no">463</span><span id="line-463"></span>
-<span class="source-line-no">464</span><span id="line-464">  /**</span>
-<span class="source-line-no">465</span><span id="line-465">   * Returns the result of invoking the {@link #get()} method, which</span>
-<span class="source-line-no">466</span><span id="line-466">   * may be {@code null}, or, if the {@link #get()} method indicates</span>
-<span class="source-line-no">467</span><span id="line-467">   * value absence by throwing either a {@link NoSuchElementException}</span>
-<span class="source-line-no">468</span><span id="line-468">   * or an {@link UnsupportedOperationException}, returns the result</span>
-<span class="source-line-no">469</span><span id="line-469">   * of invoking the {@link #get()} method on the supplied {@link</span>
-<span class="source-line-no">470</span><span id="line-470">   * Supplier}, which may be {@code null}.</span>
-<span class="source-line-no">471</span><span id="line-471">   *</span>
-<span class="source-line-no">472</span><span id="line-472">   * @param supplier the alternate value {@link Supplier}; must not be</span>
-<span class="source-line-no">473</span><span id="line-473">   * {@code null}</span>
+<span class="source-line-no">418</span><span id="line-418">   * @return the result of invoking the {@link #get()} method, which</span>
+<span class="source-line-no">419</span><span id="line-419">   * may be {@code null}, or, if the {@link #get()} method indicates</span>
+<span class="source-line-no">420</span><span id="line-420">   * value absence by throwing either a {@link NoSuchElementException}</span>
+<span class="source-line-no">421</span><span id="line-421">   * or an {@link UnsupportedOperationException}, returns the supplied</span>
+<span class="source-line-no">422</span><span id="line-422">   * alternate value, which may be {@code null}</span>
+<span class="source-line-no">423</span><span id="line-423">   *</span>
+<span class="source-line-no">424</span><span id="line-424">   * @nullability This method and its (discouraged) overrides may</span>
+<span class="source-line-no">425</span><span id="line-425">   * return {@code null}.</span>
+<span class="source-line-no">426</span><span id="line-426">   *</span>
+<span class="source-line-no">427</span><span id="line-427">   * @idempotency No guarantees are made about idempotency or</span>
+<span class="source-line-no">428</span><span id="line-428">   * determinism.</span>
+<span class="source-line-no">429</span><span id="line-429">   *</span>
+<span class="source-line-no">430</span><span id="line-430">   * @threadsafety This method is, and its (discouraged) overrides</span>
+<span class="source-line-no">431</span><span id="line-431">   * must be, safe for concurrent use by multiple threads.</span>
+<span class="source-line-no">432</span><span id="line-432">   *</span>
+<span class="source-line-no">433</span><span id="line-433">   * @see #get()</span>
+<span class="source-line-no">434</span><span id="line-434">   */</span>
+<span class="source-line-no">435</span><span id="line-435">  public default T orElse(final T other) {</span>
+<span class="source-line-no">436</span><span id="line-436">    try {</span>
+<span class="source-line-no">437</span><span id="line-437">      return this.get();</span>
+<span class="source-line-no">438</span><span id="line-438">    } catch (final NoSuchElementException | UnsupportedOperationException e) {</span>
+<span class="source-line-no">439</span><span id="line-439">      return other;</span>
+<span class="source-line-no">440</span><span id="line-440">    }</span>
+<span class="source-line-no">441</span><span id="line-441">  }</span>
+<span class="source-line-no">442</span><span id="line-442"></span>
+<span class="source-line-no">443</span><span id="line-443">  /**</span>
+<span class="source-line-no">444</span><span id="line-444">   * Returns the result of invoking the {@link #get()} method, which</span>
+<span class="source-line-no">445</span><span id="line-445">   * may be {@code null}, or, if the {@link #get()} method indicates</span>
+<span class="source-line-no">446</span><span id="line-446">   * value absence by throwing either a {@link NoSuchElementException}</span>
+<span class="source-line-no">447</span><span id="line-447">   * or an {@link UnsupportedOperationException}, returns the result</span>
+<span class="source-line-no">448</span><span id="line-448">   * of invoking the {@link #get()} method on the supplied {@link</span>
+<span class="source-line-no">449</span><span id="line-449">   * Supplier}, which may be {@code null}.</span>
+<span class="source-line-no">450</span><span id="line-450">   *</span>
+<span class="source-line-no">451</span><span id="line-451">   * @param supplier the alternate value {@link Supplier}; must not be</span>
+<span class="source-line-no">452</span><span id="line-452">   * {@code null}</span>
+<span class="source-line-no">453</span><span id="line-453">   *</span>
+<span class="source-line-no">454</span><span id="line-454">   * @return the result of invoking the {@link #get()} method, which</span>
+<span class="source-line-no">455</span><span id="line-455">   * may be {@code null}, or, if the {@link #get()} method indicates</span>
+<span class="source-line-no">456</span><span id="line-456">   * value absence by throwing either a {@link NoSuchElementException}</span>
+<span class="source-line-no">457</span><span id="line-457">   * or an {@link UnsupportedOperationException}, returns the result</span>
+<span class="source-line-no">458</span><span id="line-458">   * of invoking the {@link #get()} method on the supplied {@link</span>
+<span class="source-line-no">459</span><span id="line-459">   * Supplier}, which may be {@code null}</span>
+<span class="source-line-no">460</span><span id="line-460">   *</span>
+<span class="source-line-no">461</span><span id="line-461">   * @exception NullPointerException if {@code supplier} is {@code</span>
+<span class="source-line-no">462</span><span id="line-462">   * null}</span>
+<span class="source-line-no">463</span><span id="line-463">   *</span>
+<span class="source-line-no">464</span><span id="line-464">   * @nullability This method and its (discouraged) overrides may</span>
+<span class="source-line-no">465</span><span id="line-465">   * return {@code null}.</span>
+<span class="source-line-no">466</span><span id="line-466">   *</span>
+<span class="source-line-no">467</span><span id="line-467">   * @idempotency No guarantees are made about idempotency or</span>
+<span class="source-line-no">468</span><span id="line-468">   * determinism.</span>
+<span class="source-line-no">469</span><span id="line-469">   *</span>
+<span class="source-line-no">470</span><span id="line-470">   * @threadsafety This method is, and its (discouraged) overrides</span>
+<span class="source-line-no">471</span><span id="line-471">   * msut be, safe for concurrent use by multiple threads, but the</span>
+<span class="source-line-no">472</span><span id="line-472">   * {@link Supplier#get() get()} method of the supplied {@code supplier}</span>
+<span class="source-line-no">473</span><span id="line-473">   * may not be</span>
 <span class="source-line-no">474</span><span id="line-474">   *</span>
-<span class="source-line-no">475</span><span id="line-475">   * @return the result of invoking the {@link #get()} method, which</span>
-<span class="source-line-no">476</span><span id="line-476">   * may be {@code null}, or, if the {@link #get()} method indicates</span>
-<span class="source-line-no">477</span><span id="line-477">   * value absence by throwing either a {@link NoSuchElementException}</span>
-<span class="source-line-no">478</span><span id="line-478">   * or an {@link UnsupportedOperationException}, returns the result</span>
-<span class="source-line-no">479</span><span id="line-479">   * of invoking the {@link #get()} method on the supplied {@link</span>
-<span class="source-line-no">480</span><span id="line-480">   * Supplier}, which may be {@code null}</span>
-<span class="source-line-no">481</span><span id="line-481">   *</span>
-<span class="source-line-no">482</span><span id="line-482">   * @exception NullPointerException if {@code supplier} is {@code</span>
-<span class="source-line-no">483</span><span id="line-483">   * null}</span>
-<span class="source-line-no">484</span><span id="line-484">   *</span>
-<span class="source-line-no">485</span><span id="line-485">   * @nullability This method and its (discouraged) overrides may</span>
-<span class="source-line-no">486</span><span id="line-486">   * return {@code null}.</span>
-<span class="source-line-no">487</span><span id="line-487">   *</span>
-<span class="source-line-no">488</span><span id="line-488">   * @idempotency No guarantees are made about idempotency or</span>
-<span class="source-line-no">489</span><span id="line-489">   * determinism.</span>
-<span class="source-line-no">490</span><span id="line-490">   *</span>
-<span class="source-line-no">491</span><span id="line-491">   * @threadsafety This method is, and its (discouraged) overrides</span>
-<span class="source-line-no">492</span><span id="line-492">   * msut be, safe for concurrent use by multiple threads, but the</span>
-<span class="source-line-no">493</span><span id="line-493">   * {@link Supplier#get() get()} method of the supplied {@code supplier}</span>
-<span class="source-line-no">494</span><span id="line-494">   * may not be</span>
-<span class="source-line-no">495</span><span id="line-495">   *</span>
-<span class="source-line-no">496</span><span id="line-496">   * @see #get()</span>
-<span class="source-line-no">497</span><span id="line-497">   */</span>
-<span class="source-line-no">498</span><span id="line-498">  @Convenience</span>
-<span class="source-line-no">499</span><span id="line-499">  @OverridingDiscouraged</span>
-<span class="source-line-no">500</span><span id="line-500">  public default T orElseGet(final Supplier&lt;? extends T&gt; supplier) {</span>
-<span class="source-line-no">501</span><span id="line-501">    try {</span>
-<span class="source-line-no">502</span><span id="line-502">      return this.get();</span>
-<span class="source-line-no">503</span><span id="line-503">    } catch (final NoSuchElementException | UnsupportedOperationException e) {</span>
-<span class="source-line-no">504</span><span id="line-504">      try {</span>
-<span class="source-line-no">505</span><span id="line-505">        return supplier.get();</span>
-<span class="source-line-no">506</span><span id="line-506">      } catch (final RuntimeException r) {</span>
-<span class="source-line-no">507</span><span id="line-507">        r.addSuppressed(e);</span>
-<span class="source-line-no">508</span><span id="line-508">        throw r;</span>
-<span class="source-line-no">509</span><span id="line-509">      }</span>
-<span class="source-line-no">510</span><span id="line-510">    }</span>
-<span class="source-line-no">511</span><span id="line-511">  }</span>
-<span class="source-line-no">512</span><span id="line-512"></span>
-<span class="source-line-no">513</span><span id="line-513">  /**</span>
-<span class="source-line-no">514</span><span id="line-514">   * Returns the result of invoking the {@link #get()} method, which</span>
-<span class="source-line-no">515</span><span id="line-515">   * may be {@code null}.</span>
-<span class="source-line-no">516</span><span id="line-516">   *</span>
-<span class="source-line-no">517</span><span id="line-517">   * @return the result of invoking the {@link #get()} method, which</span>
-<span class="source-line-no">518</span><span id="line-518">   * may be {@code null}</span>
-<span class="source-line-no">519</span><span id="line-519">   *</span>
-<span class="source-line-no">520</span><span id="line-520">   * @exception NoSuchElementException if value absence was indicated</span>
-<span class="source-line-no">521</span><span id="line-521">   * by the {@link #get()} method</span>
-<span class="source-line-no">522</span><span id="line-522">   *</span>
-<span class="source-line-no">523</span><span id="line-523">   * @nullability This method and its (discouraged) overrides may</span>
-<span class="source-line-no">524</span><span id="line-524">   * return {@code null}.</span>
-<span class="source-line-no">525</span><span id="line-525">   *</span>
-<span class="source-line-no">526</span><span id="line-526">   * @idempotency No guarantees are made about idempotency or</span>
-<span class="source-line-no">527</span><span id="line-527">   * determinism.</span>
-<span class="source-line-no">528</span><span id="line-528">   *</span>
-<span class="source-line-no">529</span><span id="line-529">   * @threadsafety This method is, and its (discouraged) overrides</span>
-<span class="source-line-no">530</span><span id="line-530">   * must be, safe for concurrent use by multiple threads.</span>
-<span class="source-line-no">531</span><span id="line-531">   *</span>
-<span class="source-line-no">532</span><span id="line-532">   * @see #orElseThrow(Supplier)</span>
-<span class="source-line-no">533</span><span id="line-533">   */</span>
-<span class="source-line-no">534</span><span id="line-534">  @Convenience</span>
-<span class="source-line-no">535</span><span id="line-535">  @OverridingDiscouraged</span>
-<span class="source-line-no">536</span><span id="line-536">  public default T orElseThrow() {</span>
-<span class="source-line-no">537</span><span id="line-537">    try {</span>
-<span class="source-line-no">538</span><span id="line-538">      return this.get();</span>
-<span class="source-line-no">539</span><span id="line-539">    } catch (final UnsupportedOperationException e) {</span>
-<span class="source-line-no">540</span><span id="line-540">      throw new NoSuchElementException(e.getMessage(), e);</span>
-<span class="source-line-no">541</span><span id="line-541">    }</span>
-<span class="source-line-no">542</span><span id="line-542">  }</span>
-<span class="source-line-no">543</span><span id="line-543"></span>
-<span class="source-line-no">544</span><span id="line-544">  /**</span>
-<span class="source-line-no">545</span><span id="line-545">   * Returns the result of invoking the {@link #get()} method, which</span>
-<span class="source-line-no">546</span><span id="line-546">   * may be {@code null}, or, if the {@link #get()} method indicates</span>
-<span class="source-line-no">547</span><span id="line-547">   * value absence by throwing either a {@link NoSuchElementException}</span>
-<span class="source-line-no">548</span><span id="line-548">   * or an {@link UnsupportedOperationException}, throws the return</span>
-<span class="source-line-no">549</span><span id="line-549">   * value of an invocation of the supplied {@link Supplier}'s {@link</span>
-<span class="source-line-no">550</span><span id="line-550">   * Supplier#get() get()} method.</span>
-<span class="source-line-no">551</span><span id="line-551">   *</span>
-<span class="source-line-no">552</span><span id="line-552">   * @param &lt;X&gt; the type of {@link Throwable} the supplied {@code</span>
-<span class="source-line-no">553</span><span id="line-553">   * throwableSupplier} {@linkplain Supplier#get() supplies}</span>
-<span class="source-line-no">554</span><span id="line-554">   *</span>
-<span class="source-line-no">555</span><span id="line-555">   * @param throwableSupplier the {@link Throwable} {@link Supplier};</span>
-<span class="source-line-no">556</span><span id="line-556">   * must not be {@code null}</span>
-<span class="source-line-no">557</span><span id="line-557">   *</span>
-<span class="source-line-no">558</span><span id="line-558">   * @return the result of invoking the {@link #get()} method, which</span>
-<span class="source-line-no">559</span><span id="line-559">   * may be {@code null}, or, if the {@link #get()} method indicates</span>
-<span class="source-line-no">560</span><span id="line-560">   * value absence by throwing either a {@link NoSuchElementException}</span>
-<span class="source-line-no">561</span><span id="line-561">   * or an {@link UnsupportedOperationException}, throws the return</span>
-<span class="source-line-no">562</span><span id="line-562">   * value of an invocation of the supplied {@link Supplier}'s {@link</span>
-<span class="source-line-no">563</span><span id="line-563">   * Supplier#get() get()} method</span>
-<span class="source-line-no">564</span><span id="line-564">   *</span>
-<span class="source-line-no">565</span><span id="line-565">   * @exception NullPointerException if {@code supplier} is {@code</span>
-<span class="source-line-no">566</span><span id="line-566">   * null}</span>
-<span class="source-line-no">567</span><span id="line-567">   *</span>
-<span class="source-line-no">568</span><span id="line-568">   * @exception X (actually {@code &lt;X&gt;}) if the {@link #get()} method</span>
-<span class="source-line-no">569</span><span id="line-569">   * throws either a {@link NoSuchElementException} or an {@link</span>
-<span class="source-line-no">570</span><span id="line-570">   * UnsupportedOperationException}</span>
-<span class="source-line-no">571</span><span id="line-571">   *</span>
-<span class="source-line-no">572</span><span id="line-572">   * @nullability This method and its (discouraged) overrides may</span>
-<span class="source-line-no">573</span><span id="line-573">   * return {@code null}.</span>
-<span class="source-line-no">574</span><span id="line-574">   *</span>
-<span class="source-line-no">575</span><span id="line-575">   * @idempotency No guarantees are made about idempotency or</span>
-<span class="source-line-no">576</span><span id="line-576">   * determinism.</span>
-<span class="source-line-no">577</span><span id="line-577">   *</span>
-<span class="source-line-no">578</span><span id="line-578">   * @threadsafety This method itself is, and its (discouraged)</span>
-<span class="source-line-no">579</span><span id="line-579">   * overrides must be, safe for concurrent use by multiple threads.</span>
-<span class="source-line-no">580</span><span id="line-580">   *</span>
-<span class="source-line-no">581</span><span id="line-581">   * @see #get()</span>
-<span class="source-line-no">582</span><span id="line-582">   */</span>
-<span class="source-line-no">583</span><span id="line-583">  @Convenience</span>
-<span class="source-line-no">584</span><span id="line-584">  @OverridingDiscouraged</span>
-<span class="source-line-no">585</span><span id="line-585">  public default &lt;X extends Throwable&gt; T orElseThrow(final Supplier&lt;? extends X&gt; throwableSupplier) throws X {</span>
-<span class="source-line-no">586</span><span id="line-586">    try {</span>
-<span class="source-line-no">587</span><span id="line-587">      return this.get();</span>
-<span class="source-line-no">588</span><span id="line-588">    } catch (final NoSuchElementException | UnsupportedOperationException e) {</span>
-<span class="source-line-no">589</span><span id="line-589">      final X throwable = throwableSupplier.get();</span>
-<span class="source-line-no">590</span><span id="line-590">      if (throwable.getCause() == null) {</span>
-<span class="source-line-no">591</span><span id="line-591">        throwable.initCause(e);</span>
-<span class="source-line-no">592</span><span id="line-592">      } else {</span>
-<span class="source-line-no">593</span><span id="line-593">        throwable.addSuppressed(e);</span>
-<span class="source-line-no">594</span><span id="line-594">      }</span>
-<span class="source-line-no">595</span><span id="line-595">      throw throwable;</span>
-<span class="source-line-no">596</span><span id="line-596">    }</span>
-<span class="source-line-no">597</span><span id="line-597">  }</span>
-<span class="source-line-no">598</span><span id="line-598"></span>
-<span class="source-line-no">599</span><span id="line-599">  /**</span>
-<span class="source-line-no">600</span><span id="line-600">   * Returns an {@link Determinism} denoting the presence of values</span>
-<span class="source-line-no">601</span><span id="line-601">   * returned by this {@link OptionalSupplier}'s {@link #get() get()}</span>
-<span class="source-line-no">602</span><span id="line-602">   * method.</span>
-<span class="source-line-no">603</span><span id="line-603">   *</span>
-<span class="source-line-no">604</span><span id="line-604">   * &lt;p&gt;Overrides of this method must be compatible with the</span>
-<span class="source-line-no">605</span><span id="line-605">   * implementation of the {@link #get()} method.  Specifically:&lt;/p&gt;</span>
+<span class="source-line-no">475</span><span id="line-475">   * @see #get()</span>
+<span class="source-line-no">476</span><span id="line-476">   */</span>
+<span class="source-line-no">477</span><span id="line-477">  public default T orElseGet(final Supplier&lt;? extends T&gt; supplier) {</span>
+<span class="source-line-no">478</span><span id="line-478">    try {</span>
+<span class="source-line-no">479</span><span id="line-479">      return this.get();</span>
+<span class="source-line-no">480</span><span id="line-480">    } catch (final NoSuchElementException | UnsupportedOperationException e) {</span>
+<span class="source-line-no">481</span><span id="line-481">      try {</span>
+<span class="source-line-no">482</span><span id="line-482">        return supplier.get();</span>
+<span class="source-line-no">483</span><span id="line-483">      } catch (final RuntimeException r) {</span>
+<span class="source-line-no">484</span><span id="line-484">        r.addSuppressed(e);</span>
+<span class="source-line-no">485</span><span id="line-485">        throw r;</span>
+<span class="source-line-no">486</span><span id="line-486">      }</span>
+<span class="source-line-no">487</span><span id="line-487">    }</span>
+<span class="source-line-no">488</span><span id="line-488">  }</span>
+<span class="source-line-no">489</span><span id="line-489"></span>
+<span class="source-line-no">490</span><span id="line-490">  /**</span>
+<span class="source-line-no">491</span><span id="line-491">   * Returns the result of invoking the {@link #get()} method, which</span>
+<span class="source-line-no">492</span><span id="line-492">   * may be {@code null}.</span>
+<span class="source-line-no">493</span><span id="line-493">   *</span>
+<span class="source-line-no">494</span><span id="line-494">   * @return the result of invoking the {@link #get()} method, which</span>
+<span class="source-line-no">495</span><span id="line-495">   * may be {@code null}</span>
+<span class="source-line-no">496</span><span id="line-496">   *</span>
+<span class="source-line-no">497</span><span id="line-497">   * @exception NoSuchElementException if value absence was indicated</span>
+<span class="source-line-no">498</span><span id="line-498">   * by the {@link #get()} method</span>
+<span class="source-line-no">499</span><span id="line-499">   *</span>
+<span class="source-line-no">500</span><span id="line-500">   * @nullability This method and its (discouraged) overrides may</span>
+<span class="source-line-no">501</span><span id="line-501">   * return {@code null}.</span>
+<span class="source-line-no">502</span><span id="line-502">   *</span>
+<span class="source-line-no">503</span><span id="line-503">   * @idempotency No guarantees are made about idempotency or</span>
+<span class="source-line-no">504</span><span id="line-504">   * determinism.</span>
+<span class="source-line-no">505</span><span id="line-505">   *</span>
+<span class="source-line-no">506</span><span id="line-506">   * @threadsafety This method is, and its (discouraged) overrides</span>
+<span class="source-line-no">507</span><span id="line-507">   * must be, safe for concurrent use by multiple threads.</span>
+<span class="source-line-no">508</span><span id="line-508">   *</span>
+<span class="source-line-no">509</span><span id="line-509">   * @see #orElseThrow(Supplier)</span>
+<span class="source-line-no">510</span><span id="line-510">   */</span>
+<span class="source-line-no">511</span><span id="line-511">  public default T orElseThrow() {</span>
+<span class="source-line-no">512</span><span id="line-512">    try {</span>
+<span class="source-line-no">513</span><span id="line-513">      return this.get();</span>
+<span class="source-line-no">514</span><span id="line-514">    } catch (final UnsupportedOperationException e) {</span>
+<span class="source-line-no">515</span><span id="line-515">      throw new NoSuchElementException(e.getMessage(), e);</span>
+<span class="source-line-no">516</span><span id="line-516">    }</span>
+<span class="source-line-no">517</span><span id="line-517">  }</span>
+<span class="source-line-no">518</span><span id="line-518"></span>
+<span class="source-line-no">519</span><span id="line-519">  /**</span>
+<span class="source-line-no">520</span><span id="line-520">   * Returns the result of invoking the {@link #get()} method, which</span>
+<span class="source-line-no">521</span><span id="line-521">   * may be {@code null}, or, if the {@link #get()} method indicates</span>
+<span class="source-line-no">522</span><span id="line-522">   * value absence by throwing either a {@link NoSuchElementException}</span>
+<span class="source-line-no">523</span><span id="line-523">   * or an {@link UnsupportedOperationException}, throws the return</span>
+<span class="source-line-no">524</span><span id="line-524">   * value of an invocation of the supplied {@link Supplier}'s {@link</span>
+<span class="source-line-no">525</span><span id="line-525">   * Supplier#get() get()} method.</span>
+<span class="source-line-no">526</span><span id="line-526">   *</span>
+<span class="source-line-no">527</span><span id="line-527">   * @param &lt;X&gt; the type of {@link Throwable} the supplied {@code</span>
+<span class="source-line-no">528</span><span id="line-528">   * throwableSupplier} {@linkplain Supplier#get() supplies}</span>
+<span class="source-line-no">529</span><span id="line-529">   *</span>
+<span class="source-line-no">530</span><span id="line-530">   * @param throwableSupplier the {@link Throwable} {@link Supplier};</span>
+<span class="source-line-no">531</span><span id="line-531">   * must not be {@code null}</span>
+<span class="source-line-no">532</span><span id="line-532">   *</span>
+<span class="source-line-no">533</span><span id="line-533">   * @return the result of invoking the {@link #get()} method, which</span>
+<span class="source-line-no">534</span><span id="line-534">   * may be {@code null}, or, if the {@link #get()} method indicates</span>
+<span class="source-line-no">535</span><span id="line-535">   * value absence by throwing either a {@link NoSuchElementException}</span>
+<span class="source-line-no">536</span><span id="line-536">   * or an {@link UnsupportedOperationException}, throws the return</span>
+<span class="source-line-no">537</span><span id="line-537">   * value of an invocation of the supplied {@link Supplier}'s {@link</span>
+<span class="source-line-no">538</span><span id="line-538">   * Supplier#get() get()} method</span>
+<span class="source-line-no">539</span><span id="line-539">   *</span>
+<span class="source-line-no">540</span><span id="line-540">   * @exception NullPointerException if {@code supplier} is {@code</span>
+<span class="source-line-no">541</span><span id="line-541">   * null}</span>
+<span class="source-line-no">542</span><span id="line-542">   *</span>
+<span class="source-line-no">543</span><span id="line-543">   * @exception X (actually {@code &lt;X&gt;}) if the {@link #get()} method</span>
+<span class="source-line-no">544</span><span id="line-544">   * throws either a {@link NoSuchElementException} or an {@link</span>
+<span class="source-line-no">545</span><span id="line-545">   * UnsupportedOperationException}</span>
+<span class="source-line-no">546</span><span id="line-546">   *</span>
+<span class="source-line-no">547</span><span id="line-547">   * @nullability This method and its (discouraged) overrides may</span>
+<span class="source-line-no">548</span><span id="line-548">   * return {@code null}.</span>
+<span class="source-line-no">549</span><span id="line-549">   *</span>
+<span class="source-line-no">550</span><span id="line-550">   * @idempotency No guarantees are made about idempotency or</span>
+<span class="source-line-no">551</span><span id="line-551">   * determinism.</span>
+<span class="source-line-no">552</span><span id="line-552">   *</span>
+<span class="source-line-no">553</span><span id="line-553">   * @threadsafety This method itself is, and its (discouraged)</span>
+<span class="source-line-no">554</span><span id="line-554">   * overrides must be, safe for concurrent use by multiple threads.</span>
+<span class="source-line-no">555</span><span id="line-555">   *</span>
+<span class="source-line-no">556</span><span id="line-556">   * @see #get()</span>
+<span class="source-line-no">557</span><span id="line-557">   */</span>
+<span class="source-line-no">558</span><span id="line-558">  public default &lt;X extends Throwable&gt; T orElseThrow(final Supplier&lt;? extends X&gt; throwableSupplier) throws X {</span>
+<span class="source-line-no">559</span><span id="line-559">    try {</span>
+<span class="source-line-no">560</span><span id="line-560">      return this.get();</span>
+<span class="source-line-no">561</span><span id="line-561">    } catch (final NoSuchElementException | UnsupportedOperationException e) {</span>
+<span class="source-line-no">562</span><span id="line-562">      final X throwable = throwableSupplier.get();</span>
+<span class="source-line-no">563</span><span id="line-563">      if (throwable.getCause() == null) {</span>
+<span class="source-line-no">564</span><span id="line-564">        throwable.initCause(e);</span>
+<span class="source-line-no">565</span><span id="line-565">      } else {</span>
+<span class="source-line-no">566</span><span id="line-566">        throwable.addSuppressed(e);</span>
+<span class="source-line-no">567</span><span id="line-567">      }</span>
+<span class="source-line-no">568</span><span id="line-568">      throw throwable;</span>
+<span class="source-line-no">569</span><span id="line-569">    }</span>
+<span class="source-line-no">570</span><span id="line-570">  }</span>
+<span class="source-line-no">571</span><span id="line-571"></span>
+<span class="source-line-no">572</span><span id="line-572">  /**</span>
+<span class="source-line-no">573</span><span id="line-573">   * Returns an {@link Determinism} denoting the presence of values</span>
+<span class="source-line-no">574</span><span id="line-574">   * returned by this {@link OptionalSupplier}'s {@link #get() get()}</span>
+<span class="source-line-no">575</span><span id="line-575">   * method.</span>
+<span class="source-line-no">576</span><span id="line-576">   *</span>
+<span class="source-line-no">577</span><span id="line-577">   * &lt;p&gt;Overrides of this method must be compatible with the</span>
+<span class="source-line-no">578</span><span id="line-578">   * implementation of the {@link #get()} method.  Specifically:&lt;/p&gt;</span>
+<span class="source-line-no">579</span><span id="line-579">   *</span>
+<span class="source-line-no">580</span><span id="line-580">   * &lt;ul&gt;</span>
+<span class="source-line-no">581</span><span id="line-581">   *</span>
+<span class="source-line-no">582</span><span id="line-582">   * &lt;li&gt;If an override of this method returns {@link</span>
+<span class="source-line-no">583</span><span id="line-583">   * Determinism#PRESENT}, then the implementation of the {@link #get()}</span>
+<span class="source-line-no">584</span><span id="line-584">   * method must never throw either a {@link NoSuchElementException}</span>
+<span class="source-line-no">585</span><span id="line-585">   * or an {@link UnsupportedOperationException}, and, for any two</span>
+<span class="source-line-no">586</span><span id="line-586">   * invocations, on any thread, must return either the same object, or</span>
+<span class="source-line-no">587</span><span id="line-587">   * objects that are indistinguishable from one another and that can</span>
+<span class="source-line-no">588</span><span id="line-588">   * be substituted for each other interchangeably.&lt;/li&gt;</span>
+<span class="source-line-no">589</span><span id="line-589">   *</span>
+<span class="source-line-no">590</span><span id="line-590">   * &lt;li&gt;If an override of this method returns {@link</span>
+<span class="source-line-no">591</span><span id="line-591">   * Determinism#ABSENT}, then it is expected that any two invocations of</span>
+<span class="source-line-no">592</span><span id="line-592">   * the {@link #get()} method, on any thread, will each throw either</span>
+<span class="source-line-no">593</span><span id="line-593">   * a {@link NoSuchElementException} or an {@link</span>
+<span class="source-line-no">594</span><span id="line-594">   * UnsupportedOperationException}.  If an implementation of the</span>
+<span class="source-line-no">595</span><span id="line-595">   * {@link #get()} method instead returns a value, contrary to these</span>
+<span class="source-line-no">596</span><span id="line-596">   * requirements, then the value must be treated as irrelevant or</span>
+<span class="source-line-no">597</span><span id="line-597">   * undefined.&lt;/li&gt;</span>
+<span class="source-line-no">598</span><span id="line-598">   *</span>
+<span class="source-line-no">599</span><span id="line-599">   * &lt;li&gt;If an override of this method returns {@link</span>
+<span class="source-line-no">600</span><span id="line-600">   * Determinism#DETERMINISTIC}, then any two invocations of the {@link</span>
+<span class="source-line-no">601</span><span id="line-601">   * #get()} method implementation, on any thread, must either throw</span>
+<span class="source-line-no">602</span><span id="line-602">   * either a {@link NoSuchElementException} or an {@link</span>
+<span class="source-line-no">603</span><span id="line-603">   * UnsupportedOperationException}, or must return either the same</span>
+<span class="source-line-no">604</span><span id="line-604">   * object, or objects that are indistinguishable from one another</span>
+<span class="source-line-no">605</span><span id="line-605">   * and that can be substituted for each other interchangeably.&lt;/li&gt;</span>
 <span class="source-line-no">606</span><span id="line-606">   *</span>
-<span class="source-line-no">607</span><span id="line-607">   * &lt;ul&gt;</span>
-<span class="source-line-no">608</span><span id="line-608">   *</span>
-<span class="source-line-no">609</span><span id="line-609">   * &lt;li&gt;If an override of this method returns {@link</span>
-<span class="source-line-no">610</span><span id="line-610">   * Determinism#PRESENT}, then the implementation of the {@link #get()}</span>
-<span class="source-line-no">611</span><span id="line-611">   * method must never throw either a {@link NoSuchElementException}</span>
-<span class="source-line-no">612</span><span id="line-612">   * or an {@link UnsupportedOperationException}, and, for any two</span>
-<span class="source-line-no">613</span><span id="line-613">   * invocations, on any thread, must return either the same object, or</span>
-<span class="source-line-no">614</span><span id="line-614">   * objects that are indistinguishable from one another and that can</span>
-<span class="source-line-no">615</span><span id="line-615">   * be substituted for each other interchangeably.&lt;/li&gt;</span>
-<span class="source-line-no">616</span><span id="line-616">   *</span>
-<span class="source-line-no">617</span><span id="line-617">   * &lt;li&gt;If an override of this method returns {@link</span>
-<span class="source-line-no">618</span><span id="line-618">   * Determinism#ABSENT}, then it is expected that any two invocations of</span>
-<span class="source-line-no">619</span><span id="line-619">   * the {@link #get()} method, on any thread, will each throw either</span>
-<span class="source-line-no">620</span><span id="line-620">   * a {@link NoSuchElementException} or an {@link</span>
-<span class="source-line-no">621</span><span id="line-621">   * UnsupportedOperationException}.  If an implementation of the</span>
-<span class="source-line-no">622</span><span id="line-622">   * {@link #get()} method instead returns a value, contrary to these</span>
-<span class="source-line-no">623</span><span id="line-623">   * requirements, then the value must be treated as irrelevant or</span>
-<span class="source-line-no">624</span><span id="line-624">   * undefined.&lt;/li&gt;</span>
-<span class="source-line-no">625</span><span id="line-625">   *</span>
-<span class="source-line-no">626</span><span id="line-626">   * &lt;li&gt;If an override of this method returns {@link</span>
-<span class="source-line-no">627</span><span id="line-627">   * Determinism#DETERMINISTIC}, then any two invocations of the {@link</span>
-<span class="source-line-no">628</span><span id="line-628">   * #get()} method implementation, on any thread, must either throw</span>
-<span class="source-line-no">629</span><span id="line-629">   * either a {@link NoSuchElementException} or an {@link</span>
-<span class="source-line-no">630</span><span id="line-630">   * UnsupportedOperationException}, or must return either the same</span>
-<span class="source-line-no">631</span><span id="line-631">   * object, or objects that are indistinguishable from one another</span>
-<span class="source-line-no">632</span><span id="line-632">   * and that can be substituted for each other interchangeably.&lt;/li&gt;</span>
+<span class="source-line-no">607</span><span id="line-607">   * &lt;li&gt;If an override of this method returns {@link</span>
+<span class="source-line-no">608</span><span id="line-608">   * Determinism#NON_DETERMINISTIC}, then there are no additional requirements</span>
+<span class="source-line-no">609</span><span id="line-609">   * placed upon the implementation of the {@link #get()} method</span>
+<span class="source-line-no">610</span><span id="line-610">   * besides those defined in {@linkplain #get() its existing</span>
+<span class="source-line-no">611</span><span id="line-611">   * contract}.&lt;/li&gt;</span>
+<span class="source-line-no">612</span><span id="line-612">   *</span>
+<span class="source-line-no">613</span><span id="line-613">   * &lt;/ul&gt;</span>
+<span class="source-line-no">614</span><span id="line-614">   *</span>
+<span class="source-line-no">615</span><span id="line-615">   * &lt;p&gt;Additionally, once an override of this method returns a {@link</span>
+<span class="source-line-no">616</span><span id="line-616">   * Determinism} whose {@link Determinism#deterministic() deterministic()}</span>
+<span class="source-line-no">617</span><span id="line-617">   * method returns {@code true}, then it must forever afterwards, for</span>
+<span class="source-line-no">618</span><span id="line-618">   * all invocations, on all possible threads, return the same {@link</span>
+<span class="source-line-no">619</span><span id="line-619">   * Determinism}.&lt;/p&gt;</span>
+<span class="source-line-no">620</span><span id="line-620">   *</span>
+<span class="source-line-no">621</span><span id="line-621">   * &lt;p&gt;If any of the requirements above is not met, undefined</span>
+<span class="source-line-no">622</span><span id="line-622">   * behavior may result.&lt;/p&gt;</span>
+<span class="source-line-no">623</span><span id="line-623">   *</span>
+<span class="source-line-no">624</span><span id="line-624">   * &lt;p&gt;The default implementation of this method returns {@link</span>
+<span class="source-line-no">625</span><span id="line-625">   * Determinism#NON_DETERMINISTIC}.  Overrides are strongly encouraged.&lt;/p&gt;</span>
+<span class="source-line-no">626</span><span id="line-626">   *</span>
+<span class="source-line-no">627</span><span id="line-627">   * @return an {@link Determinism} denoting the presence of values</span>
+<span class="source-line-no">628</span><span id="line-628">   * returned by this {@link OptionalSupplier}'s {@link #get() get()}</span>
+<span class="source-line-no">629</span><span id="line-629">   * method</span>
+<span class="source-line-no">630</span><span id="line-630">   *</span>
+<span class="source-line-no">631</span><span id="line-631">   * @nullability This method does not, and its (encouraged) overrides</span>
+<span class="source-line-no">632</span><span id="line-632">   * must not, return {@code null}.</span>
 <span class="source-line-no">633</span><span id="line-633">   *</span>
-<span class="source-line-no">634</span><span id="line-634">   * &lt;li&gt;If an override of this method returns {@link</span>
-<span class="source-line-no">635</span><span id="line-635">   * Determinism#NON_DETERMINISTIC}, then there are no additional requirements</span>
-<span class="source-line-no">636</span><span id="line-636">   * placed upon the implementation of the {@link #get()} method</span>
-<span class="source-line-no">637</span><span id="line-637">   * besides those defined in {@linkplain #get() its existing</span>
-<span class="source-line-no">638</span><span id="line-638">   * contract}.&lt;/li&gt;</span>
-<span class="source-line-no">639</span><span id="line-639">   *</span>
-<span class="source-line-no">640</span><span id="line-640">   * &lt;/ul&gt;</span>
-<span class="source-line-no">641</span><span id="line-641">   *</span>
-<span class="source-line-no">642</span><span id="line-642">   * &lt;p&gt;Additionally, once an override of this method returns a {@link</span>
-<span class="source-line-no">643</span><span id="line-643">   * Determinism} whose {@link Determinism#deterministic() deterministic()}</span>
-<span class="source-line-no">644</span><span id="line-644">   * method returns {@code true}, then it must forever afterwards, for</span>
-<span class="source-line-no">645</span><span id="line-645">   * all invocations, on all possible threads, return the same {@link</span>
-<span class="source-line-no">646</span><span id="line-646">   * Determinism}.&lt;/p&gt;</span>
-<span class="source-line-no">647</span><span id="line-647">   *</span>
-<span class="source-line-no">648</span><span id="line-648">   * &lt;p&gt;If any of the requirements above is not met, undefined</span>
-<span class="source-line-no">649</span><span id="line-649">   * behavior may result.&lt;/p&gt;</span>
-<span class="source-line-no">650</span><span id="line-650">   *</span>
-<span class="source-line-no">651</span><span id="line-651">   * &lt;p&gt;The default implementation of this method returns {@link</span>
-<span class="source-line-no">652</span><span id="line-652">   * Determinism#NON_DETERMINISTIC}.  Overrides are strongly encouraged.&lt;/p&gt;</span>
+<span class="source-line-no">634</span><span id="line-634">   * @idempotency This method is idempotent and deterministic.  Its</span>
+<span class="source-line-no">635</span><span id="line-635">   * (encouraged) overrides must be idempotent.  They may not be</span>
+<span class="source-line-no">636</span><span id="line-636">   * deterministic (see above).</span>
+<span class="source-line-no">637</span><span id="line-637">   *</span>
+<span class="source-line-no">638</span><span id="line-638">   * @threadsafety This method is, and its (encouraged) overrides must</span>
+<span class="source-line-no">639</span><span id="line-639">   * be, safe for concurrent use by multiple threads.</span>
+<span class="source-line-no">640</span><span id="line-640">   */</span>
+<span class="source-line-no">641</span><span id="line-641">  public default Determinism determinism() {</span>
+<span class="source-line-no">642</span><span id="line-642">    return Determinism.NON_DETERMINISTIC;</span>
+<span class="source-line-no">643</span><span id="line-643">  }</span>
+<span class="source-line-no">644</span><span id="line-644"></span>
+<span class="source-line-no">645</span><span id="line-645">  /**</span>
+<span class="source-line-no">646</span><span id="line-646">   * Returns the result of invoking the {@link Stream#of(Object)}</span>
+<span class="source-line-no">647</span><span id="line-647">   * method on the return value of an invocation of the {@link #get()}</span>
+<span class="source-line-no">648</span><span id="line-648">   * method, which may be {@code null}, or, if the {@link #get()}</span>
+<span class="source-line-no">649</span><span id="line-649">   * method indicates value absence by throwing either a {@link</span>
+<span class="source-line-no">650</span><span id="line-650">   * NoSuchElementException} or an {@link</span>
+<span class="source-line-no">651</span><span id="line-651">   * UnsupportedOperationException}, returns the result of invoking</span>
+<span class="source-line-no">652</span><span id="line-652">   * the {@link Stream#empty()} method.</span>
 <span class="source-line-no">653</span><span id="line-653">   *</span>
-<span class="source-line-no">654</span><span id="line-654">   * @return an {@link Determinism} denoting the presence of values</span>
-<span class="source-line-no">655</span><span id="line-655">   * returned by this {@link OptionalSupplier}'s {@link #get() get()}</span>
-<span class="source-line-no">656</span><span id="line-656">   * method</span>
-<span class="source-line-no">657</span><span id="line-657">   *</span>
-<span class="source-line-no">658</span><span id="line-658">   * @nullability This method does not, and its (encouraged) overrides</span>
-<span class="source-line-no">659</span><span id="line-659">   * must not, return {@code null}.</span>
-<span class="source-line-no">660</span><span id="line-660">   *</span>
-<span class="source-line-no">661</span><span id="line-661">   * @idempotency This method is idempotent and deterministic.  Its</span>
-<span class="source-line-no">662</span><span id="line-662">   * (encouraged) overrides must be idempotent.  They may not be</span>
-<span class="source-line-no">663</span><span id="line-663">   * deterministic (see above).</span>
-<span class="source-line-no">664</span><span id="line-664">   *</span>
-<span class="source-line-no">665</span><span id="line-665">   * @threadsafety This method is, and its (encouraged) overrides must</span>
-<span class="source-line-no">666</span><span id="line-666">   * be, safe for concurrent use by multiple threads.</span>
-<span class="source-line-no">667</span><span id="line-667">   */</span>
-<span class="source-line-no">668</span><span id="line-668">  @OverridingEncouraged</span>
-<span class="source-line-no">669</span><span id="line-669">  public default Determinism determinism() {</span>
-<span class="source-line-no">670</span><span id="line-670">    return Determinism.NON_DETERMINISTIC;</span>
-<span class="source-line-no">671</span><span id="line-671">  }</span>
-<span class="source-line-no">672</span><span id="line-672"></span>
-<span class="source-line-no">673</span><span id="line-673">  /**</span>
-<span class="source-line-no">674</span><span id="line-674">   * Returns the result of invoking the {@link Stream#of(Object)}</span>
-<span class="source-line-no">675</span><span id="line-675">   * method on the return value of an invocation of the {@link #get()}</span>
-<span class="source-line-no">676</span><span id="line-676">   * method, which may be {@code null}, or, if the {@link #get()}</span>
-<span class="source-line-no">677</span><span id="line-677">   * method indicates value absence by throwing either a {@link</span>
-<span class="source-line-no">678</span><span id="line-678">   * NoSuchElementException} or an {@link</span>
-<span class="source-line-no">679</span><span id="line-679">   * UnsupportedOperationException}, returns the result of invoking</span>
-<span class="source-line-no">680</span><span id="line-680">   * the {@link Stream#empty()} method.</span>
-<span class="source-line-no">681</span><span id="line-681">   *</span>
-<span class="source-line-no">682</span><span id="line-682">   * &lt;p&gt;Note that this means the sole element of the {@link Stream}</span>
-<span class="source-line-no">683</span><span id="line-683">   * that is returned may be {@code null}.  If this is undesirable,</span>
-<span class="source-line-no">684</span><span id="line-684">   * consider invoking {@link Optional#stream() stream()} on the</span>
-<span class="source-line-no">685</span><span id="line-685">   * return value of the {@link #optional()} method instead.&lt;/p&gt;</span>
-<span class="source-line-no">686</span><span id="line-686">   *</span>
-<span class="source-line-no">687</span><span id="line-687">   * @return the result of invoking the {@link Stream#of(Object)}</span>
-<span class="source-line-no">688</span><span id="line-688">   * method on the return value of an invocation of the {@link #get()}</span>
-<span class="source-line-no">689</span><span id="line-689">   * method, which may be {@code null}, or, if the {@link #get()}</span>
-<span class="source-line-no">690</span><span id="line-690">   * method indicates value absence by throwing either a {@link</span>
-<span class="source-line-no">691</span><span id="line-691">   * NoSuchElementException} or an {@link</span>
-<span class="source-line-no">692</span><span id="line-692">   * UnsupportedOperationException}, returns the result of invoking</span>
-<span class="source-line-no">693</span><span id="line-693">   * the {@link Stream#empty()} method</span>
-<span class="source-line-no">694</span><span id="line-694">   *</span>
-<span class="source-line-no">695</span><span id="line-695">   * @nullability This method does not, and its (discouraged)</span>
-<span class="source-line-no">696</span><span id="line-696">   * overrides must not, return {@code null}.</span>
-<span class="source-line-no">697</span><span id="line-697">   *</span>
-<span class="source-line-no">698</span><span id="line-698">   * @idempotency No guarantees are made about idempotency or</span>
-<span class="source-line-no">699</span><span id="line-699">   * determinism.</span>
-<span class="source-line-no">700</span><span id="line-700">   *</span>
-<span class="source-line-no">701</span><span id="line-701">   * @threadsafety This method is, and its (discouraged) overrides</span>
-<span class="source-line-no">702</span><span id="line-702">   * must be, safe for concurrent use by multiple threads.</span>
-<span class="source-line-no">703</span><span id="line-703">   *</span>
-<span class="source-line-no">704</span><span id="line-704">   * @see #get()</span>
-<span class="source-line-no">705</span><span id="line-705">   */</span>
-<span class="source-line-no">706</span><span id="line-706">  @Convenience</span>
-<span class="source-line-no">707</span><span id="line-707">  @OverridingDiscouraged</span>
-<span class="source-line-no">708</span><span id="line-708">  public default Stream&lt;T&gt; stream() {</span>
-<span class="source-line-no">709</span><span id="line-709">    try {</span>
-<span class="source-line-no">710</span><span id="line-710">      return Stream.of(this.get());</span>
-<span class="source-line-no">711</span><span id="line-711">    } catch (final NoSuchElementException | UnsupportedOperationException e) {</span>
-<span class="source-line-no">712</span><span id="line-712">      return Stream.empty();</span>
-<span class="source-line-no">713</span><span id="line-713">    }</span>
-<span class="source-line-no">714</span><span id="line-714">  }</span>
-<span class="source-line-no">715</span><span id="line-715"></span>
-<span class="source-line-no">716</span><span id="line-716"></span>
-<span class="source-line-no">717</span><span id="line-717">  /*</span>
-<span class="source-line-no">718</span><span id="line-718">   * Static methods.</span>
-<span class="source-line-no">719</span><span id="line-719">   */</span>
-<span class="source-line-no">720</span><span id="line-720"></span>
-<span class="source-line-no">721</span><span id="line-721"></span>
-<span class="source-line-no">722</span><span id="line-722">  private static &lt;T&gt; T returnNull(final RuntimeException e) {</span>
-<span class="source-line-no">723</span><span id="line-723">    if (e instanceof NoSuchElementException || e instanceof UnsupportedOperationException) {</span>
-<span class="source-line-no">724</span><span id="line-724">      return null;</span>
-<span class="source-line-no">725</span><span id="line-725">    } else {</span>
-<span class="source-line-no">726</span><span id="line-726">      throw e;</span>
-<span class="source-line-no">727</span><span id="line-727">    }</span>
-<span class="source-line-no">728</span><span id="line-728">  }</span>
-<span class="source-line-no">729</span><span id="line-729"></span>
-<span class="source-line-no">730</span><span id="line-730">  /**</span>
-<span class="source-line-no">731</span><span id="line-731">   * Returns a new {@link OptionalSupplier} whose {@link #determinism()}</span>
-<span class="source-line-no">732</span><span id="line-732">   * method will return the supplied {@link Determinism} and whose {@link</span>
-<span class="source-line-no">733</span><span id="line-733">   * #get()} method will return the result of invoking the {@link</span>
-<span class="source-line-no">734</span><span id="line-734">   * Supplier#get()} method on the supplied {@code supplier}.</span>
+<span class="source-line-no">654</span><span id="line-654">   * &lt;p&gt;Note that this means the sole element of the {@link Stream}</span>
+<span class="source-line-no">655</span><span id="line-655">   * that is returned may be {@code null}.  If this is undesirable,</span>
+<span class="source-line-no">656</span><span id="line-656">   * consider invoking {@link Optional#stream() stream()} on the</span>
+<span class="source-line-no">657</span><span id="line-657">   * return value of the {@link #optional()} method instead.&lt;/p&gt;</span>
+<span class="source-line-no">658</span><span id="line-658">   *</span>
+<span class="source-line-no">659</span><span id="line-659">   * @return the result of invoking the {@link Stream#of(Object)}</span>
+<span class="source-line-no">660</span><span id="line-660">   * method on the return value of an invocation of the {@link #get()}</span>
+<span class="source-line-no">661</span><span id="line-661">   * method, which may be {@code null}, or, if the {@link #get()}</span>
+<span class="source-line-no">662</span><span id="line-662">   * method indicates value absence by throwing either a {@link</span>
+<span class="source-line-no">663</span><span id="line-663">   * NoSuchElementException} or an {@link</span>
+<span class="source-line-no">664</span><span id="line-664">   * UnsupportedOperationException}, returns the result of invoking</span>
+<span class="source-line-no">665</span><span id="line-665">   * the {@link Stream#empty()} method</span>
+<span class="source-line-no">666</span><span id="line-666">   *</span>
+<span class="source-line-no">667</span><span id="line-667">   * @nullability This method does not, and its (discouraged)</span>
+<span class="source-line-no">668</span><span id="line-668">   * overrides must not, return {@code null}.</span>
+<span class="source-line-no">669</span><span id="line-669">   *</span>
+<span class="source-line-no">670</span><span id="line-670">   * @idempotency No guarantees are made about idempotency or</span>
+<span class="source-line-no">671</span><span id="line-671">   * determinism.</span>
+<span class="source-line-no">672</span><span id="line-672">   *</span>
+<span class="source-line-no">673</span><span id="line-673">   * @threadsafety This method is, and its (discouraged) overrides</span>
+<span class="source-line-no">674</span><span id="line-674">   * must be, safe for concurrent use by multiple threads.</span>
+<span class="source-line-no">675</span><span id="line-675">   *</span>
+<span class="source-line-no">676</span><span id="line-676">   * @see #get()</span>
+<span class="source-line-no">677</span><span id="line-677">   */</span>
+<span class="source-line-no">678</span><span id="line-678">  public default Stream&lt;T&gt; stream() {</span>
+<span class="source-line-no">679</span><span id="line-679">    try {</span>
+<span class="source-line-no">680</span><span id="line-680">      return Stream.of(this.get());</span>
+<span class="source-line-no">681</span><span id="line-681">    } catch (final NoSuchElementException | UnsupportedOperationException e) {</span>
+<span class="source-line-no">682</span><span id="line-682">      return Stream.empty();</span>
+<span class="source-line-no">683</span><span id="line-683">    }</span>
+<span class="source-line-no">684</span><span id="line-684">  }</span>
+<span class="source-line-no">685</span><span id="line-685"></span>
+<span class="source-line-no">686</span><span id="line-686"></span>
+<span class="source-line-no">687</span><span id="line-687">  /*</span>
+<span class="source-line-no">688</span><span id="line-688">   * Static methods.</span>
+<span class="source-line-no">689</span><span id="line-689">   */</span>
+<span class="source-line-no">690</span><span id="line-690"></span>
+<span class="source-line-no">691</span><span id="line-691"></span>
+<span class="source-line-no">692</span><span id="line-692">  private static &lt;T&gt; T returnNull(final RuntimeException e) {</span>
+<span class="source-line-no">693</span><span id="line-693">    if (e instanceof NoSuchElementException || e instanceof UnsupportedOperationException) {</span>
+<span class="source-line-no">694</span><span id="line-694">      return null;</span>
+<span class="source-line-no">695</span><span id="line-695">    } else {</span>
+<span class="source-line-no">696</span><span id="line-696">      throw e;</span>
+<span class="source-line-no">697</span><span id="line-697">    }</span>
+<span class="source-line-no">698</span><span id="line-698">  }</span>
+<span class="source-line-no">699</span><span id="line-699"></span>
+<span class="source-line-no">700</span><span id="line-700">  /**</span>
+<span class="source-line-no">701</span><span id="line-701">   * Returns a new {@link OptionalSupplier} whose {@link #determinism()}</span>
+<span class="source-line-no">702</span><span id="line-702">   * method will return the supplied {@link Determinism} and whose {@link</span>
+<span class="source-line-no">703</span><span id="line-703">   * #get()} method will return the result of invoking the {@link</span>
+<span class="source-line-no">704</span><span id="line-704">   * Supplier#get()} method on the supplied {@code supplier}.</span>
+<span class="source-line-no">705</span><span id="line-705">   *</span>
+<span class="source-line-no">706</span><span id="line-706">   * @param &lt;T&gt; the type of value the returned {@link</span>
+<span class="source-line-no">707</span><span id="line-707">   * OptionalSupplier} will {@linkplain #get() supply}</span>
+<span class="source-line-no">708</span><span id="line-708">   *</span>
+<span class="source-line-no">709</span><span id="line-709">   * @param determinism the {@link Determinism} to use; must not be {@code null}</span>
+<span class="source-line-no">710</span><span id="line-710">   *</span>
+<span class="source-line-no">711</span><span id="line-711">   * @param supplier the {@link Supplier} whose {@link #get()} method</span>
+<span class="source-line-no">712</span><span id="line-712">   * will be called; must not be {@code null}</span>
+<span class="source-line-no">713</span><span id="line-713">   *</span>
+<span class="source-line-no">714</span><span id="line-714">   * @return a new {@link OptionalSupplier} whose {@link #determinism()}</span>
+<span class="source-line-no">715</span><span id="line-715">   * method will return the supplied {@link Determinism} and whose {@link</span>
+<span class="source-line-no">716</span><span id="line-716">   * #get()} method will return the result of invoking the {@link</span>
+<span class="source-line-no">717</span><span id="line-717">   * Supplier#get()} method on the supplied {@code supplier}</span>
+<span class="source-line-no">718</span><span id="line-718">   *</span>
+<span class="source-line-no">719</span><span id="line-719">   * @exception NullPointerException if {@code determinism} or {@code</span>
+<span class="source-line-no">720</span><span id="line-720">   * supplier} is {@code null}</span>
+<span class="source-line-no">721</span><span id="line-721">   *</span>
+<span class="source-line-no">722</span><span id="line-722">   * @nullability This method never returns {@code null}.</span>
+<span class="source-line-no">723</span><span id="line-723">   *</span>
+<span class="source-line-no">724</span><span id="line-724">   * @idempotency This method is not idempotent but is deterministic.</span>
+<span class="source-line-no">725</span><span id="line-725">   *</span>
+<span class="source-line-no">726</span><span id="line-726">   * @threadsafety This method is safe for concurrent use by multiple</span>
+<span class="source-line-no">727</span><span id="line-727">   * threads.</span>
+<span class="source-line-no">728</span><span id="line-728">   */</span>
+<span class="source-line-no">729</span><span id="line-729">  public static &lt;T&gt; OptionalSupplier&lt;T&gt; of(final Determinism determinism, final Supplier&lt;? extends T&gt; supplier) {</span>
+<span class="source-line-no">730</span><span id="line-730">    return new OptionalSupplierAdapter&lt;&gt;(determinism, supplier);</span>
+<span class="source-line-no">731</span><span id="line-731">  }</span>
+<span class="source-line-no">732</span><span id="line-732"></span>
+<span class="source-line-no">733</span><span id="line-733">  /**</span>
+<span class="source-line-no">734</span><span id="line-734">   * Invokes {@link Absence#instance()} and returns the result.</span>
 <span class="source-line-no">735</span><span id="line-735">   *</span>
-<span class="source-line-no">736</span><span id="line-736">   * @param &lt;T&gt; the type of value the returned {@link</span>
-<span class="source-line-no">737</span><span id="line-737">   * OptionalSupplier} will {@linkplain #get() supply}</span>
+<span class="source-line-no">736</span><span id="line-736">   * @param &lt;T&gt; the type of the nonexistent value the returned {@link</span>
+<span class="source-line-no">737</span><span id="line-737">   * OptionalSupplier} will never {@linkplain #get() supply}</span>
 <span class="source-line-no">738</span><span id="line-738">   *</span>
-<span class="source-line-no">739</span><span id="line-739">   * @param determinism the {@link Determinism} to use; must not be {@code null}</span>
+<span class="source-line-no">739</span><span id="line-739">   * @return the result of invoking {@link Absence#instance()}</span>
 <span class="source-line-no">740</span><span id="line-740">   *</span>
-<span class="source-line-no">741</span><span id="line-741">   * @param supplier the {@link Supplier} whose {@link #get()} method</span>
-<span class="source-line-no">742</span><span id="line-742">   * will be called; must not be {@code null}</span>
-<span class="source-line-no">743</span><span id="line-743">   *</span>
-<span class="source-line-no">744</span><span id="line-744">   * @return a new {@link OptionalSupplier} whose {@link #determinism()}</span>
-<span class="source-line-no">745</span><span id="line-745">   * method will return the supplied {@link Determinism} and whose {@link</span>
-<span class="source-line-no">746</span><span id="line-746">   * #get()} method will return the result of invoking the {@link</span>
-<span class="source-line-no">747</span><span id="line-747">   * Supplier#get()} method on the supplied {@code supplier}</span>
-<span class="source-line-no">748</span><span id="line-748">   *</span>
-<span class="source-line-no">749</span><span id="line-749">   * @exception NullPointerException if {@code determinism} or {@code</span>
-<span class="source-line-no">750</span><span id="line-750">   * supplier} is {@code null}</span>
-<span class="source-line-no">751</span><span id="line-751">   *</span>
-<span class="source-line-no">752</span><span id="line-752">   * @nullability This method never returns {@code null}.</span>
-<span class="source-line-no">753</span><span id="line-753">   *</span>
-<span class="source-line-no">754</span><span id="line-754">   * @idempotency This method is not idempotent but is deterministic.</span>
-<span class="source-line-no">755</span><span id="line-755">   *</span>
-<span class="source-line-no">756</span><span id="line-756">   * @threadsafety This method is safe for concurrent use by multiple</span>
-<span class="source-line-no">757</span><span id="line-757">   * threads.</span>
-<span class="source-line-no">758</span><span id="line-758">   */</span>
-<span class="source-line-no">759</span><span id="line-759">  public static &lt;T&gt; OptionalSupplier&lt;T&gt; of(final Determinism determinism, final Supplier&lt;? extends T&gt; supplier) {</span>
-<span class="source-line-no">760</span><span id="line-760">    return new OptionalSupplierAdapter&lt;&gt;(determinism, supplier);</span>
-<span class="source-line-no">761</span><span id="line-761">  }</span>
-<span class="source-line-no">762</span><span id="line-762"></span>
-<span class="source-line-no">763</span><span id="line-763">  /**</span>
-<span class="source-line-no">764</span><span id="line-764">   * Invokes {@link Absence#instance()} and returns the result.</span>
-<span class="source-line-no">765</span><span id="line-765">   *</span>
-<span class="source-line-no">766</span><span id="line-766">   * @param &lt;T&gt; the type of the nonexistent value the returned {@link</span>
-<span class="source-line-no">767</span><span id="line-767">   * OptionalSupplier} will never {@linkplain #get() supply}</span>
-<span class="source-line-no">768</span><span id="line-768">   *</span>
-<span class="source-line-no">769</span><span id="line-769">   * @return the result of invoking {@link Absence#instance()}</span>
-<span class="source-line-no">770</span><span id="line-770">   *</span>
-<span class="source-line-no">771</span><span id="line-771">   * @nullability This method never returns {@code null}.</span>
-<span class="source-line-no">772</span><span id="line-772">   *</span>
-<span class="source-line-no">773</span><span id="line-773">   * @idempotency This method is idempotent and deterministic.</span>
-<span class="source-line-no">774</span><span id="line-774">   *</span>
-<span class="source-line-no">775</span><span id="line-775">   * @threadsafety This method is safe for concurrent use by</span>
-<span class="source-line-no">776</span><span id="line-776">   * multiple threads.</span>
-<span class="source-line-no">777</span><span id="line-777">   *</span>
-<span class="source-line-no">778</span><span id="line-778">   * @see Absence#instance()</span>
-<span class="source-line-no">779</span><span id="line-779">   */</span>
-<span class="source-line-no">780</span><span id="line-780">  public static &lt;T&gt; OptionalSupplier&lt;T&gt; of() {</span>
-<span class="source-line-no">781</span><span id="line-781">    return Absence.instance();</span>
-<span class="source-line-no">782</span><span id="line-782">  }</span>
-<span class="source-line-no">783</span><span id="line-783"></span>
-<span class="source-line-no">784</span><span id="line-784">  /**</span>
-<span class="source-line-no">785</span><span id="line-785">   * Returns an {@link OptionalSupplier} representing the supplied</span>
-<span class="source-line-no">786</span><span id="line-786">   * {@link Supplier}.</span>
-<span class="source-line-no">787</span><span id="line-787">   *</span>
-<span class="source-line-no">788</span><span id="line-788">   * @param &lt;T&gt; the type of value the returned {@link</span>
-<span class="source-line-no">789</span><span id="line-789">   * OptionalSupplier} will {@linkplain #get() supply}</span>
-<span class="source-line-no">790</span><span id="line-790">   *</span>
-<span class="source-line-no">791</span><span id="line-791">   * @param supplier the {@link Supplier}; may be {@code null} in</span>
-<span class="source-line-no">792</span><span id="line-792">   * which case the return value of an invocation of {@link</span>
-<span class="source-line-no">793</span><span id="line-793">   * Absence#instance()} will be returned</span>
-<span class="source-line-no">794</span><span id="line-794">   *</span>
-<span class="source-line-no">795</span><span id="line-795">   * @return an {@link OptionalSupplier} representing the supplied</span>
-<span class="source-line-no">796</span><span id="line-796">   * {@link Supplier}</span>
+<span class="source-line-no">741</span><span id="line-741">   * @nullability This method never returns {@code null}.</span>
+<span class="source-line-no">742</span><span id="line-742">   *</span>
+<span class="source-line-no">743</span><span id="line-743">   * @idempotency This method is idempotent and deterministic.</span>
+<span class="source-line-no">744</span><span id="line-744">   *</span>
+<span class="source-line-no">745</span><span id="line-745">   * @threadsafety This method is safe for concurrent use by</span>
+<span class="source-line-no">746</span><span id="line-746">   * multiple threads.</span>
+<span class="source-line-no">747</span><span id="line-747">   *</span>
+<span class="source-line-no">748</span><span id="line-748">   * @see Absence#instance()</span>
+<span class="source-line-no">749</span><span id="line-749">   */</span>
+<span class="source-line-no">750</span><span id="line-750">  public static &lt;T&gt; OptionalSupplier&lt;T&gt; of() {</span>
+<span class="source-line-no">751</span><span id="line-751">    return Absence.instance();</span>
+<span class="source-line-no">752</span><span id="line-752">  }</span>
+<span class="source-line-no">753</span><span id="line-753"></span>
+<span class="source-line-no">754</span><span id="line-754">  /**</span>
+<span class="source-line-no">755</span><span id="line-755">   * Returns an {@link OptionalSupplier} representing the supplied</span>
+<span class="source-line-no">756</span><span id="line-756">   * {@link Supplier}.</span>
+<span class="source-line-no">757</span><span id="line-757">   *</span>
+<span class="source-line-no">758</span><span id="line-758">   * @param &lt;T&gt; the type of value the returned {@link</span>
+<span class="source-line-no">759</span><span id="line-759">   * OptionalSupplier} will {@linkplain #get() supply}</span>
+<span class="source-line-no">760</span><span id="line-760">   *</span>
+<span class="source-line-no">761</span><span id="line-761">   * @param supplier the {@link Supplier}; may be {@code null} in</span>
+<span class="source-line-no">762</span><span id="line-762">   * which case the return value of an invocation of {@link</span>
+<span class="source-line-no">763</span><span id="line-763">   * Absence#instance()} will be returned</span>
+<span class="source-line-no">764</span><span id="line-764">   *</span>
+<span class="source-line-no">765</span><span id="line-765">   * @return an {@link OptionalSupplier} representing the supplied</span>
+<span class="source-line-no">766</span><span id="line-766">   * {@link Supplier}</span>
+<span class="source-line-no">767</span><span id="line-767">   *</span>
+<span class="source-line-no">768</span><span id="line-768">   * @nullability This method never returns {@code null}.</span>
+<span class="source-line-no">769</span><span id="line-769">   *</span>
+<span class="source-line-no">770</span><span id="line-770">   * @idempotency This method is not idempotent but is deterministic.</span>
+<span class="source-line-no">771</span><span id="line-771">   *</span>
+<span class="source-line-no">772</span><span id="line-772">   * @threadsafety This method is safe for concurrent use by</span>
+<span class="source-line-no">773</span><span id="line-773">   * multiple threads.</span>
+<span class="source-line-no">774</span><span id="line-774">   */</span>
+<span class="source-line-no">775</span><span id="line-775">  @SuppressWarnings("unchecked")</span>
+<span class="source-line-no">776</span><span id="line-776">  public static &lt;T&gt; OptionalSupplier&lt;T&gt; of(final Supplier&lt;? extends T&gt; supplier) {</span>
+<span class="source-line-no">777</span><span id="line-777">    if (supplier == null) {</span>
+<span class="source-line-no">778</span><span id="line-778">      return Absence.instance();</span>
+<span class="source-line-no">779</span><span id="line-779">    } else if (supplier instanceof OptionalSupplier&lt;? extends T&gt; os) {</span>
+<span class="source-line-no">780</span><span id="line-780">      return (OptionalSupplier&lt;T&gt;)os;</span>
+<span class="source-line-no">781</span><span id="line-781">    } else {</span>
+<span class="source-line-no">782</span><span id="line-782">      return new OptionalSupplierAdapter&lt;&gt;(supplier);</span>
+<span class="source-line-no">783</span><span id="line-783">    }</span>
+<span class="source-line-no">784</span><span id="line-784">  }</span>
+<span class="source-line-no">785</span><span id="line-785"></span>
+<span class="source-line-no">786</span><span id="line-786">  /**</span>
+<span class="source-line-no">787</span><span id="line-787">   * Returns an {@link OptionalSupplier} that will, loosely speaking,</span>
+<span class="source-line-no">788</span><span id="line-788">   * try the supplied {@code supplier} first, and, if it throws a</span>
+<span class="source-line-no">789</span><span id="line-789">   * {@link NoSuchElementException} or an {@link</span>
+<span class="source-line-no">790</span><span id="line-790">   * UnsupportedOperationException} from its {@link Supplier#get()}</span>
+<span class="source-line-no">791</span><span id="line-791">   * method, will then try the supplied {@code defaults}.</span>
+<span class="source-line-no">792</span><span id="line-792">   *</span>
+<span class="source-line-no">793</span><span id="line-793">   * &lt;p&gt;The supplied {@link Supplier} instances can, themselves, be</span>
+<span class="source-line-no">794</span><span id="line-794">   * {@link OptionalSupplier}s, and, if so, the resulting {@link</span>
+<span class="source-line-no">795</span><span id="line-795">   * OptionalSupplier} will have its {@link #determinism()} method</span>
+<span class="source-line-no">796</span><span id="line-796">   * appropriately implemented.&lt;/p&gt;</span>
 <span class="source-line-no">797</span><span id="line-797">   *</span>
-<span class="source-line-no">798</span><span id="line-798">   * @nullability This method never returns {@code null}.</span>
-<span class="source-line-no">799</span><span id="line-799">   *</span>
-<span class="source-line-no">800</span><span id="line-800">   * @idempotency This method is not idempotent but is deterministic.</span>
-<span class="source-line-no">801</span><span id="line-801">   *</span>
-<span class="source-line-no">802</span><span id="line-802">   * @threadsafety This method is safe for concurrent use by</span>
-<span class="source-line-no">803</span><span id="line-803">   * multiple threads.</span>
-<span class="source-line-no">804</span><span id="line-804">   */</span>
-<span class="source-line-no">805</span><span id="line-805">  @SuppressWarnings("unchecked")</span>
-<span class="source-line-no">806</span><span id="line-806">  public static &lt;T&gt; OptionalSupplier&lt;T&gt; of(final Supplier&lt;? extends T&gt; supplier) {</span>
-<span class="source-line-no">807</span><span id="line-807">    if (supplier == null) {</span>
-<span class="source-line-no">808</span><span id="line-808">      return Absence.instance();</span>
-<span class="source-line-no">809</span><span id="line-809">    } else if (supplier instanceof OptionalSupplier&lt;? extends T&gt; os) {</span>
-<span class="source-line-no">810</span><span id="line-810">      return (OptionalSupplier&lt;T&gt;)os;</span>
-<span class="source-line-no">811</span><span id="line-811">    } else {</span>
-<span class="source-line-no">812</span><span id="line-812">      return new OptionalSupplierAdapter&lt;&gt;(supplier);</span>
-<span class="source-line-no">813</span><span id="line-813">    }</span>
-<span class="source-line-no">814</span><span id="line-814">  }</span>
-<span class="source-line-no">815</span><span id="line-815"></span>
-<span class="source-line-no">816</span><span id="line-816">  /**</span>
-<span class="source-line-no">817</span><span id="line-817">   * Returns an {@link OptionalSupplier} that will, loosely speaking,</span>
-<span class="source-line-no">818</span><span id="line-818">   * try the supplied {@code supplier} first, and, if it throws a</span>
-<span class="source-line-no">819</span><span id="line-819">   * {@link NoSuchElementException} or an {@link</span>
-<span class="source-line-no">820</span><span id="line-820">   * UnsupportedOperationException} from its {@link Supplier#get()}</span>
-<span class="source-line-no">821</span><span id="line-821">   * method, will then try the supplied {@code defaults}.</span>
-<span class="source-line-no">822</span><span id="line-822">   *</span>
-<span class="source-line-no">823</span><span id="line-823">   * &lt;p&gt;The supplied {@link Supplier} instances can, themselves, be</span>
-<span class="source-line-no">824</span><span id="line-824">   * {@link OptionalSupplier}s, and, if so, the resulting {@link</span>
-<span class="source-line-no">825</span><span id="line-825">   * OptionalSupplier} will have its {@link #determinism()} method</span>
-<span class="source-line-no">826</span><span id="line-826">   * appropriately implemented.&lt;/p&gt;</span>
-<span class="source-line-no">827</span><span id="line-827">   *</span>
-<span class="source-line-no">828</span><span id="line-828">   * @param &lt;T&gt; the type of object the returned {@link</span>
-<span class="source-line-no">829</span><span id="line-829">   * OptionalSupplier} will {@linkplain #get() supply}</span>
-<span class="source-line-no">830</span><span id="line-830">   *</span>
-<span class="source-line-no">831</span><span id="line-831">   * @param supplier the first {@link Supplier} to try; may be {@code</span>
-<span class="source-line-no">832</span><span id="line-832">   * null}</span>
-<span class="source-line-no">833</span><span id="line-833">   *</span>
-<span class="source-line-no">834</span><span id="line-834">   * @param defaults the fallback {@link Supplier} to try; may be</span>
-<span class="source-line-no">835</span><span id="line-835">   * {@code null}</span>
-<span class="source-line-no">836</span><span id="line-836">   *</span>
-<span class="source-line-no">837</span><span id="line-837">   * @return a {@link DefaultingOptionalSupplier}</span>
-<span class="source-line-no">838</span><span id="line-838">   *</span>
-<span class="source-line-no">839</span><span id="line-839">   * @nullability This method never returns {@code null}.</span>
+<span class="source-line-no">798</span><span id="line-798">   * @param &lt;T&gt; the type of object the returned {@link</span>
+<span class="source-line-no">799</span><span id="line-799">   * OptionalSupplier} will {@linkplain #get() supply}</span>
+<span class="source-line-no">800</span><span id="line-800">   *</span>
+<span class="source-line-no">801</span><span id="line-801">   * @param supplier the first {@link Supplier} to try; may be {@code</span>
+<span class="source-line-no">802</span><span id="line-802">   * null}</span>
+<span class="source-line-no">803</span><span id="line-803">   *</span>
+<span class="source-line-no">804</span><span id="line-804">   * @param defaults the fallback {@link Supplier} to try; may be</span>
+<span class="source-line-no">805</span><span id="line-805">   * {@code null}</span>
+<span class="source-line-no">806</span><span id="line-806">   *</span>
+<span class="source-line-no">807</span><span id="line-807">   * @return a {@link DefaultingOptionalSupplier}</span>
+<span class="source-line-no">808</span><span id="line-808">   *</span>
+<span class="source-line-no">809</span><span id="line-809">   * @nullability This method never returns {@code null}.</span>
+<span class="source-line-no">810</span><span id="line-810">   *</span>
+<span class="source-line-no">811</span><span id="line-811">   * @idempotency This method is idempotent and deterministic.</span>
+<span class="source-line-no">812</span><span id="line-812">   *</span>
+<span class="source-line-no">813</span><span id="line-813">   * @threadsafety This method is safe for concurrent use by multiple</span>
+<span class="source-line-no">814</span><span id="line-814">   * threads.</span>
+<span class="source-line-no">815</span><span id="line-815">   */</span>
+<span class="source-line-no">816</span><span id="line-816">  public static &lt;T&gt; OptionalSupplier&lt;T&gt; of(final Supplier&lt;? extends T&gt; supplier, final Supplier&lt;? extends T&gt; defaults) {</span>
+<span class="source-line-no">817</span><span id="line-817">    if (supplier == null) {</span>
+<span class="source-line-no">818</span><span id="line-818">      if (defaults == null) {</span>
+<span class="source-line-no">819</span><span id="line-819">        return Absence.instance();</span>
+<span class="source-line-no">820</span><span id="line-820">      } else {</span>
+<span class="source-line-no">821</span><span id="line-821">        return of(defaults);</span>
+<span class="source-line-no">822</span><span id="line-822">      }</span>
+<span class="source-line-no">823</span><span id="line-823">    } else if (defaults == null) {</span>
+<span class="source-line-no">824</span><span id="line-824">      return of(supplier);</span>
+<span class="source-line-no">825</span><span id="line-825">    } else {</span>
+<span class="source-line-no">826</span><span id="line-826">      return DefaultingOptionalSupplier.of(supplier, defaults);</span>
+<span class="source-line-no">827</span><span id="line-827">    }</span>
+<span class="source-line-no">828</span><span id="line-828">  }</span>
+<span class="source-line-no">829</span><span id="line-829"></span>
+<span class="source-line-no">830</span><span id="line-830">  /**</span>
+<span class="source-line-no">831</span><span id="line-831">   * Returns a new {@link OptionalSupplier} whose {@link #determinism()}</span>
+<span class="source-line-no">832</span><span id="line-832">   * method will return {@link Determinism#PRESENT} and whose {@link</span>
+<span class="source-line-no">833</span><span id="line-833">   * #get()} method will return the supplied {@code value}.</span>
+<span class="source-line-no">834</span><span id="line-834">   *</span>
+<span class="source-line-no">835</span><span id="line-835">   * @param &lt;T&gt; the type of value the returned {@link</span>
+<span class="source-line-no">836</span><span id="line-836">   * OptionalSupplier} will {@linkplain #get() supply}</span>
+<span class="source-line-no">837</span><span id="line-837">   *</span>
+<span class="source-line-no">838</span><span id="line-838">   * @param value the value the new {@link OptionalSupplier} will</span>
+<span class="source-line-no">839</span><span id="line-839">   * return from its {@link #get()} method; may be {@code null}</span>
 <span class="source-line-no">840</span><span id="line-840">   *</span>
-<span class="source-line-no">841</span><span id="line-841">   * @idempotency This method is idempotent and deterministic.</span>
-<span class="source-line-no">842</span><span id="line-842">   *</span>
-<span class="source-line-no">843</span><span id="line-843">   * @threadsafety This method is safe for concurrent use by multiple</span>
-<span class="source-line-no">844</span><span id="line-844">   * threads.</span>
-<span class="source-line-no">845</span><span id="line-845">   */</span>
-<span class="source-line-no">846</span><span id="line-846">  public static &lt;T&gt; OptionalSupplier&lt;T&gt; of(final Supplier&lt;? extends T&gt; supplier, final Supplier&lt;? extends T&gt; defaults) {</span>
-<span class="source-line-no">847</span><span id="line-847">    if (supplier == null) {</span>
-<span class="source-line-no">848</span><span id="line-848">      if (defaults == null) {</span>
-<span class="source-line-no">849</span><span id="line-849">        return Absence.instance();</span>
-<span class="source-line-no">850</span><span id="line-850">      } else {</span>
-<span class="source-line-no">851</span><span id="line-851">        return of(defaults);</span>
-<span class="source-line-no">852</span><span id="line-852">      }</span>
-<span class="source-line-no">853</span><span id="line-853">    } else if (defaults == null) {</span>
-<span class="source-line-no">854</span><span id="line-854">      return of(supplier);</span>
-<span class="source-line-no">855</span><span id="line-855">    } else {</span>
-<span class="source-line-no">856</span><span id="line-856">      return DefaultingOptionalSupplier.of(supplier, defaults);</span>
-<span class="source-line-no">857</span><span id="line-857">    }</span>
-<span class="source-line-no">858</span><span id="line-858">  }</span>
-<span class="source-line-no">859</span><span id="line-859"></span>
-<span class="source-line-no">860</span><span id="line-860">  /**</span>
-<span class="source-line-no">861</span><span id="line-861">   * Returns a new {@link OptionalSupplier} whose {@link #determinism()}</span>
-<span class="source-line-no">862</span><span id="line-862">   * method will return {@link Determinism#PRESENT} and whose {@link</span>
-<span class="source-line-no">863</span><span id="line-863">   * #get()} method will return the supplied {@code value}.</span>
+<span class="source-line-no">841</span><span id="line-841">   * @return a new {@link OptionalSupplier} whose {@link #determinism()}</span>
+<span class="source-line-no">842</span><span id="line-842">   * method will return {@link Determinism#PRESENT} and whose {@link</span>
+<span class="source-line-no">843</span><span id="line-843">   * #get()} method will return the supplied {@code value}</span>
+<span class="source-line-no">844</span><span id="line-844">   *</span>
+<span class="source-line-no">845</span><span id="line-845">   * @nullability This method never returns {@code null}.</span>
+<span class="source-line-no">846</span><span id="line-846">   *</span>
+<span class="source-line-no">847</span><span id="line-847">   * @idempotency This method is not idempotent but is deterministic.</span>
+<span class="source-line-no">848</span><span id="line-848">   *</span>
+<span class="source-line-no">849</span><span id="line-849">   * @threadsafety This method is safe for concurrent use by multiple</span>
+<span class="source-line-no">850</span><span id="line-850">   * threads.</span>
+<span class="source-line-no">851</span><span id="line-851">   */</span>
+<span class="source-line-no">852</span><span id="line-852">  public static &lt;T&gt; OptionalSupplier&lt;T&gt; of(final T value) {</span>
+<span class="source-line-no">853</span><span id="line-853">    return FixedValueSupplier.of(value);</span>
+<span class="source-line-no">854</span><span id="line-854">  }</span>
+<span class="source-line-no">855</span><span id="line-855"></span>
+<span class="source-line-no">856</span><span id="line-856"></span>
+<span class="source-line-no">857</span><span id="line-857">  /*</span>
+<span class="source-line-no">858</span><span id="line-858">   * Inner and nested classes.</span>
+<span class="source-line-no">859</span><span id="line-859">   */</span>
+<span class="source-line-no">860</span><span id="line-860"></span>
+<span class="source-line-no">861</span><span id="line-861"></span>
+<span class="source-line-no">862</span><span id="line-862">  /**</span>
+<span class="source-line-no">863</span><span id="line-863">   * A token indicating transitory or permanent presence or absence.</span>
 <span class="source-line-no">864</span><span id="line-864">   *</span>
-<span class="source-line-no">865</span><span id="line-865">   * @param &lt;T&gt; the type of value the returned {@link</span>
-<span class="source-line-no">866</span><span id="line-866">   * OptionalSupplier} will {@linkplain #get() supply}</span>
+<span class="source-line-no">865</span><span id="line-865">   * @author &lt;a href="https://about.me/lairdnelson"</span>
+<span class="source-line-no">866</span><span id="line-866">   * target="_parent"&gt;Laird Nelson&lt;/a&gt;</span>
 <span class="source-line-no">867</span><span id="line-867">   *</span>
-<span class="source-line-no">868</span><span id="line-868">   * @param value the value the new {@link OptionalSupplier} will</span>
-<span class="source-line-no">869</span><span id="line-869">   * return from its {@link #get()} method; may be {@code null}</span>
-<span class="source-line-no">870</span><span id="line-870">   *</span>
-<span class="source-line-no">871</span><span id="line-871">   * @return a new {@link OptionalSupplier} whose {@link #determinism()}</span>
-<span class="source-line-no">872</span><span id="line-872">   * method will return {@link Determinism#PRESENT} and whose {@link</span>
-<span class="source-line-no">873</span><span id="line-873">   * #get()} method will return the supplied {@code value}</span>
-<span class="source-line-no">874</span><span id="line-874">   *</span>
-<span class="source-line-no">875</span><span id="line-875">   * @nullability This method never returns {@code null}.</span>
-<span class="source-line-no">876</span><span id="line-876">   *</span>
-<span class="source-line-no">877</span><span id="line-877">   * @idempotency This method is not idempotent but is deterministic.</span>
-<span class="source-line-no">878</span><span id="line-878">   *</span>
-<span class="source-line-no">879</span><span id="line-879">   * @threadsafety This method is safe for concurrent use by multiple</span>
-<span class="source-line-no">880</span><span id="line-880">   * threads.</span>
-<span class="source-line-no">881</span><span id="line-881">   */</span>
-<span class="source-line-no">882</span><span id="line-882">  public static &lt;T&gt; OptionalSupplier&lt;T&gt; of(final T value) {</span>
-<span class="source-line-no">883</span><span id="line-883">    return FixedValueSupplier.of(value);</span>
-<span class="source-line-no">884</span><span id="line-884">  }</span>
+<span class="source-line-no">868</span><span id="line-868">   * @see #deterministic()</span>
+<span class="source-line-no">869</span><span id="line-869">   *</span>
+<span class="source-line-no">870</span><span id="line-870">   * @see OptionalSupplier#determinism()</span>
+<span class="source-line-no">871</span><span id="line-871">   */</span>
+<span class="source-line-no">872</span><span id="line-872">  public static enum Determinism {</span>
+<span class="source-line-no">873</span><span id="line-873"></span>
+<span class="source-line-no">874</span><span id="line-874">    /**</span>
+<span class="source-line-no">875</span><span id="line-875">     * An {@link Determinism} indicating an unknown, possibly</span>
+<span class="source-line-no">876</span><span id="line-876">     * transitory, determinism or absence.</span>
+<span class="source-line-no">877</span><span id="line-877">     */</span>
+<span class="source-line-no">878</span><span id="line-878">    NON_DETERMINISTIC(false),</span>
+<span class="source-line-no">879</span><span id="line-879"></span>
+<span class="source-line-no">880</span><span id="line-880">    /**</span>
+<span class="source-line-no">881</span><span id="line-881">     * An {@link Determinism} indicating an unknown permanent presence</span>
+<span class="source-line-no">882</span><span id="line-882">     * or absence.</span>
+<span class="source-line-no">883</span><span id="line-883">     */</span>
+<span class="source-line-no">884</span><span id="line-884">    DETERMINISTIC(true),</span>
 <span class="source-line-no">885</span><span id="line-885"></span>
-<span class="source-line-no">886</span><span id="line-886"></span>
-<span class="source-line-no">887</span><span id="line-887">  /*</span>
-<span class="source-line-no">888</span><span id="line-888">   * Inner and nested classes.</span>
-<span class="source-line-no">889</span><span id="line-889">   */</span>
+<span class="source-line-no">886</span><span id="line-886">    /**</span>
+<span class="source-line-no">887</span><span id="line-887">     * An {@link Determinism} indicating permanent absence.</span>
+<span class="source-line-no">888</span><span id="line-888">     */</span>
+<span class="source-line-no">889</span><span id="line-889">    ABSENT(true),</span>
 <span class="source-line-no">890</span><span id="line-890"></span>
-<span class="source-line-no">891</span><span id="line-891"></span>
-<span class="source-line-no">892</span><span id="line-892">  /**</span>
-<span class="source-line-no">893</span><span id="line-893">   * A token indicating transitory or permanent presence or absence.</span>
-<span class="source-line-no">894</span><span id="line-894">   *</span>
-<span class="source-line-no">895</span><span id="line-895">   * @author &lt;a href="https://about.me/lairdnelson"</span>
-<span class="source-line-no">896</span><span id="line-896">   * target="_parent"&gt;Laird Nelson&lt;/a&gt;</span>
-<span class="source-line-no">897</span><span id="line-897">   *</span>
-<span class="source-line-no">898</span><span id="line-898">   * @see #deterministic()</span>
-<span class="source-line-no">899</span><span id="line-899">   *</span>
-<span class="source-line-no">900</span><span id="line-900">   * @see OptionalSupplier#determinism()</span>
-<span class="source-line-no">901</span><span id="line-901">   */</span>
-<span class="source-line-no">902</span><span id="line-902">  public static enum Determinism {</span>
-<span class="source-line-no">903</span><span id="line-903"></span>
-<span class="source-line-no">904</span><span id="line-904">    /**</span>
-<span class="source-line-no">905</span><span id="line-905">     * An {@link Determinism} indicating an unknown, possibly</span>
-<span class="source-line-no">906</span><span id="line-906">     * transitory, determinism or absence.</span>
-<span class="source-line-no">907</span><span id="line-907">     */</span>
-<span class="source-line-no">908</span><span id="line-908">    NON_DETERMINISTIC(false),</span>
-<span class="source-line-no">909</span><span id="line-909"></span>
-<span class="source-line-no">910</span><span id="line-910">    /**</span>
-<span class="source-line-no">911</span><span id="line-911">     * An {@link Determinism} indicating an unknown permanent presence</span>
-<span class="source-line-no">912</span><span id="line-912">     * or absence.</span>
+<span class="source-line-no">891</span><span id="line-891">    /**</span>
+<span class="source-line-no">892</span><span id="line-892">     * An {@link Determinism} indicating permanent determinism.</span>
+<span class="source-line-no">893</span><span id="line-893">     */</span>
+<span class="source-line-no">894</span><span id="line-894">    PRESENT(true);</span>
+<span class="source-line-no">895</span><span id="line-895"></span>
+<span class="source-line-no">896</span><span id="line-896">    private final boolean deterministic;</span>
+<span class="source-line-no">897</span><span id="line-897"></span>
+<span class="source-line-no">898</span><span id="line-898">    private Determinism(final boolean deterministic) {</span>
+<span class="source-line-no">899</span><span id="line-899">      this.deterministic = deterministic;</span>
+<span class="source-line-no">900</span><span id="line-900">    }</span>
+<span class="source-line-no">901</span><span id="line-901"></span>
+<span class="source-line-no">902</span><span id="line-902">    /**</span>
+<span class="source-line-no">903</span><span id="line-903">     * Returns {@code true} if the presence or absence denoted by this</span>
+<span class="source-line-no">904</span><span id="line-904">     * {@link Determinism} is deterministic.</span>
+<span class="source-line-no">905</span><span id="line-905">     *</span>
+<span class="source-line-no">906</span><span id="line-906">     * @return {@code true} if the presence or absence denoted by this</span>
+<span class="source-line-no">907</span><span id="line-907">     * {@link Determinism} is deterministic</span>
+<span class="source-line-no">908</span><span id="line-908">     *</span>
+<span class="source-line-no">909</span><span id="line-909">     * @idempotency This method is idempotent and deterministic.</span>
+<span class="source-line-no">910</span><span id="line-910">     *</span>
+<span class="source-line-no">911</span><span id="line-911">     * @threadsafety This method is safe for concurrent use by</span>
+<span class="source-line-no">912</span><span id="line-912">     * multiple threads.</span>
 <span class="source-line-no">913</span><span id="line-913">     */</span>
-<span class="source-line-no">914</span><span id="line-914">    DETERMINISTIC(true),</span>
-<span class="source-line-no">915</span><span id="line-915"></span>
-<span class="source-line-no">916</span><span id="line-916">    /**</span>
-<span class="source-line-no">917</span><span id="line-917">     * An {@link Determinism} indicating permanent absence.</span>
-<span class="source-line-no">918</span><span id="line-918">     */</span>
-<span class="source-line-no">919</span><span id="line-919">    ABSENT(true),</span>
-<span class="source-line-no">920</span><span id="line-920"></span>
-<span class="source-line-no">921</span><span id="line-921">    /**</span>
-<span class="source-line-no">922</span><span id="line-922">     * An {@link Determinism} indicating permanent determinism.</span>
-<span class="source-line-no">923</span><span id="line-923">     */</span>
-<span class="source-line-no">924</span><span id="line-924">    PRESENT(true);</span>
-<span class="source-line-no">925</span><span id="line-925"></span>
-<span class="source-line-no">926</span><span id="line-926">    private final boolean deterministic;</span>
-<span class="source-line-no">927</span><span id="line-927"></span>
-<span class="source-line-no">928</span><span id="line-928">    private Determinism(final boolean deterministic) {</span>
-<span class="source-line-no">929</span><span id="line-929">      this.deterministic = deterministic;</span>
-<span class="source-line-no">930</span><span id="line-930">    }</span>
-<span class="source-line-no">931</span><span id="line-931"></span>
-<span class="source-line-no">932</span><span id="line-932">    /**</span>
-<span class="source-line-no">933</span><span id="line-933">     * Returns {@code true} if the presence or absence denoted by this</span>
-<span class="source-line-no">934</span><span id="line-934">     * {@link Determinism} is deterministic.</span>
-<span class="source-line-no">935</span><span id="line-935">     *</span>
-<span class="source-line-no">936</span><span id="line-936">     * @return {@code true} if the presence or absence denoted by this</span>
-<span class="source-line-no">937</span><span id="line-937">     * {@link Determinism} is deterministic</span>
-<span class="source-line-no">938</span><span id="line-938">     *</span>
-<span class="source-line-no">939</span><span id="line-939">     * @idempotency This method is idempotent and deterministic.</span>
-<span class="source-line-no">940</span><span id="line-940">     *</span>
-<span class="source-line-no">941</span><span id="line-941">     * @threadsafety This method is safe for concurrent use by</span>
-<span class="source-line-no">942</span><span id="line-942">     * multiple threads.</span>
-<span class="source-line-no">943</span><span id="line-943">     */</span>
-<span class="source-line-no">944</span><span id="line-944">    public final boolean deterministic() {</span>
-<span class="source-line-no">945</span><span id="line-945">      return this.deterministic;</span>
-<span class="source-line-no">946</span><span id="line-946">    }</span>
-<span class="source-line-no">947</span><span id="line-947"></span>
-<span class="source-line-no">948</span><span id="line-948">  }</span>
-<span class="source-line-no">949</span><span id="line-949"></span>
-<span class="source-line-no">950</span><span id="line-950">}</span>
+<span class="source-line-no">914</span><span id="line-914">    public final boolean deterministic() {</span>
+<span class="source-line-no">915</span><span id="line-915">      return this.deterministic;</span>
+<span class="source-line-no">916</span><span id="line-916">    }</span>
+<span class="source-line-no">917</span><span id="line-917"></span>
+<span class="source-line-no">918</span><span id="line-918">  }</span>
+<span class="source-line-no">919</span><span id="line-919"></span>
+<span class="source-line-no">920</span><span id="line-920">}</span>
 
 
 
