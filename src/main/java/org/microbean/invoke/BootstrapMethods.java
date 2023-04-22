@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -248,6 +249,68 @@ public final class BootstrapMethods {
    */
   public static final <K, V> SortedMap<K, V> immutableEmptySortedMap(final Comparator<? super K> comparator) {
     return comparator == null ? Collections.emptySortedMap() : immutableSortedMapOf(Map.of(), comparator);
+  }
+
+  /**
+   * Given a {@link Collection} of {@link Entry} instances, returns a {@link SortedMap} representing it that is
+   * immutable.
+   *
+   * @param <K> the type borne by the supplied entries' {@linkplain Map#keySet() keys}
+   *
+   * @param <V> the type borne by the supplied entries' {@linkplain Map#values() values}
+   *
+   * @param entries the {@link Entry} instances to represent; must not be {@code null}
+   *
+   * @return an immutable {@link SortedMap} representing the supplied entries
+   *
+   * @exception NullPointerException if {@code entries} is {@code null}
+   *
+   * @nullability This method never returns {@code null}.
+   *
+   * @idempotency This method is idempotent and deterministic.
+   *
+   * @threadsafety This method is safe for concurrent use by multiple threads.
+   *
+   * @see #immutableSortedMapOf(Collection, Comparator)
+   */
+  public static final <K, V> SortedMap<K, V> immutableSortedMapOf(final Collection<? extends Entry<K, V>> entries) {
+    return immutableSortedMapOf(entries, null);
+  }
+
+  /**
+   * Given a {@link Collection} of {@link Entry} instances, returns a {@link SortedMap} representing it that is
+   * immutable.
+   *
+   * @param <K> the type borne by the supplied entries' {@linkplain Map#keySet() keys}
+   *
+   * @param <V> the type borne by the supplied entries' {@linkplain Map#values() values}
+   *
+   * @param entries the {@link Entry} instances to represent; must not be {@code null}
+   *
+   * @param comparator the {@link Comparator} to use to order the returned {@link SortedMap}'s elements; may be {@code
+   * null} to indicate natural order should be used in which case the supplied keys and values must implement {@link
+   * Comparable}
+   *
+   * @return an immutable {@link SortedMap} representing the supplied entries
+   *
+   * @exception NullPointerException if {@code entries} is {@code null}
+   *
+   * @nullability This method never returns {@code null}.
+   *
+   * @idempotency This method is idempotent and deterministic.
+   *
+   * @threadsafety This method is safe for concurrent use by multiple threads.
+   */
+  public static final <K, V> SortedMap<K, V> immutableSortedMapOf(final Collection<? extends Entry<K, V>> entries,
+                                                                  final Comparator<? super K> comparator) {
+    if (entries.isEmpty()) {
+      return comparator == null ? Collections.emptySortedMap() : immutableSortedMapOf(Map.of(), comparator);
+    }
+    final SortedMap<K, V> sm = new TreeMap<>(comparator);
+    for (final Entry<K, V> entry : entries) {
+      sm.put(entry.getKey(), entry.getValue());
+    }
+    return Collections.unmodifiableSortedMap(sm);
   }
 
   /**
