@@ -4,7 +4,7 @@
 
   <groupId>org.microbean</groupId>
   <artifactId>microbean-invoke</artifactId>
-  <version>0.0.15</version>
+  <version>0.0.16-SNAPSHOT</version>
 
   <parent>
     <groupId>org.microbean</groupId>
@@ -22,7 +22,7 @@
     <connection>scm:git:git@github.com:microbean/microbean-invoke.git</connection>
     <developerConnection>scm:git:git@github.com:microbean/microbean-invoke.git</developerConnection>
     <url>https://github.com/microbean/microbean-invoke/</url>
-    <tag>v0.0.15</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <dependencies>
