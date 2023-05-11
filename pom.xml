@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.microbean</groupId>
     <artifactId>microbean-pluginmanagement-pom</artifactId>
-    <version>18</version>
+    <version>21</version>
     <relativePath />
   </parent>
 
