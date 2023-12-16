@@ -14,13 +14,11 @@
 package org.microbean.invoke;
 
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Optional;
 
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import java.util.stream.Stream;
@@ -206,7 +204,7 @@ public interface OptionalSupplier<T> extends Supplier<T> {
    * @see #get()
    */
   public default <U> U handle(final BiFunction<? super T, ? super RuntimeException, ? extends U> handler) {
-    T value;
+    final T value;
     try {
       value = this.get();
     } catch (final RuntimeException e) {
@@ -245,7 +243,7 @@ public interface OptionalSupplier<T> extends Supplier<T> {
    * @see #get()
    */
   public default void ifPresent(final Consumer<? super T> action) {
-    T value;
+    final T value;
     try {
       value = this.get();
     } catch (final NoSuchElementException | UnsupportedOperationException e) {
@@ -284,7 +282,7 @@ public interface OptionalSupplier<T> extends Supplier<T> {
    * @see #get()
    */
   public default void ifPresentOrElse(final Consumer<? super T> presentAction, final Runnable absentAction) {
-    T value;
+    final T value;
     try {
       value = this.get();
     } catch (final NoSuchElementException | UnsupportedOperationException e) {

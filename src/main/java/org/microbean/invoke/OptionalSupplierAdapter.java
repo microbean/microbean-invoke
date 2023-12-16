@@ -30,11 +30,11 @@ final class OptionalSupplierAdapter<T> implements OptionalSupplier<T> {
     this(Determinism.ABSENT, Absence.instance());
   }
 
-  OptionalSupplierAdapter(Supplier<? extends T> supplier) {
+  OptionalSupplierAdapter(final Supplier<? extends T> supplier) {
     this(Determinism.NON_DETERMINISTIC, supplier);
   }
 
-  OptionalSupplierAdapter(final Determinism determinism, Supplier<? extends T> supplier) {
+  OptionalSupplierAdapter(final Determinism determinism, final Supplier<? extends T> supplier) {
     super();
     if (supplier == null) {
       this.determinism = Determinism.ABSENT;

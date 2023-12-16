@@ -40,7 +40,7 @@ final class DefaultingOptionalSupplier<T> implements OptionalSupplier<T> {
     this(null, null);
   }
 
-  private DefaultingOptionalSupplier(Supplier<? extends T> supplier) {
+  private DefaultingOptionalSupplier(final Supplier<? extends T> supplier) {
     this(supplier, null);
   }
 
