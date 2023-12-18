@@ -19,11 +19,24 @@
   <url>https://microbean.github.io/microbean-invoke</url>
 
   <scm>
-    <connection>scm:git:git@github.com:microbean/microbean-invoke.git</connection>
-    <developerConnection>scm:git:git@github.com:microbean/microbean-invoke.git</developerConnection>
+    <connection>${scm.url}</connection>
+    <developerConnection>${scm.url}</developerConnection>
     <url>https://github.com/microbean/microbean-invoke/</url>
     <tag>HEAD</tag>
   </scm>
+
+  <distributionManagement>
+    <repository>
+      <id>sonatype-oss-repository-hosting</id>
+      <!-- See https://central.sonatype.org/publish/publish-maven/#distribution-management-and-authentication -->
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+    <site>
+      <id>Github Pages</id>
+      <name>microBean™ Invoke Site</name>
+      <url>https://microbean.github.io/microbean-invoke/</url>
+    </site>
+  </distributionManagement>
 
   <dependencies>
 
@@ -157,7 +170,7 @@
             </propertyExpansion>
           </configuration>
         </plugin>
-        
+
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
           <configuration>
@@ -167,6 +180,7 @@
             </compilerArgs>
           </configuration>
         </plugin>
+
         <plugin>
           <artifactId>maven-javadoc-plugin</artifactId>
           <configuration>
@@ -177,6 +191,7 @@
             <docfilessubdirs>true</docfilessubdirs>
           </configuration>
         </plugin>
+
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
@@ -214,6 +229,8 @@
 
     <!-- maven-release-plugin properties; see http://maven.apache.org/maven-release/maven-release-plugin/ -->
     <goals>deploy,post-site,scm-publish:publish-scm</goals>
+
+    <scm.url>scm:git:git@github.com:microbean/microbean-invoke.git</scm.url>
 
     <!-- maven-scm-publish-plugin properties;
          see https://maven.apache.org/plugins/maven-scm-publish-plugin/publish-scm-mojo.html -->
